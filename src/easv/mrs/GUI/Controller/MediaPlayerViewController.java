@@ -101,6 +101,7 @@ public class MediaPlayerViewController implements Initializable {
 
         // set default volume to 50 and update song progress
         sliderProgressVolume.setValue(0.5);
+        setVolume();
         updateProgressStyle();
 
         for (Song s: songModel.getObservableSongs()) {
@@ -335,4 +336,5 @@ public class MediaPlayerViewController implements Initializable {
     }
 
 }
+
 
