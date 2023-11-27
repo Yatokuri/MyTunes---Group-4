@@ -29,7 +29,6 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <TextField fx:id="txtInputName" prefHeight="26.0" prefWidth="84.0" promptText="Title" GridPane.columnIndex="2" />
             <TextField fx:id="txtInputArtist" promptText="Artist" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <HBox prefHeight="22.0" prefWidth="368.0" spacing="30.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
                <children>
@@ -47,12 +46,13 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Time:" wrappingWidth="30.64453125" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <HBox alignment="CENTER_LEFT" prefHeight="14.0" prefWidth="243.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
                <children>
-                  <TextField disable="true" editable="false" onAction="#cancelAction" prefHeight="25.0" prefWidth="134.0" promptText="Time" styleClass="timeText-field" stylesheets="@../CSS/Main.css" />
+                  <TextField fx:id="lblTime" disable="true" editable="false" prefHeight="25.0" prefWidth="134.0" styleClass="timeText-field" stylesheets="@../CSS/Main.css" text="00:00:00" />
                </children>
             </HBox>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Category" wrappingWidth="48.64453125" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <ComboBox fx:id="comCategory" prefHeight="25.0" prefWidth="146.0" promptText="Pop" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Button mnemonicParsing="false" text="More..." GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <TextField fx:id="txtInputName" prefHeight="26.0" prefWidth="229.0" promptText="Title" GridPane.columnIndex="2" />
          </children>
       </GridPane>
    </children>

@@ -30,44 +30,36 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 public class MediaPlayerViewController implements Initializable {
-
-
-    public TextField txtSongSearch;
-    public ListView<Song> lstSongs;
-    public TableView tblMovies;
-    public Button btnDelete;
-    public Slider sliderProgressSong;
-    public Button btnPlay;
-    public Slider sliderProgressVolume;
-    public Label lblPlayingNow, lblSongDuration, lblCurrentSongProgress, lblVolume;
-    public AnchorPane anchorPane;
-    public ImageView btnPlayIcon;
-
-
-    private MediaPlayer currentMusic = null;
-    private final Map<Integer, MediaPlayer> soundMap = new HashMap<>(); //Every song have there unique id
-    private boolean isUserChangingSlider = false;
-    private boolean isMusicPaused = false;
     @FXML
-    private Button btnCreate, btnUpdate;
-
+    private AnchorPane anchorPane;
+    @FXML
+    private ImageView btnPlayIcon;
+    @FXML
+    private Button btnCreate, btnUpdate, btnPlay, btnDelete;
+    @FXML
+    private TextField txtName, txtArtist, txtYear, txtSongSearch;
+    @FXML
+    private Label lblPlayingNow, lblSongDuration, lblCurrentSongProgress, lblVolume;
+    @FXML
+    private Slider sliderProgressSong, sliderProgressVolume;
     @FXML
     private TableColumn<Song, String> colName;
     @FXML
     private TableColumn<Song, Integer> colYear;
     @FXML
     private TableColumn<Song, String> colArtist;
-
     @FXML
     private TableView<Song> tblSongs;
-
     @FXML
-    private TextField txtName, txtArtist, txtYear;
+    private ListView<Song> lstSongs;
 
+    private MediaPlayer currentMusic = null;
+    private final Map<Integer, MediaPlayer> soundMap = new HashMap<>(); //Every song have there unique id
+    private boolean isUserChangingSlider = false;
+    private boolean isMusicPaused = false;
     private SongModel songModel;
 
     public MediaPlayerViewController()  {
-
         try {
             songModel = new SongModel();
         }
@@ -235,12 +227,9 @@ public class MediaPlayerViewController implements Initializable {
         tblSongs.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) { // Check for double-click
                 Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-                if (selectedSong != null) {
-                    MediaPlayer newSong = soundMap.get(selectedSong.getId());
-                    if (currentMusic != newSong && newSong != null) {
-                        sliderProgressSong.setValue(0);
-                        playSong();
-                    }
+                if (selectedSong != null && currentMusic != soundMap.get(selectedSong.getId())) {
+                    sliderProgressSong.setValue(0);
+                    playSong();
                 }
             }
         });
@@ -257,8 +246,6 @@ public class MediaPlayerViewController implements Initializable {
                 }
                 sliderProgressSong.setDisable(false);
                 currentMusic = newSong;
-
-                System.out.println(newSong);
 
                 sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
                 lblPlayingNow.setText("Now playing: " + tblSongs.getSelectionModel().getSelectedItem().getTitle() + " - " + tblSongs.getSelectionModel().getSelectedItem().getArtist());
@@ -282,10 +269,10 @@ public class MediaPlayerViewController implements Initializable {
                     updateSongProgressTimer();
                     btnPlayIcon.setImage(new Image("Icons/play.png"));
                 });
+                return;
             }
         }
-            else if (currentMusic != null) {
-            System.out.println("32");
+            if (currentMusic != null) {
                 if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was paused now play
                     currentMusic.pause();
                     isMusicPaused = true;
@@ -370,23 +357,17 @@ public class MediaPlayerViewController implements Initializable {
     private void updateSongProgressTimer() {
         if (currentMusic != null) {
             double progressValue = sliderProgressSong.getValue();
-
             long currentSeconds = (long) progressValue;
-            String formattedTime = String.format("%02d:%02d:%02d", currentSeconds / 3600, (currentSeconds % 3600) / 60, currentSeconds % 60);
-            lblCurrentSongProgress.setText(formattedTime);
-
+            lblCurrentSongProgress.setText(String.format("%02d:%02d:%02d", currentSeconds / 3600, (currentSeconds % 3600) / 60, currentSeconds % 60)); //Format HH:MM:SS
             Duration totalDuration = currentMusic.getTotalDuration();
             long totalSeconds = (long) totalDuration.toSeconds();
-            String formattedTotalDuration = String.format("%02d:%02d:%02d", totalSeconds / 3600, (totalSeconds % 3600) / 60, totalSeconds % 60); //Format HH:MM:SS
-            lblSongDuration.setText(formattedTotalDuration);
+            lblSongDuration.setText(String.format("%02d:%02d:%02d", totalSeconds / 3600, (totalSeconds % 3600) / 60, totalSeconds % 60)); //Format HH:MM:SS
         }
         else {
             lblCurrentSongProgress.setText("00:00:00");
             lblSongDuration.setText("00:00:00");
         }
     }
-
-
 
     public void testNewWindowCreate() throws IOException {
         testNewWindow("Song Creator");
@@ -397,8 +378,6 @@ public class MediaPlayerViewController implements Initializable {
         testNewWindow("Song Updater");
         MediaPlayerCUViewController.setTypeCU(2);
     }
-
-
 
 
     public void testNewWindow(String windowTitle) throws IOException {

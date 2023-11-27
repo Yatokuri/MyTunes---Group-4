@@ -32,11 +32,11 @@ public class SongDAO_DB implements ISongDataAccess {
             while (rs.next()) {
 
                 //Map DB row to Movie object
-                int id = rs.getInt("Id");
-                String title = rs.getString("Name");
-                String artist = rs.getString("artist");
-                int year = rs.getInt("year");
-                String songPath = rs.getString("filepath");
+                int id = rs.getInt("SongId");
+                String title = rs.getString("SongName");
+                String artist = rs.getString("SongArtist");
+                int year = rs.getInt("SongYear");
+                String songPath = rs.getString("SongFilepath");
                 Song song = new Song(id, year, title, artist, songPath);
                 allSongs.add(song);
             }
@@ -57,7 +57,7 @@ public class SongDAO_DB implements ISongDataAccess {
     public Song createSong(Song song) throws Exception {
 
         // SQL command
-        String sql = "INSERT INTO dbo.Songs (Name,Artist,Year, Filepath) VALUES (?,?,?,?);";
+        String sql = "INSERT INTO dbo.Songs (SongName, SongArtist, SongYear, SongFilepath) VALUES (?,?,?,?);";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
@@ -96,7 +96,7 @@ public class SongDAO_DB implements ISongDataAccess {
     public void updateSong(Song song) throws Exception {
 
         // SQL command
-        String sql = "UPDATE dbo.Songs SET Name = ?, Artist = ?, Year = ? WHERE ID = ?";
+        String sql = "UPDATE dbo.Songs SET SongName = ?, SongArtist = ?, SongYear = ? WHERE SongID = ?";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))
@@ -120,7 +120,7 @@ public class SongDAO_DB implements ISongDataAccess {
 
     public void deleteSong(Song song) throws Exception {
         // SQL command
-        String sql = "DELETE FROM dbo.Songs WHERE ID = ?;";
+        String sql = "DELETE FROM dbo.Songs WHERE SongID = ?;";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))

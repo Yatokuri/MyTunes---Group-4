@@ -2,11 +2,11 @@ package easv.mrs.BE;
 
 public class Song {
 
-    private int id;
-    private String title;
+
+    private String title, artist, songPath;
     private int year;
-    private String artist;
-    private String songPath;
+    private final int id;
+
     public Song(int id, int year, String title, String artist, String songPath) {
         this.id = id;
         this.title = title;
