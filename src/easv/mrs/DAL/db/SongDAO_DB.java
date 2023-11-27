@@ -33,7 +33,7 @@ public class SongDAO_DB implements ISongDataAccess {
 
                 //Map DB row to Movie object
                 int id = rs.getInt("Id");
-                String title = rs.getString("Title");
+                String title = rs.getString("Name");
                 String artist = rs.getString("artist");
                 int year = rs.getInt("year");
 
@@ -57,7 +57,7 @@ public class SongDAO_DB implements ISongDataAccess {
     public Song createSong(Song song) throws Exception {
 
         // SQL command
-        String sql = "INSERT INTO dbo.Songs (Title,Artist,Year) VALUES (?,?,?);";
+        String sql = "INSERT INTO dbo.Songs (Name,Artist,Year) VALUES (?,?,?);";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
@@ -96,7 +96,7 @@ public class SongDAO_DB implements ISongDataAccess {
     public void updateSong(Song song) throws Exception {
 
         // SQL command
-        String sql = "UPDATE dbo.Songs SET Title = ?, Artist = ?, Year = ? WHERE ID = ?";
+        String sql = "UPDATE dbo.Songs SET Name = ?, Artist = ?, Year = ? WHERE ID = ?";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))

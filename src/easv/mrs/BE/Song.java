@@ -6,7 +6,6 @@ public class Song {
     private String title;
     private int year;
     private String artist;
-
     public Song(int id, int year, String title, String artist) {
         this.id = id;
         this.title = title;
