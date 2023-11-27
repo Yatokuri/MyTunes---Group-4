@@ -51,11 +51,14 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Button fx:id="btnDelete" layoutX="511.0" layoutY="287.0" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
+      <Button fx:id="btnDelete" layoutX="561.0" layoutY="295.0" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
       <Button fx:id="btnUpdate" layoutX="14.0" layoutY="295.0" mnemonicParsing="false" onAction="#updateSong" text="Update" />
       <Slider fx:id="sliderProgressSong" disable="true" layoutX="699.0" layoutY="188.0" onKeyPressed="#onSlideProgressPressed" onKeyReleased="#onSlideProgressReleased" onMousePressed="#onSlideProgressPressed" onMouseReleased="#onSlideProgressReleased" onTouchPressed="#onSlideProgressPressed" onTouchReleased="#onSlideProgressReleased" />
       <Button fx:id="btnPlay" layoutX="750.0" layoutY="154.0" mnemonicParsing="false" onAction="#playSong" text="Play" />
       <Slider fx:id="sliderProgressVolume" layoutX="699.0" layoutY="249.0" max="1.0" />
-      <Label fx:id="lblPlayingNow" layoutX="755.0" layoutY="122.0" text="Label" />
+      <Label fx:id="lblPlayingNow" layoutX="727.0" layoutY="124.0" text="Choose a song to play!" />
+      <Label fx:id="lblSongDuration" layoutX="839.0" layoutY="186.0" text="NaN" />
+      <Label fx:id="lblCurrentSongProgress" layoutX="665.0" layoutY="186.0" text="NaN" />
+      <Label fx:id="lblVolume" layoutX="839.0" layoutY="247.0" text="50%" />
    </children>
 </AnchorPane>

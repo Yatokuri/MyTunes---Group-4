@@ -4,6 +4,7 @@ import easv.mrs.BE.Song;
 import easv.mrs.GUI.Model.SongModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.property.Property;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -34,6 +35,9 @@ public class MediaPlayerViewController implements Initializable {
     public Slider sliderProgressVolume;
     public Label lblPlayingNow;
     public AnchorPane anchorPane;
+    public Label lblSongDuration;
+    public Label lblCurrentSongProgress;
+    public Label lblVolume;
 
 
     private MediaPlayer currentMusic = null;
@@ -95,7 +99,8 @@ public class MediaPlayerViewController implements Initializable {
             txtYear.setText(Integer.toString(newValue.getYear()));
         });
 
-
+        // set default volume to 50 and update song progress
+        sliderProgressVolume.setValue(0.5);
         updateProgressStyle();
 
         for (Song s: songModel.getObservableSongs()) {
@@ -151,7 +156,6 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
-
     /**
      *
      * @param actionEvent
@@ -200,9 +204,6 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
-
-
-
     public void playSong()    {
         if (tblSongs.getSelectionModel().getSelectedItem() != null)   {
             MediaPlayer newSong = soundMap.get(tblSongs.getSelectionModel().getSelectedItem().getId());
@@ -212,12 +213,13 @@ public class MediaPlayerViewController implements Initializable {
                 }
                 sliderProgressSong.setDisable(false);
                 currentMusic = newSong;
+                startUpdatingProgress();
 
                 sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
                 lblPlayingNow.setText("Playing " + tblSongs.getSelectionModel().getSelectedItem().getTitle() );
                 currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
+                btnPlay.setText("Pause");
                 currentMusic.play();
-
 
                 currentMusic.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
                     // Update the slider value as the song progresses
@@ -238,12 +240,14 @@ public class MediaPlayerViewController implements Initializable {
                 if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was paused now play
                     currentMusic.pause();
                     isMusicPaused = true;
+                    btnPlay.setText("Play");
                     //currentMusic.seek(Duration.ZERO); //Mark these two out, and then you can now pause when you use the button instead of start again
                     //currentMusic.play();
                 } else {
                     currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()));
                     currentMusic.play();
                     isMusicPaused = false;
+                    btnPlay.setText("Pause");
                 }
             }
         }
@@ -272,6 +276,11 @@ public class MediaPlayerViewController implements Initializable {
     public void setVolume() {
         if (currentMusic != null)
             currentMusic.setVolume((sliderProgressVolume.getValue()));
+        double progress = sliderProgressVolume.getValue();
+        int percentage = (int) (progress * 100);
+
+        String text = String.format("%d%%", percentage);
+        lblVolume.setText(text);
     }
 
     private void setSliderVolumeStyle()  {
@@ -287,7 +296,6 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     private void updateProgressStyle() { //This automatic change the progress bar
-
         Timeline updater = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             setSliderVolumeStyle();
             setSliderSongProgressStyle();
@@ -303,8 +311,27 @@ public class MediaPlayerViewController implements Initializable {
         sliderProgressSong.valueProperty().addListener((obs, oldVal, newVal) -> {
             setSliderSongProgressStyle();
         });
+    }
 
+    private void updateSongProgress() {
+        if (currentMusic != null && currentMusic.getStatus() == MediaPlayer.Status.PLAYING) {
+            Duration currentTime = currentMusic.getCurrentTime();
+            long currentSeconds = (long) currentTime.toSeconds();
+            String formattedTime = String.format("%d:%02d", currentSeconds / 60, currentSeconds % 60);
+            lblCurrentSongProgress.setText(formattedTime);
 
+            Duration totalDuration = currentMusic.getTotalDuration();
+            long totalSeconds = (long) totalDuration.toSeconds();
+            String formattedTotalDuration = String.format("%d:%02d", totalSeconds/60, totalSeconds%60); // Format M:SS
+            lblSongDuration.setText(formattedTotalDuration);
+
+        }
+    }
+
+    private void startUpdatingProgress() {
+        Timeline updater = new Timeline(new KeyFrame(Duration.seconds(1), event -> updateSongProgress()));
+        updater.setCycleCount(Timeline.INDEFINITE);
+        updater.play();
     }
 
 }
