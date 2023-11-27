@@ -15,8 +15,6 @@ public class SongManager {
     private ISongDataAccess songDAO;
 
     public SongManager() throws IOException {
-        //songDAO = new songDAO_Mock();
-        //songDAO = new songDAO_File();
         songDAO = new SongDAO_DB();
     }
 

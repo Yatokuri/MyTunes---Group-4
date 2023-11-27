@@ -36,8 +36,8 @@ public class SongDAO_DB implements ISongDataAccess {
                 String title = rs.getString("Name");
                 String artist = rs.getString("artist");
                 int year = rs.getInt("year");
-
-                Song song = new Song(id, year, title, artist);
+                String songPath = rs.getString("filepath");
+                Song song = new Song(id, year, title, artist, songPath);
                 allSongs.add(song);
             }
             return allSongs;
@@ -57,7 +57,7 @@ public class SongDAO_DB implements ISongDataAccess {
     public Song createSong(Song song) throws Exception {
 
         // SQL command
-        String sql = "INSERT INTO dbo.Songs (Name,Artist,Year) VALUES (?,?,?);";
+        String sql = "INSERT INTO dbo.Songs (Name,Artist,Year, Filepath) VALUES (?,?,?,?);";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
@@ -66,7 +66,7 @@ public class SongDAO_DB implements ISongDataAccess {
             stmt.setString(1, song.getTitle());
             stmt.setString(2, song.getArtist());
             stmt.setInt(3, song.getYear());
-
+            stmt.setString(4, song.getSongPath());
             // Run the specified SQL statement
             stmt.executeUpdate();
 
@@ -79,7 +79,7 @@ public class SongDAO_DB implements ISongDataAccess {
             }
 
             // Create movie object and send up the layers
-            Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist());
+            Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath());
 
             return createdSong;
         }
