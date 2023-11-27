@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="324.0" prefWidth="591.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MovieViewController">
+<AnchorPane prefHeight="324.0" prefWidth="591.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
    <children>
       <GridPane alignment="center" hgap="10" prefHeight="276.0" prefWidth="309.0" vgap="10">
          <columnConstraints>
@@ -47,7 +47,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Button fx:id="btnDelete" layoutX="511.0" layoutY="287.0" mnemonicParsing="false" onAction="#deleteMovie" text="Delete" />
-      <Button fx:id="btnUpdate" layoutX="8.0" layoutY="282.0" mnemonicParsing="false" onAction="#updateMovie" text="Update" />
+      <Button fx:id="btnDelete" layoutX="511.0" layoutY="287.0" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
+      <Button fx:id="btnUpdate" layoutX="8.0" layoutY="282.0" mnemonicParsing="false" onAction="#updateSong" text="Update" />
    </children>
 </AnchorPane>

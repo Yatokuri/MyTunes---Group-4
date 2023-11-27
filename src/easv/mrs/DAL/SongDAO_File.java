@@ -1,6 +1,6 @@
 package easv.mrs.DAL;
 
-import easv.mrs.BE.Movie;
+import easv.mrs.BE.Song;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -11,15 +11,15 @@ import java.util.ArrayList;
 import static java.nio.file.StandardOpenOption.APPEND;
 
 
-public class MovieDAO_File implements IMovieDataAccess {
+public class SongDAO_File implements ISongDataAccess {
 
     private static final String MOVIES_FILE = "data/movie_titles.txt";
 
-    public List<Movie> getAllMovies() throws IOException {
+    public List<Song> getAllSongs() throws IOException {
 
         // Read all lines from file
         List<String> lines = Files.readAllLines(Path.of(MOVIES_FILE));
-        List<Movie> movies = new ArrayList<>();
+        List<Song> songs = new ArrayList<>();
 
         // Parse each line as movie
         for (String line: lines) {
@@ -28,6 +28,7 @@ public class MovieDAO_File implements IMovieDataAccess {
             int id = Integer.parseInt(separatedLine[0]);
             int year = Integer.parseInt(separatedLine[1]);
             String title = separatedLine[2];
+            String artist = separatedLine[3];
             if(separatedLine.length > 3)
             {
                 for(int i = 3; i < separatedLine.length; i++)
@@ -35,15 +36,15 @@ public class MovieDAO_File implements IMovieDataAccess {
                     title += "," + separatedLine[i];
                 }
             }
-            Movie movie = new Movie(id, year, title);
-            movies.add(movie);
+            Song song = new Song(id, year, title, artist);
+            songs.add(song);
         }
 
-        return movies;
+        return songs;
     }
 
     @Override
-    public Movie createMovie(Movie movie) throws Exception {
+    public Song createSong(Song song) throws Exception {
 
         List<String> movies = Files.readAllLines(Path.of(MOVIES_FILE));
 
@@ -51,10 +52,10 @@ public class MovieDAO_File implements IMovieDataAccess {
             // get next id
             String[] separatedLine = movies.get(movies.size() - 1).split(",");
             int nextId = Integer.parseInt(separatedLine[0]) + 1;
-            String newMovieLine = nextId + "," + movie.getYear() + "," + movie.getTitle();
+            String newMovieLine = nextId + "," + song.getYear() + "," + song.getTitle();
             Files.write(Path.of(MOVIES_FILE), (newMovieLine + "\r\n").getBytes(), APPEND);
 
-            return new Movie(nextId, movie.getYear(), movie.getTitle());
+            return new Song(nextId, song.getYear(), song.getTitle(),song.getArtist());
         }
 
         return null;
@@ -62,12 +63,12 @@ public class MovieDAO_File implements IMovieDataAccess {
     }
 
     @Override
-    public void updateMovie(Movie movie) throws Exception {
+    public void updateSong(Song song) throws Exception {
 
     }
 
     @Override
-    public void deleteMovie(Movie movie) throws Exception {
+    public void deleteSong(Song song) throws Exception {
 
     }
 

@@ -1,8 +1,8 @@
 package easv.mrs.DAL.db;
 
 // Project imports
-import easv.mrs.BE.Movie;
-import easv.mrs.DAL.IMovieDataAccess;
+import easv.mrs.BE.Song;
+import easv.mrs.DAL.ISongDataAccess;
 
 // Java imports
 import java.io.IOException;
@@ -10,22 +10,22 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieDAO_DB implements IMovieDataAccess {
+public class SongDAO_DB implements ISongDataAccess {
 
     private MyDatabaseConnector databaseConnector;
 
-    public MovieDAO_DB() throws IOException {
+    public SongDAO_DB() throws IOException {
         databaseConnector = new MyDatabaseConnector();
     }
 
-    public List<Movie> getAllMovies() throws Exception {
+    public List<Song> getAllSongs() throws Exception {
 
-        ArrayList<Movie> allMovies = new ArrayList<>();
+        ArrayList<Song> allSongs = new ArrayList<>();
 
         try (Connection conn = databaseConnector.getConnection();
              Statement stmt = conn.createStatement())
         {
-            String sql = "SELECT * FROM dbo.Movie;";
+            String sql = "SELECT * FROM dbo.Songs;";
             ResultSet rs = stmt.executeQuery(sql);
 
             // Loop through rows from the database result set
@@ -34,12 +34,13 @@ public class MovieDAO_DB implements IMovieDataAccess {
                 //Map DB row to Movie object
                 int id = rs.getInt("Id");
                 String title = rs.getString("Title");
+                String artist = rs.getString("artist");
                 int year = rs.getInt("year");
 
-                Movie movie = new Movie(id, year, title);
-                allMovies.add(movie);
+                Song song = new Song(id, year, title, artist);
+                allSongs.add(song);
             }
-            return allMovies;
+            return allSongs;
 
         }
         catch (SQLException ex)
@@ -53,17 +54,18 @@ public class MovieDAO_DB implements IMovieDataAccess {
         //throw new UnsupportedOperationException();
     }
 
-    public Movie createMovie(Movie movie) throws Exception {
+    public Song createSong(Song song) throws Exception {
 
         // SQL command
-        String sql = "INSERT INTO dbo.Movie (Title,Year) VALUES (?,?);";
+        String sql = "INSERT INTO dbo.Songs (Title,Artist,Year) VALUES (?,?,?);";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
             // Bind parameters
-            stmt.setString(1,movie.getTitle());
-            stmt.setInt(2, movie.getYear());
+            stmt.setString(1, song.getTitle());
+            stmt.setString(2, song.getArtist());
+            stmt.setInt(3, song.getYear());
 
             // Run the specified SQL statement
             stmt.executeUpdate();
@@ -77,9 +79,9 @@ public class MovieDAO_DB implements IMovieDataAccess {
             }
 
             // Create movie object and send up the layers
-            Movie createdMovie = new Movie(id, movie.getYear(), movie.getTitle());
+            Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist());
 
-            return createdMovie;
+            return createdSong;
         }
 
         catch (SQLException ex)
@@ -91,18 +93,19 @@ public class MovieDAO_DB implements IMovieDataAccess {
 
     }
 
-    public void updateMovie(Movie movie) throws Exception {
+    public void updateSong(Song song) throws Exception {
 
         // SQL command
-        String sql = "UPDATE dbo.Movie SET Title = ?, Year = ? WHERE ID = ?";
+        String sql = "UPDATE dbo.Songs SET Title = ?, Artist = ?, Year = ? WHERE ID = ?";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))
         {
             // Bind parameters
-            stmt.setString(1,movie.getTitle());
-            stmt.setInt(2, movie.getYear());
-            stmt.setInt(3, movie.getId());
+            stmt.setString(1, song.getTitle());
+            stmt.setString(2, song.getArtist());
+            stmt.setInt(3, song.getYear());
+            stmt.setInt(4, song.getId());
 
             // Run the specified SQL statement
             stmt.executeUpdate();
@@ -111,19 +114,19 @@ public class MovieDAO_DB implements IMovieDataAccess {
         {
             // create entry in log file
             ex.printStackTrace();
-            throw new Exception("Could not update movie", ex);
+            throw new Exception("Could not update song", ex);
         }
     }
 
-    public void deleteMovie(Movie movie) throws Exception {
+    public void deleteSong(Song song) throws Exception {
         // SQL command
-        String sql = "DELETE FROM dbo.Movie WHERE ID = ?;";
+        String sql = "DELETE FROM dbo.Songs WHERE ID = ?;";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))
         {
             // Bind parameters
-            stmt.setInt(1, movie.getId());
+            stmt.setInt(1, song.getId());
 
             // Run the specified SQL statement
             stmt.executeUpdate();
@@ -136,7 +139,7 @@ public class MovieDAO_DB implements IMovieDataAccess {
         }
     }
 
-    public List<Movie> searchMovies(String query) throws Exception {
+    public List<Song> searchSongs(String query) throws Exception {
 
         //TODO Do this
         throw new UnsupportedOperationException();

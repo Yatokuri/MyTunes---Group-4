@@ -1,15 +1,17 @@
 package easv.mrs.BE;
 
-public class Movie {
+public class Song {
 
     private int id;
     private String title;
     private int year;
+    private String artist;
 
-    public Movie(int id, int year, String title) {
+    public Song(int id, int year, String title, String artist) {
         this.id = id;
         this.title = title;
         this.year = year;
+        this.artist = artist;
     }
 
     public int getId() {
@@ -31,6 +33,8 @@ public class Movie {
     public void setYear(int year) {
         this.year = year;
     }
+    public String getArtist() { return artist; }
+    public void setArtist(String artist) { this.artist = artist; }
 
     @Override
     public String toString()
