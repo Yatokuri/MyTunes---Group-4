@@ -6,19 +6,23 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.beans.property.Property;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
@@ -151,6 +155,8 @@ public class MediaPlayerViewController implements Initializable {
         alert.showAndWait();
     }
 
+
+
     /**
      *
      * @param actionEvent
@@ -252,6 +258,7 @@ public class MediaPlayerViewController implements Initializable {
                 sliderProgressSong.setDisable(false);
                 currentMusic = newSong;
 
+                System.out.println(newSong);
 
                 sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
                 lblPlayingNow.setText("Now playing: " + tblSongs.getSelectionModel().getSelectedItem().getTitle() + " - " + tblSongs.getSelectionModel().getSelectedItem().getArtist());
@@ -277,7 +284,8 @@ public class MediaPlayerViewController implements Initializable {
                 });
             }
         }
-            if (currentMusic != null) {
+            else if (currentMusic != null) {
+            System.out.println("32");
                 if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was paused now play
                     currentMusic.pause();
                     isMusicPaused = true;
@@ -291,6 +299,7 @@ public class MediaPlayerViewController implements Initializable {
                     btnPlayIcon.setImage(new Image("Icons/pause.png"));
 
             }
+
         }
     }
 
@@ -319,10 +328,10 @@ public class MediaPlayerViewController implements Initializable {
             currentMusic.setVolume((sliderProgressVolume.getValue()));
             double progress = sliderProgressVolume.getValue();
             int percentage = (int) (progress * 100);
-            String text = String.format("%d%%", percentage);
-            lblVolume.setText(text);
+            lblVolume.setText(String.format("%d%%", percentage));
         }
     }
+
 
         private void setSliderVolumeStyle()  {
             double percentage = sliderProgressVolume.getValue() / (sliderProgressVolume.getMax() - sliderProgressVolume.getMin());
@@ -379,7 +388,30 @@ public class MediaPlayerViewController implements Initializable {
 
 
 
+    public void testNewWindowCreate() throws IOException {
+        testNewWindow("Song Creator");
+        MediaPlayerCUViewController.setTypeCU(1);
+    }
 
+    public void testNewWindowUpdate() throws IOException {
+        testNewWindow("Song Updater");
+        MediaPlayerCUViewController.setTypeCU(2);
+    }
+
+
+
+
+    public void testNewWindow(String windowTitle) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/MediaPlayerCU.fxml"));
+        Parent root = loader.load();
+        Stage stage = new Stage();
+        stage.getIcons().add(new Image("/Icons/mainIcon.png"));
+        stage.setTitle(windowTitle + " NOT WORKING");
+        stage.setScene(new Scene(root));
+        //stage.setMaximized(true);
+        stage.initModality(Modality.APPLICATION_MODAL); //Lock the first window until second is close
+        stage.show();
+    }
 }
 
 

@@ -4,3 +4,9 @@
 .buttonSound {
     -fx-background-color: none;
 }
+
+
+
+.timeText-field:disabled {
+    -fx-opacity: 1.0; /* Set the opacity to 1.0 to make it fully visible */
+}

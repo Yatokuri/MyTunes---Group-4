@@ -36,7 +36,6 @@
                   <TextField fx:id="txtName" prefHeight="26.0" prefWidth="153.0" promptText="Title" />
                   <TextField fx:id="txtArtist" promptText="Artist" />
                   <TextField fx:id="txtYear" prefHeight="26.0" prefWidth="73.0" promptText="Year" />
-                  <Button fx:id="btnCreate" mnemonicParsing="false" onAction="#createNewMovie" text="Create" />
                </children>
                <GridPane.margin>
                   <Insets />
@@ -87,5 +86,8 @@
             <Label fx:id="lblVolume" text="50%" />
          </children>
       </HBox>
+      <Button fx:id="btnCreate" layoutX="130.0" layoutY="308.0" mnemonicParsing="false" onAction="#createNewMovie" text="Create" />
+      <Button layoutX="238.0" layoutY="308.0" mnemonicParsing="false" onAction="#testNewWindowCreate" text="Test - Create" />
+      <Button layoutX="361.0" layoutY="308.0" mnemonicParsing="false" onAction="#testNewWindowUpdate" text="Test - Update" />
    </children>
 </AnchorPane>
