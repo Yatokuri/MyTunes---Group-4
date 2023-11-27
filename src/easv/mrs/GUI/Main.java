@@ -13,7 +13,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader();
         Parent root = loader.load(getClass().getResource("/View/MediaPlayer.fxml"));
 
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("MyTunes");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }

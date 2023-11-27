@@ -119,6 +119,9 @@ public class MediaPlayerViewController implements Initializable {
                 e.printStackTrace();
             }
         });
+
+        // Add tableview functionality
+        playSongFromTableView();
     }
 
     /**
@@ -214,10 +217,10 @@ public class MediaPlayerViewController implements Initializable {
                 }
                 sliderProgressSong.setDisable(false);
                 currentMusic = newSong;
-                startUpdatingProgress();
+                startUpdatingSongProgress();
 
                 sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
-                lblPlayingNow.setText("Playing " + tblSongs.getSelectionModel().getSelectedItem().getTitle() );
+                lblPlayingNow.setText("Playing " + tblSongs.getSelectionModel().getSelectedItem().getTitle());
                 currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
                 btnPlay.setText("Pause");
                 currentMusic.play();
@@ -238,19 +241,23 @@ public class MediaPlayerViewController implements Initializable {
             }
 
             else if (currentMusic != null) {
-                if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was paused now play
-                    currentMusic.pause();
-                    isMusicPaused = true;
-                    btnPlay.setText("Play");
-                    //currentMusic.seek(Duration.ZERO); //Mark these two out, and then you can now pause when you use the button instead of start again
-                    //currentMusic.play();
-                } else {
-                    currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()));
-                    currentMusic.play();
-                    isMusicPaused = false;
-                    btnPlay.setText("Pause");
-                }
+                pauseMusic();
             }
+        }
+    }
+
+    public void pauseMusic() {
+        if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was paused now play
+            currentMusic.pause();
+            isMusicPaused = true;
+            btnPlay.setText("Play");
+            //currentMusic.seek(Duration.ZERO); //Mark these two out, and then you can now pause when you use the button instead of start again
+            //currentMusic.play();
+        } else {
+            currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()));
+            currentMusic.play();
+            isMusicPaused = false;
+            btnPlay.setText("Pause");
         }
     }
 
@@ -270,7 +277,6 @@ public class MediaPlayerViewController implements Initializable {
                 isUserChangingSlider = false;
                 anchorPane.requestFocus();
             }
-
         }
     }
 
@@ -329,10 +335,25 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
-    private void startUpdatingProgress() {
+    private void startUpdatingSongProgress() {
         Timeline updater = new Timeline(new KeyFrame(Duration.seconds(1), event -> updateSongProgress()));
         updater.setCycleCount(Timeline.INDEFINITE);
         updater.play();
+    }
+
+    private void playSongFromTableView() {
+        tblSongs.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) { // Check for double-click
+                Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+                if (selectedSong != null) {
+                    MediaPlayer newSong = soundMap.get(selectedSong.getId());
+                    if (currentMusic != newSong && newSong != null) {
+                        sliderProgressSong.setValue(0);
+                        playSong();
+                    }
+                }
+            }
+        });
     }
 
 }
