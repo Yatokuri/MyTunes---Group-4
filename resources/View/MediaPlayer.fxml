@@ -8,6 +8,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -15,9 +17,8 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="343.0" prefWidth="889.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
+<AnchorPane fx:id="anchorPane" prefHeight="346.0" prefWidth="916.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
    <children>
-      <Slider fx:id="sliderProgressVolume" layoutX="756.0" layoutY="286.0" max="1.0" prefHeight="14.0" prefWidth="93.0" />
       <GridPane alignment="center" hgap="10" prefHeight="308.0" prefWidth="368.0" vgap="10">
          <columnConstraints>
             <ColumnConstraints />
@@ -33,8 +34,8 @@
             <HBox prefHeight="30.0" prefWidth="336.0" spacing="10.0">
                <children>
                   <TextField fx:id="txtName" prefHeight="26.0" prefWidth="153.0" promptText="Title" />
-                  <TextField fx:id="txtArtist" />
-                  <TextField fx:id="txtYear" prefHeight="26.0" prefWidth="55.0" promptText="Year" />
+                  <TextField fx:id="txtArtist" promptText="Artist" />
+                  <TextField fx:id="txtYear" prefHeight="26.0" prefWidth="73.0" promptText="Year" />
                   <Button fx:id="btnCreate" mnemonicParsing="false" onAction="#createNewMovie" text="Create" />
                </children>
                <GridPane.margin>
@@ -43,7 +44,7 @@
             </HBox>
          </children>
       </GridPane>
-      <TableView fx:id="tblSongs" layoutX="389.0" layoutY="14.0" prefHeight="279.0" prefWidth="223.0">
+      <TableView fx:id="tblSongs" layoutX="389.0" layoutY="14.0" prefHeight="275.0" prefWidth="223.0">
          <columns>
             <TableColumn fx:id="colName" prefWidth="75.0" text="Title" />
             <TableColumn fx:id="colArtist" prefWidth="75.0" text="Artist" />
@@ -53,25 +54,38 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Button fx:id="btnDelete" layoutX="561.0" layoutY="296.0" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
-      <Button fx:id="btnUpdate" layoutX="14.0" layoutY="296.0" mnemonicParsing="false" onAction="#updateSong" text="Update" />
-      <VBox alignment="CENTER" layoutX="627.0" layoutY="15.0" prefHeight="119.0" prefWidth="235.0">
+      <Button fx:id="btnDelete" layoutX="561.0" layoutY="295.0" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
+      <Button fx:id="btnUpdate" layoutX="14.0" layoutY="295.0" mnemonicParsing="false" onAction="#updateSong" text="Update" />
+      <VBox alignment="CENTER" layoutX="612.0" prefHeight="182.0" prefWidth="336.0">
          <children>
-            <Label fx:id="lblPlayingNow" alignment="CENTER" contentDisplay="CENTER" text="Choose a song to play!" textAlignment="CENTER">
+            <Label fx:id="lblPlayingNow" text="Choose a song to play!">
                <padding>
                   <Insets bottom="5.0" />
                </padding>
             </Label>
-            <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#playSong" text="Play" />
-            <HBox alignment="CENTER" prefHeight="28.0" prefWidth="235.0">
+            <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#playSong" prefHeight="30.0" prefWidth="14.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css">
+               <graphic>
+                  <ImageView fx:id="btnPlayIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../Icons/play.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <HBox alignment="CENTER" prefHeight="30.0" prefWidth="239.0">
                <children>
-                  <Label fx:id="lblCurrentSongProgress" text="0:00" />
+                  <Label fx:id="lblCurrentSongProgress" text="00:00:00" />
                   <Slider fx:id="sliderProgressSong" disable="true" onKeyPressed="#onSlideProgressPressed" onKeyReleased="#onSlideProgressReleased" onMousePressed="#onSlideProgressPressed" onMouseReleased="#onSlideProgressReleased" onTouchPressed="#onSlideProgressPressed" onTouchReleased="#onSlideProgressReleased" />
-                  <Label fx:id="lblSongDuration" text="0:00" />
+                  <Label fx:id="lblSongDuration" text="00:00:00" />
                </children>
             </HBox>
          </children>
       </VBox>
-      <Label fx:id="lblVolume" layoutX="847.0" layoutY="285.0" prefHeight="17.0" prefWidth="30.0" text="50%" />
+      <HBox layoutX="734.0" layoutY="284.0" prefHeight="22.0" prefWidth="200.0">
+         <children>
+            <Slider fx:id="sliderProgressVolume" max="1.0" />
+            <Label fx:id="lblVolume" text="50%" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

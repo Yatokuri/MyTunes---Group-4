@@ -4,17 +4,19 @@ import easv.mrs.BE.Song;
 import easv.mrs.GUI.Model.SongModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.property.Property;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+import javafx.beans.property.Property;
 
 import java.io.File;
 import java.net.URL;
@@ -33,11 +35,9 @@ public class MediaPlayerViewController implements Initializable {
     public Slider sliderProgressSong;
     public Button btnPlay;
     public Slider sliderProgressVolume;
-    public Label lblPlayingNow;
+    public Label lblPlayingNow, lblSongDuration, lblCurrentSongProgress, lblVolume;
     public AnchorPane anchorPane;
-    public Label lblSongDuration;
-    public Label lblCurrentSongProgress;
-    public Label lblVolume;
+    public ImageView btnPlayIcon;
 
 
     private MediaPlayer currentMusic = null;
@@ -87,16 +87,30 @@ public class MediaPlayerViewController implements Initializable {
 
         // table view listener (when user selects a movie in the tableview)
         tblSongs.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            txtName.setText(newValue.getTitle());
-            txtArtist.setText(newValue.getArtist());
-            txtYear.setText(Integer.toString(newValue.getYear()));
+            if (tblSongs.getSelectionModel().getSelectedItem() == null)   {
+                txtName.setText("");
+                txtArtist.setText("");
+                txtYear.setText("");
+            }
+            else {
+                txtName.setText(newValue.getTitle());
+                txtArtist.setText(newValue.getArtist());
+                txtYear.setText(Integer.toString(newValue.getYear()));
+            }
         });
 
         // list view listener (when user selects a movie in the listview)
         lstSongs.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            txtName.setText(newValue.getTitle());
-            txtArtist.setText(newValue.getArtist());
-            txtYear.setText(Integer.toString(newValue.getYear()));
+                    if (lstSongs.getSelectionModel().getSelectedItem() == null) {
+                        txtName.setText("");
+                        txtArtist.setText("");
+                        txtYear.setText("");
+                    }
+                    else {
+                        txtName.setText(newValue.getTitle());
+                        txtArtist.setText(newValue.getArtist());
+                        txtYear.setText(Integer.toString(newValue.getYear()));
+                    }
         });
 
         // set default volume to 50 and update song progress
@@ -122,6 +136,7 @@ public class MediaPlayerViewController implements Initializable {
 
         // Add tableview functionality
         playSongFromTableView();
+
     }
 
     /**
@@ -144,7 +159,7 @@ public class MediaPlayerViewController implements Initializable {
         // get data from UI
         String title = txtName.getText();
         String artist = txtArtist.getText();
-        // String songPath = txtSongPath.getText();
+       // String songPath = txtSongPath.getText();
         String songPath = "";
         int year = Integer.parseInt(txtYear.getText());
 
@@ -159,6 +174,7 @@ public class MediaPlayerViewController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
     /**
      *
@@ -208,23 +224,41 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
+
+    private void playSongFromTableView() {
+        tblSongs.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) { // Check for double-click
+                Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+                if (selectedSong != null) {
+                    MediaPlayer newSong = soundMap.get(selectedSong.getId());
+                    if (currentMusic != newSong && newSong != null) {
+                        sliderProgressSong.setValue(0);
+                        playSong();
+                    }
+                }
+            }
+        });
+    }
+
+
+
     public void playSong()    {
-        if (tblSongs.getSelectionModel().getSelectedItem() != null)   {
+        if (tblSongs.getSelectionModel().getSelectedItem() != null) {
             MediaPlayer newSong = soundMap.get(tblSongs.getSelectionModel().getSelectedItem().getId());
-            if (currentMusic != newSong && newSong != null)   {
-                if (currentMusic != null)   {
+            if (currentMusic != newSong && newSong != null) {
+                if (currentMusic != null) {
                     currentMusic.stop();
                 }
                 sliderProgressSong.setDisable(false);
                 currentMusic = newSong;
-                startUpdatingSongProgress();
+
 
                 sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
                 lblPlayingNow.setText("Now playing: " + tblSongs.getSelectionModel().getSelectedItem().getTitle() + " - " + tblSongs.getSelectionModel().getSelectedItem().getArtist());
                 currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
-                btnPlay.setText("Pause");
-                setVolume();
                 currentMusic.play();
+                btnPlayIcon.setImage(new Image("Icons/pause.png"));
+
 
                 currentMusic.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
                     // Update the slider value as the song progresses
@@ -238,27 +272,25 @@ public class MediaPlayerViewController implements Initializable {
                     sliderProgressSong.setValue(0);
                     lblPlayingNow.setText("No song playing");
                     sliderProgressSong.setDisable(true);
+                    updateSongProgressTimer();
+                    btnPlayIcon.setImage(new Image("Icons/play.png"));
                 });
             }
-
-            else if (currentMusic != null) {
-                pauseMusic();
-            }
         }
-    }
+            if (currentMusic != null) {
+                if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was paused now play
+                    currentMusic.pause();
+                    isMusicPaused = true;
+                    btnPlayIcon.setImage(new Image("Icons/play.png"));
+                    //currentMusic.seek(Duration.ZERO); //Mark these two out, and then you can now pause when you use the button instead of start again
+                    //currentMusic.play();
+                } else {
+                    currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()));
+                    currentMusic.play();
+                    isMusicPaused = false;
+                    btnPlayIcon.setImage(new Image("Icons/pause.png"));
 
-    public void pauseMusic() {
-        if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was paused now play
-            currentMusic.pause();
-            isMusicPaused = true;
-            btnPlay.setText("Play");
-            //currentMusic.seek(Duration.ZERO); //Mark these two out, and then you can now pause when you use the button instead of start again
-            //currentMusic.play();
-        } else {
-            currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()));
-            currentMusic.play();
-            isMusicPaused = false;
-            btnPlay.setText("Pause");
+            }
         }
     }
 
@@ -278,32 +310,34 @@ public class MediaPlayerViewController implements Initializable {
                 isUserChangingSlider = false;
                 anchorPane.requestFocus();
             }
+
+        }
+    }
+    
+    public void setVolume() {
+        if (currentMusic != null) {
+            currentMusic.setVolume((sliderProgressVolume.getValue()));
+            double progress = sliderProgressVolume.getValue();
+            int percentage = (int) (progress * 100);
+            String text = String.format("%d%%", percentage);
+            lblVolume.setText(text);
         }
     }
 
-    public void setVolume() {
-        if (currentMusic != null)
-            currentMusic.setVolume((sliderProgressVolume.getValue()));
-        double progress = sliderProgressVolume.getValue();
-        int percentage = (int) (progress * 100);
+        private void setSliderVolumeStyle()  {
+            double percentage = sliderProgressVolume.getValue() / (sliderProgressVolume.getMax() - sliderProgressVolume.getMin());
+            String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, blue 0%%, blue %.2f%%, white %.2f%%, white 100%%);", percentage * 100, percentage * 100);
+            sliderProgressVolume.lookup(".track").setStyle(color);
+        }
 
-        String text = String.format("%d%%", percentage);
-        lblVolume.setText(text);
-    }
-
-    private void setSliderVolumeStyle()  {
-        double percentage = sliderProgressVolume.getValue() / (sliderProgressVolume.getMax() - sliderProgressVolume.getMin());
-        String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, blue 0%%, blue %.2f%%, white %.2f%%, white 100%%);", percentage * 100, percentage * 100);
-        sliderProgressVolume.lookup(".track").setStyle(color);
-    }
-
-    private void setSliderSongProgressStyle()  {
-        double percentage = sliderProgressSong.getValue() / (sliderProgressSong.getMax() - sliderProgressSong.getMin());
-        String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, green 0%%, green %.10f%%, red %.10f%%, red 100%%);", percentage * 100, percentage * 100);
-        sliderProgressSong.lookup(".track").setStyle(color);
-    }
+        private void setSliderSongProgressStyle()  {
+            double percentage = sliderProgressSong.getValue() / (sliderProgressSong.getMax() - sliderProgressSong.getMin());
+            String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, green 0%%, green %.10f%%, red %.10f%%, red 100%%);", percentage * 100, percentage * 100);
+            sliderProgressSong.lookup(".track").setStyle(color);
+        }
 
     private void updateProgressStyle() { //This automatic change the progress bar
+
         Timeline updater = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             setSliderVolumeStyle();
             setSliderSongProgressStyle();
@@ -318,45 +352,38 @@ public class MediaPlayerViewController implements Initializable {
 
         sliderProgressSong.valueProperty().addListener((obs, oldVal, newVal) -> {
             setSliderSongProgressStyle();
-        });
+            updateSongProgressTimer();
+        }); 
+
+
     }
 
-    private void updateSongProgress() {
-        if (currentMusic != null && currentMusic.getStatus() == MediaPlayer.Status.PLAYING) {
-            Duration currentTime = currentMusic.getCurrentTime();
-            long currentSeconds = (long) currentTime.toSeconds();
-            String formattedTime = String.format("%d:%02d", currentSeconds / 60, currentSeconds % 60);
+    private void updateSongProgressTimer() {
+        if (currentMusic != null) {
+            double progressValue = sliderProgressSong.getValue();
+
+            long currentSeconds = (long) progressValue;
+            String formattedTime = String.format("%02d:%02d:%02d", currentSeconds / 3600, (currentSeconds % 3600) / 60, currentSeconds % 60);
             lblCurrentSongProgress.setText(formattedTime);
 
             Duration totalDuration = currentMusic.getTotalDuration();
             long totalSeconds = (long) totalDuration.toSeconds();
-            String formattedTotalDuration = String.format("%d:%02d", totalSeconds/60, totalSeconds%60); // Format M:SS
+            String formattedTotalDuration = String.format("%02d:%02d:%02d", totalSeconds / 3600, (totalSeconds % 3600) / 60, totalSeconds % 60); //Format HH:MM:SS
             lblSongDuration.setText(formattedTotalDuration);
-
+        }
+        else {
+            lblCurrentSongProgress.setText("00:00:00");
+            lblSongDuration.setText("00:00:00");
         }
     }
 
-    private void startUpdatingSongProgress() {
-        Timeline updater = new Timeline(new KeyFrame(Duration.seconds(1), event -> updateSongProgress()));
-        updater.setCycleCount(Timeline.INDEFINITE);
-        updater.play();
-    }
 
-    private void playSongFromTableView() {
-        tblSongs.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // Check for double-click
-                Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-                if (selectedSong != null) {
-                    MediaPlayer newSong = soundMap.get(selectedSong.getId());
-                    if (currentMusic != newSong && newSong != null) {
-                        sliderProgressSong.setValue(0);
-                        playSong();
-                    }
-                }
-            }
-        });
-    }
+
 
 }
+
+
+
+
 
 
