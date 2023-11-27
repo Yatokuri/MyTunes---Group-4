@@ -8,13 +8,16 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="528.0" prefWidth="1094.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
+<AnchorPane fx:id="anchorPane" prefHeight="346.0" prefWidth="916.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
    <children>
       <GridPane alignment="center" hgap="10" prefHeight="308.0" prefWidth="368.0" vgap="10">
          <columnConstraints>
@@ -31,8 +34,8 @@
             <HBox prefHeight="30.0" prefWidth="336.0" spacing="10.0">
                <children>
                   <TextField fx:id="txtName" prefHeight="26.0" prefWidth="153.0" promptText="Title" />
-                  <TextField fx:id="txtArtist" />
-                  <TextField fx:id="txtYear" prefHeight="26.0" prefWidth="55.0" promptText="Year" />
+                  <TextField fx:id="txtArtist" promptText="Artist" />
+                  <TextField fx:id="txtYear" prefHeight="26.0" prefWidth="73.0" promptText="Year" />
                   <Button fx:id="btnCreate" mnemonicParsing="false" onAction="#createNewMovie" text="Create" />
                </children>
                <GridPane.margin>
@@ -51,11 +54,38 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Button fx:id="btnDelete" layoutX="511.0" layoutY="287.0" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
+      <Button fx:id="btnDelete" layoutX="561.0" layoutY="295.0" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
       <Button fx:id="btnUpdate" layoutX="14.0" layoutY="295.0" mnemonicParsing="false" onAction="#updateSong" text="Update" />
-      <Slider fx:id="sliderProgressSong" disable="true" layoutX="699.0" layoutY="188.0" onKeyPressed="#onSlideProgressPressed" onKeyReleased="#onSlideProgressReleased" onMousePressed="#onSlideProgressPressed" onMouseReleased="#onSlideProgressReleased" onTouchPressed="#onSlideProgressPressed" onTouchReleased="#onSlideProgressReleased" />
-      <Button fx:id="btnPlay" layoutX="750.0" layoutY="154.0" mnemonicParsing="false" onAction="#playSong" text="Play" />
-      <Slider fx:id="sliderProgressVolume" layoutX="699.0" layoutY="249.0" max="1.0" />
-      <Label fx:id="lblPlayingNow" layoutX="755.0" layoutY="122.0" text="Label" />
+      <VBox alignment="CENTER" layoutX="612.0" prefHeight="182.0" prefWidth="336.0">
+         <children>
+            <Label fx:id="lblPlayingNow" text="Choose a song to play!">
+               <padding>
+                  <Insets bottom="5.0" />
+               </padding>
+            </Label>
+            <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#playSong" prefHeight="30.0" prefWidth="14.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css">
+               <graphic>
+                  <ImageView fx:id="btnPlayIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../Icons/play.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <HBox alignment="CENTER" prefHeight="30.0" prefWidth="239.0">
+               <children>
+                  <Label fx:id="lblCurrentSongProgress" text="00:00:00" />
+                  <Slider fx:id="sliderProgressSong" disable="true" onKeyPressed="#onSlideProgressPressed" onKeyReleased="#onSlideProgressReleased" onMousePressed="#onSlideProgressPressed" onMouseReleased="#onSlideProgressReleased" onTouchPressed="#onSlideProgressPressed" onTouchReleased="#onSlideProgressReleased" />
+                  <Label fx:id="lblSongDuration" text="00:00:00" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <HBox layoutX="734.0" layoutY="284.0" prefHeight="22.0" prefWidth="200.0">
+         <children>
+            <Slider fx:id="sliderProgressVolume" max="1.0" />
+            <Label fx:id="lblVolume" text="50%" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>
