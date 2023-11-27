@@ -220,9 +220,10 @@ public class MediaPlayerViewController implements Initializable {
                 startUpdatingSongProgress();
 
                 sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
-                lblPlayingNow.setText("Playing " + tblSongs.getSelectionModel().getSelectedItem().getTitle());
+                lblPlayingNow.setText("Now playing: " + tblSongs.getSelectionModel().getSelectedItem().getTitle() + " - " + tblSongs.getSelectionModel().getSelectedItem().getArtist());
                 currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
                 btnPlay.setText("Pause");
+                setVolume();
                 currentMusic.play();
 
                 currentMusic.currentTimeProperty().addListener((observable, oldValue, newValue) -> {

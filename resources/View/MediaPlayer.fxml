@@ -13,9 +13,11 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
 <AnchorPane fx:id="anchorPane" prefHeight="343.0" prefWidth="889.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
    <children>
+      <Slider fx:id="sliderProgressVolume" layoutX="756.0" layoutY="286.0" max="1.0" prefHeight="14.0" prefWidth="93.0" />
       <GridPane alignment="center" hgap="10" prefHeight="308.0" prefWidth="368.0" vgap="10">
          <columnConstraints>
             <ColumnConstraints />
@@ -53,12 +55,23 @@
       </TableView>
       <Button fx:id="btnDelete" layoutX="561.0" layoutY="296.0" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
       <Button fx:id="btnUpdate" layoutX="14.0" layoutY="296.0" mnemonicParsing="false" onAction="#updateSong" text="Update" />
-      <Slider fx:id="sliderProgressSong" disable="true" layoutX="680.0" layoutY="77.0" onKeyPressed="#onSlideProgressPressed" onKeyReleased="#onSlideProgressReleased" onMousePressed="#onSlideProgressPressed" onMouseReleased="#onSlideProgressReleased" onTouchPressed="#onSlideProgressPressed" onTouchReleased="#onSlideProgressReleased" AnchorPane.leftAnchor="680.0" />
-      <Button fx:id="btnPlay" layoutX="731.0" layoutY="41.0" mnemonicParsing="false" onAction="#playSong" text="Play" />
-      <Slider fx:id="sliderProgressVolume" layoutX="680.0" layoutY="107.0" max="1.0" />
-      <Label fx:id="lblPlayingNow" layoutX="689.0" layoutY="14.0" text="Choose a song to play!" />
-      <Label fx:id="lblSongDuration" layoutX="820.0" layoutY="76.0" text="0:00" />
-      <Label fx:id="lblCurrentSongProgress" layoutX="655.0" layoutY="76.0" text="0:00" />
-      <Label fx:id="lblVolume" layoutX="821.0" layoutY="106.0" text="50%" />
+      <VBox alignment="CENTER" layoutX="627.0" layoutY="15.0" prefHeight="119.0" prefWidth="235.0">
+         <children>
+            <Label fx:id="lblPlayingNow" alignment="CENTER" contentDisplay="CENTER" text="Choose a song to play!" textAlignment="CENTER">
+               <padding>
+                  <Insets bottom="5.0" />
+               </padding>
+            </Label>
+            <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#playSong" text="Play" />
+            <HBox alignment="CENTER" prefHeight="28.0" prefWidth="235.0">
+               <children>
+                  <Label fx:id="lblCurrentSongProgress" text="0:00" />
+                  <Slider fx:id="sliderProgressSong" disable="true" onKeyPressed="#onSlideProgressPressed" onKeyReleased="#onSlideProgressReleased" onMousePressed="#onSlideProgressPressed" onMouseReleased="#onSlideProgressReleased" onTouchPressed="#onSlideProgressPressed" onTouchReleased="#onSlideProgressReleased" />
+                  <Label fx:id="lblSongDuration" text="0:00" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <Label fx:id="lblVolume" layoutX="847.0" layoutY="285.0" prefHeight="17.0" prefWidth="30.0" text="50%" />
    </children>
 </AnchorPane>
