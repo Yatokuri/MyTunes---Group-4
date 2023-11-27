@@ -6,11 +6,13 @@ public class Song {
     private String title;
     private int year;
     private String artist;
-    public Song(int id, int year, String title, String artist) {
+    private String songPath;
+    public Song(int id, int year, String title, String artist, String songPath) {
         this.id = id;
         this.title = title;
         this.year = year;
         this.artist = artist;
+        this.songPath = songPath;
     }
 
     public int getId() {
@@ -34,6 +36,9 @@ public class Song {
     }
     public String getArtist() { return artist; }
     public void setArtist(String artist) { this.artist = artist; }
+    public String getSongPath() { return songPath;}
+
+    public void setSongPath() { this.songPath = songPath;}
 
     @Override
     public String toString()

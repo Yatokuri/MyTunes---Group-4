@@ -22,7 +22,7 @@ public class SongModel {
 
 
 
-    public ObservableList<Song> getObservableMovies() {
+    public ObservableList<Song> getObservableSongs() {
         return songsToBeViewed;
     }
 
@@ -37,26 +37,22 @@ public class SongModel {
     public void createNewSong(Song newSong) throws Exception {
         Song s = songManager.createNewSong(newSong);
         songsToBeViewed.add(s); // update list
-
-        // loading entire file again... not optimal
-        //moviesToBeViewed.clear();
-        //moviesToBeViewed.addAll(movieManager.getAllMovies());
     }
 
 
     public void updateSong(Song updatedSong) throws Exception {
-        // update movie in DAL layer (through the layers)
+        // update song in DAL layer (through the layers)
         songManager.updateSong(updatedSong);
 
         // update observable list (and UI)
-        Song m = songsToBeViewed.get(songsToBeViewed.indexOf(updatedSong));
-        m.setTitle(updatedSong.getTitle());
-        m.setYear(updatedSong.getYear());
+        Song s = songsToBeViewed.get(songsToBeViewed.indexOf(updatedSong));
+        s.setTitle(updatedSong.getTitle());
+        s.setYear(updatedSong.getYear());
     }
 
 
-    public void deleteMovie(Song selectedSong) throws Exception {
-        // delete movie in DAL layer (through the layers)
+    public void deleteSong(Song selectedSong) throws Exception {
+        // delete song in DAL layer (through the layers)
         songManager.deleteSong(selectedSong);
 
         // remove from observable list (and UI)
