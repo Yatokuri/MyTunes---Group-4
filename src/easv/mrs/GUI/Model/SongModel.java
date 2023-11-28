@@ -1,6 +1,8 @@
 package easv.mrs.GUI.Model;
 
+import easv.mrs.BE.Playlist;
 import easv.mrs.BE.Song;
+import easv.mrs.BLL.PlaylistManager;
 import easv.mrs.BLL.SongManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,11 +15,11 @@ public class SongModel {
 
     private SongManager songManager;
 
-
     public SongModel() throws Exception {
         songManager = new SongManager();
         songsToBeViewed = FXCollections.observableArrayList();
         songsToBeViewed.addAll(songManager.getAllSongs());
+
     }
 
 
@@ -58,4 +60,6 @@ public class SongModel {
         // remove from observable list (and UI)
         songsToBeViewed.remove(selectedSong);
     }
+
+
 }

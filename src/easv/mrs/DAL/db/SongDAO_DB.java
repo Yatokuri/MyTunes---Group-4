@@ -12,15 +12,21 @@ import java.util.List;
 
 public class SongDAO_DB implements ISongDataAccess {
 
+
+    private ArrayList<Song> allSongs;
+
     private MyDatabaseConnector databaseConnector;
 
     public SongDAO_DB() throws IOException {
         databaseConnector = new MyDatabaseConnector();
     }
 
+    public List<Song> getSongsArray() throws Exception { return getAllSongs(); }
+
+
     public List<Song> getAllSongs() throws Exception {
 
-        ArrayList<Song> allSongs = new ArrayList<>();
+        allSongs = new ArrayList<>();
 
         try (Connection conn = databaseConnector.getConnection();
              Statement stmt = conn.createStatement())
@@ -138,11 +144,4 @@ public class SongDAO_DB implements ISongDataAccess {
             throw new Exception("Could not delete movie", ex);
         }
     }
-
-    public List<Song> searchSongs(String query) throws Exception {
-
-        //TODO Do this
-        throw new UnsupportedOperationException();
-    }
-
 }

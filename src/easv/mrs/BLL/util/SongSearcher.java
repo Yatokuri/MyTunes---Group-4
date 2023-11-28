@@ -20,7 +20,6 @@ public class SongSearcher {
 
         return searchResult;
     }
-
     private boolean compareToSongYear(String query, Song song) {
         return Integer.toString(song.getYear()).contains(query);
     }

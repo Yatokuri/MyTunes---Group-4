@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="346.0" prefWidth="916.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
+<AnchorPane fx:id="anchorPane" prefHeight="657.0" prefWidth="948.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
    <children>
       <GridPane alignment="center" hgap="10" prefHeight="308.0" prefWidth="368.0" vgap="10">
          <columnConstraints>
@@ -89,5 +89,25 @@
       <Button fx:id="btnCreate" layoutX="130.0" layoutY="308.0" mnemonicParsing="false" onAction="#createNewMovie" text="Create" />
       <Button layoutX="238.0" layoutY="308.0" mnemonicParsing="false" onAction="#testNewWindowCreate" text="Test - Create" />
       <Button layoutX="361.0" layoutY="308.0" mnemonicParsing="false" onAction="#testNewWindowUpdate" text="Test - Update" />
+      <TableView fx:id="tblPlaylist" layoutX="19.0" layoutY="359.0" prefHeight="275.0" prefWidth="223.0">
+         <columns>
+            <TableColumn fx:id="colPlaylistName" prefWidth="75.0" text="Playlist" />
+            <TableColumn fx:id="colSongCount" prefWidth="75.0" text="SongCount" />
+            <TableColumn fx:id="colSongTime" prefWidth="75.0" text="SongTime" />
+         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+      <TableView fx:id="tblSongsInPlaylist" layoutX="389.0" layoutY="359.0" prefHeight="275.0" prefWidth="223.0">
+         <columns>
+            <TableColumn fx:id="colTitlePlaylist" prefWidth="75.0" text="Title" />
+            <TableColumn fx:id="colArtistPlaylist" prefWidth="75.0" text="Artist" />
+            <TableColumn fx:id="colYearPlaylist" prefWidth="75.0" text="Year" />
+         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
    </children>
 </AnchorPane>

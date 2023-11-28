@@ -1,6 +1,8 @@
 package easv.mrs.GUI.Controller;
 
+import easv.mrs.BE.Playlist;
 import easv.mrs.BE.Song;
+import easv.mrs.GUI.Model.PlaylistModel;
 import easv.mrs.GUI.Model.SongModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -31,6 +33,24 @@ import java.util.ResourceBundle;
 
 public class MediaPlayerViewController implements Initializable {
     @FXML
+    public TableView<Playlist> tblPlaylist;
+    @FXML
+    public TableColumn<Playlist, String> colPlaylistName;
+    @FXML
+    public TableColumn<Playlist, Integer> colSongCount;
+
+    @FXML
+    public TableColumn<Playlist, Integer> colSongTime;
+
+    @FXML
+    private TableView<Song> tblSongsInPlaylist;
+    @FXML
+    private TableColumn<Song, String> colTitlePlaylist;
+    @FXML
+    private TableColumn<Song, String> colArtistPlaylist;
+    @FXML
+    private TableColumn<Song, Integer> colYearPlaylist;
+    @FXML
     private AnchorPane anchorPane;
     @FXML
     private ImageView btnPlayIcon;
@@ -43,25 +63,24 @@ public class MediaPlayerViewController implements Initializable {
     @FXML
     private Slider sliderProgressSong, sliderProgressVolume;
     @FXML
-    private TableColumn<Song, String> colName;
+    private TableColumn<Song, String> colName, colArtist;
     @FXML
     private TableColumn<Song, Integer> colYear;
     @FXML
-    private TableColumn<Song, String> colArtist;
-    @FXML
     private TableView<Song> tblSongs;
     @FXML
-    private ListView<Song> lstSongs;
 
     private MediaPlayer currentMusic = null;
-    private final Map<Integer, MediaPlayer> soundMap = new HashMap<>(); //Every song have there unique id
+    private final Map<Integer, MediaPlayer> soundMap = new HashMap<>(); //Every song has a unique id
     private boolean isUserChangingSlider = false;
     private boolean isMusicPaused = false;
     private SongModel songModel;
+    private PlaylistModel playlistModel;
 
     public MediaPlayerViewController()  {
         try {
             songModel = new SongModel();
+            playlistModel = new PlaylistModel();
         }
         catch (Exception e) {
             displayError(e);
@@ -72,21 +91,38 @@ public class MediaPlayerViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
-        // Initialize the person table with the two columns.
+        // Initialize the person tables with columns.
         colName.setCellValueFactory(new PropertyValueFactory<>("title"));
         colArtist.setCellValueFactory(new PropertyValueFactory<>("artist"));
         colYear.setCellValueFactory(new PropertyValueFactory<>("year"));
+        
+        colPlaylistName.setCellValueFactory(new PropertyValueFactory<>("playlistName"));
+        colSongCount.setCellValueFactory(new PropertyValueFactory<>("songCount"));
+        colSongTime.setCellValueFactory(new PropertyValueFactory<>("songTotalTime"));
+
+        colTitlePlaylist.setCellValueFactory(new PropertyValueFactory<>("title"));
+        colArtistPlaylist.setCellValueFactory(new PropertyValueFactory<>("artist"));
+        colYearPlaylist.setCellValueFactory(new PropertyValueFactory<>("year"));
 
         // add data from observable list
-        lstSongs.setItems(songModel.getObservableSongs());
         tblSongs.setItems(songModel.getObservableSongs());
+        tblPlaylist.setItems(playlistModel.getObservablePlaylists());
 
-        // table view listener (when user selects a movie in the tableview)
-        tblSongs.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (tblSongs.getSelectionModel().getSelectedItem() == null)   {
-                txtName.setText("");
-                txtArtist.setText("");
+
+        tblPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (tblPlaylist.getSelectionModel().getSelectedItem() == null)   {
+                clearSearch();
+            }
+            else {
+                txtName.setText(newValue.getPlaylistName());
                 txtYear.setText("");
+                txtArtist.setText("");
+            }
+        });
+
+        tblSongsInPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (tblPlaylist.getSelectionModel().getSelectedItem() == null)   {
+                clearSearch();
             }
             else {
                 txtName.setText(newValue.getTitle());
@@ -94,21 +130,17 @@ public class MediaPlayerViewController implements Initializable {
                 txtYear.setText(Integer.toString(newValue.getYear()));
             }
         });
-
-        // list view listener (when user selects a movie in the listview)
-        lstSongs.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                    if (lstSongs.getSelectionModel().getSelectedItem() == null) {
-                        txtName.setText("");
-                        txtArtist.setText("");
-                        txtYear.setText("");
-                    }
-                    else {
-                        txtName.setText(newValue.getTitle());
-                        txtArtist.setText(newValue.getArtist());
-                        txtYear.setText(Integer.toString(newValue.getYear()));
-                    }
+        // table view listener (when user selects a song in the tableview)
+        tblSongs.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (tblSongs.getSelectionModel().getSelectedItem() == null)   {
+                clearSearch();
+            }
+            else {
+                txtName.setText(newValue.getTitle());
+                txtArtist.setText(newValue.getArtist());
+                txtYear.setText(Integer.toString(newValue.getYear()));
+            }
         });
-
         // set default volume to 50 and update song progress
         sliderProgressVolume.setValue(0.5);
         setVolume();
@@ -132,9 +164,13 @@ public class MediaPlayerViewController implements Initializable {
 
         // Add tableview functionality
         playSongFromTableView();
-
+        playSongFromTableViewPlaylist();
     }
-
+    private void clearSearch(){
+        txtName.setText("");
+        txtArtist.setText("");
+        txtYear.setText("");
+    }
     /**
      *
      * @param t
@@ -173,7 +209,6 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
-
     /**
      *
      * @param actionEvent
@@ -192,7 +227,6 @@ public class MediaPlayerViewController implements Initializable {
                 songModel.updateSong(selectedSong);
 
                 // ask controls to refresh their content
-                lstSongs.refresh();
                 tblSongs.refresh();
             }
             catch (Exception e) {
@@ -201,7 +235,6 @@ public class MediaPlayerViewController implements Initializable {
             }
         }
     }
-
     /**
      *
      * @param actionEvent
@@ -227,6 +260,8 @@ public class MediaPlayerViewController implements Initializable {
         tblSongs.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) { // Check for double-click
                 Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+
+
                 if (selectedSong != null && currentMusic != soundMap.get(selectedSong.getId())) {
                     sliderProgressSong.setValue(0);
                     playSong();
@@ -235,7 +270,19 @@ public class MediaPlayerViewController implements Initializable {
         });
     }
 
+    private void playSongFromTableViewPlaylist() {
+        tblSongsInPlaylist.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) { // Check for double-click
+                Song selectedSong = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
 
+
+                if (selectedSong != null && currentMusic != soundMap.get(selectedSong.getId())) {
+                    sliderProgressSong.setValue(0);
+                    playSong();
+                }
+            }
+        });
+    }
 
     public void playSong()    {
         if (tblSongs.getSelectionModel().getSelectedItem() != null) {
@@ -284,9 +331,7 @@ public class MediaPlayerViewController implements Initializable {
                     currentMusic.play();
                     isMusicPaused = false;
                     btnPlayIcon.setImage(new Image("Icons/pause.png"));
-
             }
-
         }
     }
 
@@ -337,9 +382,26 @@ public class MediaPlayerViewController implements Initializable {
         Timeline updater = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             setSliderVolumeStyle();
             setSliderSongProgressStyle();
+
         }));
         //updater.setCycleCount(Timeline.INDEFINITE); //The way to run it so many times u want
         updater.play();
+
+        tblPlaylist.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                try {
+                    tblSongsInPlaylist.getItems().clear();
+
+                    playlistModel.playlistSongs(tblPlaylist.getSelectionModel().getSelectedItem());
+                    tblSongsInPlaylist.setItems(playlistModel.getObservablePlaylistsSong());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else {
+                tblSongsInPlaylist.getItems().clear();
+            }
+        });
 
         sliderProgressVolume.valueProperty().addListener((obs, oldVal, newVal) -> {
             setSliderVolumeStyle();
@@ -392,9 +454,3 @@ public class MediaPlayerViewController implements Initializable {
         stage.show();
     }
 }
-
-
-
-
-
-
