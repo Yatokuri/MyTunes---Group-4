@@ -79,7 +79,7 @@ public class MediaPlayerCUViewController implements Initializable {
         //typeCU 1 = C 2 = U
 
         //Hvis dette er true er det en valid fil der er sat ind lblTime.getText().equals("00:00:00");
-
+        //Tid skal gemmes i sekunder format
     }
 
     public void cancel() {

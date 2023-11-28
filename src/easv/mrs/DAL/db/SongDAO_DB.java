@@ -43,7 +43,8 @@ public class SongDAO_DB implements ISongDataAccess {
                 String artist = rs.getString("SongArtist");
                 int year = rs.getInt("SongYear");
                 String songPath = rs.getString("SongFilepath");
-                Song song = new Song(id, year, title, artist, songPath);
+                double songLength = rs.getDouble("SongLength");
+                Song song = new Song(id, year, title, artist, songPath, songLength);
                 allSongs.add(song);
             }
             return allSongs;
@@ -85,7 +86,7 @@ public class SongDAO_DB implements ISongDataAccess {
             }
 
             // Create movie object and send up the layers
-            Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath());
+            Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath(), song.getSongLength());
 
             return createdSong;
         }

@@ -4,24 +4,12 @@ package easv.mrs.DAL.db;
 import easv.mrs.BE.Playlist;
 import easv.mrs.BE.Song;
 import easv.mrs.BLL.SongManager;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 
-import java.io.File;
-import java.nio.file.Path;
+// Java imports
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-
-
-
-// Java imports
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import java.io.IOException;
-
 
 public class PlaylistSongDAO_DB {
 
@@ -60,28 +48,8 @@ public class PlaylistSongDAO_DB {
                     if (s.getId() == id)    {
                                                                     
                         playlist.setSongCount(playlist.getSongCount() + 1);
+                        playlist.setSongTotalTime(playlist.getSongTotalTime() + s.getSongLength());
 
-
-                            MediaPlayer tempTime = new MediaPlayer(new Media(new File(s.getSongPath()).toURI().toString()));
-                            tempTime.setOnReady(() -> {
-                                long totalSeconds = (long) tempTime.getTotalDuration().toSeconds();
-                                playlist.setSongTotalTime(playlist.getSongTotalTime() + totalSeconds);
-                            });
-
-
-                            
-
-                        /*
-                        File pathToSong = new File(s.getSongPath());
-                        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(pathToSong);
-                        AudioFormat format = audioInputStream.getFormat();
-                        long audioFileLength = pathToSong.length();
-                        int frameSize = format.getFrameSize();
-                        float frameRate = format.getFrameRate();
-                        float timeInSeconds = (audioFileLength / (frameSize * frameRate));
-
-                        playlist.setSongTotalTime(playlist.getSongTotalTime()+ timeInSeconds);
-                        */
                         allSongsInPlaylist.add(s);
                     }
                 }
@@ -121,7 +89,7 @@ public class PlaylistSongDAO_DB {
             }
 
             // Create movie object and send up the layers
-            Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath());
+            Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath(), song.getSongLength());
 
             return createdSong;
         }

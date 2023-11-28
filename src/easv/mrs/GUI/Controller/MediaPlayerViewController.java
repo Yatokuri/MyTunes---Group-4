@@ -40,7 +40,7 @@ public class MediaPlayerViewController implements Initializable {
     public TableColumn<Playlist, Integer> colSongCount;
 
     @FXML
-    public TableColumn<Playlist, Integer> colSongTime;
+    public TableColumn<Playlist, String> colSongTime;
 
     @FXML
     private TableView<Song> tblSongsInPlaylist;
@@ -81,6 +81,7 @@ public class MediaPlayerViewController implements Initializable {
         try {
             songModel = new SongModel();
             playlistModel = new PlaylistModel();
+
         }
         catch (Exception e) {
             displayError(e);
@@ -95,10 +96,10 @@ public class MediaPlayerViewController implements Initializable {
         colName.setCellValueFactory(new PropertyValueFactory<>("title"));
         colArtist.setCellValueFactory(new PropertyValueFactory<>("artist"));
         colYear.setCellValueFactory(new PropertyValueFactory<>("year"));
-        
+
         colPlaylistName.setCellValueFactory(new PropertyValueFactory<>("playlistName"));
         colSongCount.setCellValueFactory(new PropertyValueFactory<>("songCount"));
-        colSongTime.setCellValueFactory(new PropertyValueFactory<>("songTotalTime"));
+        colSongTime.setCellValueFactory(new PropertyValueFactory<>("SongLengthHHMMSS"));
 
         colTitlePlaylist.setCellValueFactory(new PropertyValueFactory<>("title"));
         colArtistPlaylist.setCellValueFactory(new PropertyValueFactory<>("artist"));
@@ -164,7 +165,7 @@ public class MediaPlayerViewController implements Initializable {
 
         // Add tableview functionality
         playSongFromTableView();
-        playSongFromTableViewPlaylist();
+
     }
     private void clearSearch(){
         txtName.setText("");
@@ -195,10 +196,11 @@ public class MediaPlayerViewController implements Initializable {
         String artist = txtArtist.getText();
        // String songPath = txtSongPath.getText();
         String songPath = "";
+        double songTime = 0;
         int year = Integer.parseInt(txtYear.getText());
 
         // create movie object to pass to method
-        Song newSong = new Song(-1, year, title, artist, songPath);
+        Song newSong = new Song(-1, year, title, artist, songPath, songTime);
 
         try {
             songModel.createNewSong(newSong);
@@ -354,7 +356,7 @@ public class MediaPlayerViewController implements Initializable {
 
         }
     }
-    
+
     public void setVolume() {
         if (currentMusic != null) {
             currentMusic.setVolume((sliderProgressVolume.getValue()));
@@ -393,7 +395,9 @@ public class MediaPlayerViewController implements Initializable {
                     tblSongsInPlaylist.getItems().clear();
 
                     playlistModel.playlistSongs(tblPlaylist.getSelectionModel().getSelectedItem());
+
                     tblSongsInPlaylist.setItems(playlistModel.getObservablePlaylistsSong());
+
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -411,7 +415,7 @@ public class MediaPlayerViewController implements Initializable {
         sliderProgressSong.valueProperty().addListener((obs, oldVal, newVal) -> {
             setSliderSongProgressStyle();
             updateSongProgressTimer();
-        }); 
+        });
 
 
     }

@@ -1,16 +1,11 @@
 package easv.mrs.BE;
 
-import easv.mrs.DAL.db.SongDAO_DB;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-
-import java.io.File;
-
 public class Playlist {
 
 
 
-    private String playlistName;
+    private String playlistName, songTotalTimeHHMMSS;
+
     private int id;
     private int songCount;
     private double songTotalTime;
@@ -20,27 +15,28 @@ public class Playlist {
         this.playlistName = playlistName;
         this.songCount = songCount;
         this.songTotalTime = songTotalTime;
-
-
-        //System.out.println("Ny playlister");
     }
+
+    public String getSongLengthHHMMSS() {
+        long hours = (long) (songTotalTime / 3600);
+        long minutes = (long) ((songTotalTime % 3600) / 60);
+        long remainingSeconds = (long) (songTotalTime % 60);
+
+        return songTotalTimeHHMMSS = String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds);
+    }
+
+
+
 
 
 
 
 
     public double getSongTotalTime() { return songTotalTime; }
-
     public void setSongTotalTime(double songTotalTime) {this.songTotalTime = songTotalTime;}
     public int getId() { return id;}
     public String getPlaylistName() { return playlistName; }
     public void setPlaylistName(String playlistName) { this.playlistName = playlistName; }
-
-    public int getSongCount() {
-
-                return songCount;
-
-    }
-
-        public void setSongCount(int songCount) {this.songCount = songCount;}
+    public int getSongCount() {return songCount;}
+    public void setSongCount(int songCount) {this.songCount = songCount;}
 }
