@@ -170,7 +170,6 @@ public class MediaPlayerViewController implements Initializable {
 
             if (txtSongSearch.getText().isEmpty())  {
                 try {
-                    System.out.println("Test");
                     tblPlaylist.getItems().clear();
                     tblPlaylist.setItems(playlistModel.updatePlaylistList());
                     tblPlaylist.refresh();
@@ -606,16 +605,17 @@ public class MediaPlayerViewController implements Initializable {
         TextInputDialog dialog = new TextInputDialog("");
         dialog.setTitle("New Playlist");
         dialog.setHeaderText("What do you want to call your new Playlist");
-        dialog.setGraphic(new ImageView(new Image("/Icons/mainIcon.png"))); //This icon is to big?
+        // dialog.setGraphic(new ImageView(new Image("/Icons/mainIcon.png"))); //Maybe?
+
+        // Set the icon for the dialog window
+        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image("/Icons/mainIcon.png"));
+
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             String inputValue = result.get(); // Get the actual value from Optional
-
             Playlist p = new Playlist(-1, inputValue, 0, 0);
-
             playlistModel.createNewPlaylist(p);
-
-            System.out.println(inputValue);
         }
     }
 

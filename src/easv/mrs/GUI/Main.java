@@ -17,6 +17,7 @@ public class Main extends Application {
         primaryStage.getIcons().add(new Image("/Icons/mainIcon.png"));
         primaryStage.setTitle("MyTunes");
         primaryStage.setScene(new Scene(root));
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 

@@ -32,7 +32,7 @@
             <TextField fx:id="txtInputArtist" promptText="Artist" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <HBox prefHeight="22.0" prefWidth="368.0" spacing="30.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
                <children>
-                  <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#cancel" text="Cancel" />
+                  <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#closeWindow" text="Cancel" />
                   <Button fx:id="btnSave" mnemonicParsing="false" onAction="#save" text="Save" />
                </children>
             </HBox>
