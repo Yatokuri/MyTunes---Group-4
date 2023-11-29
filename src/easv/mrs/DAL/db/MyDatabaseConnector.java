@@ -4,23 +4,19 @@ package easv.mrs.DAL.db;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.Properties;
 
 public class MyDatabaseConnector {
+    private static final String configFile = "config/config.settings";
 
-
-    //Class will easv.mrs.be included when we start working on DATABASES
-    private static final String PROP_FILE = "config/config.settings";
-
-    private SQLServerDataSource dataSource;
+    private final SQLServerDataSource dataSource;
 
     public MyDatabaseConnector() throws IOException {
         Properties databaseProperties = new Properties();
-        databaseProperties.load(new FileInputStream(new File(PROP_FILE)));
+        databaseProperties.load(new FileInputStream((configFile)));
 
         dataSource = new SQLServerDataSource();
         dataSource.setServerName(databaseProperties.getProperty("Server"));
@@ -29,26 +25,10 @@ public class MyDatabaseConnector {
         dataSource.setPassword(databaseProperties.getProperty("Password"));
         dataSource.setPortNumber(1433);
         dataSource.setTrustServerCertificate(true);
+        dataSource.setLoginTimeout(5); //So we get a quick response on when it goes wrong know when it goes wrong
     }
 
     public Connection getConnection() throws SQLServerException {
         return dataSource.getConnection();
     }
-
-    /* Testing purposes...
-
-    public static void main(String[] args) throws SQLException, IOException {
-
-        MyDatabaseConnector databaseConnector = new MyDatabaseConnector();
-
-        try (Connection connection = databaseConnector.getConnection()) {
-            System.out.println("Is it open? " + !connection.isClosed());
-        } //Connection gets closed here
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    */
-
-
 }

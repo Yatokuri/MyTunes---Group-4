@@ -1,7 +1,6 @@
 package easv.mrs.BLL.util;
 
 import easv.mrs.BE.Playlist;
-import easv.mrs.BE.Song;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ public class PlaylistSearcher {
         List<Playlist> searchResult = new ArrayList<>();
 
         for (Playlist playlist : searchBase) {
-            if(compareToSongTitle(query, playlist) || compareToSongYear(query, playlist))
+            if(compareToPlaylistTitle(query, playlist) || compareToPlaylistId(query, playlist))
             {
                 searchResult.add(playlist);
             }
@@ -21,11 +20,11 @@ public class PlaylistSearcher {
 
         return searchResult;
     }
-    private boolean compareToSongYear(String query, Playlist playlist) {
+    private boolean compareToPlaylistId(String query, Playlist playlist) {
         return Integer.toString(playlist.getId()).contains(query);
     }
 
-    private boolean compareToSongTitle(String query, Playlist playlist) {
+    private boolean compareToPlaylistTitle(String query, Playlist playlist) {
         return playlist.getPlaylistName().toLowerCase().contains(query.toLowerCase());
     }
 

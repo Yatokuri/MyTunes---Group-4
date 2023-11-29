@@ -37,7 +37,7 @@ public class SongDAO_DB implements ISongDataAccess {
             // Loop through rows from the database result set
             while (rs.next()) {
 
-                //Map DB row to Movie object
+                //Map DB row to Song object
                 int id = rs.getInt("SongId");
                 String title = rs.getString("SongName");
                 String artist = rs.getString("SongArtist");
@@ -53,7 +53,7 @@ public class SongDAO_DB implements ISongDataAccess {
         catch (SQLException ex)
         {
             ex.printStackTrace();
-            throw new Exception("Could not get movies from database", ex);
+            throw new Exception("Could not get songs from database", ex);
         }
 
 
@@ -64,7 +64,7 @@ public class SongDAO_DB implements ISongDataAccess {
     public Song createSong(Song song) throws Exception {
 
         // SQL command
-        String sql = "INSERT INTO dbo.Songs (SongName, SongArtist, SongYear, SongFilepath) VALUES (?,?,?,?);";
+        String sql = "INSERT INTO dbo.Songs (SongName, SongArtist, SongYear, SongFilepath, songLength) VALUES (?,?,?,?,?);";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
@@ -74,6 +74,7 @@ public class SongDAO_DB implements ISongDataAccess {
             stmt.setString(2, song.getArtist());
             stmt.setInt(3, song.getYear());
             stmt.setString(4, song.getSongPath());
+            stmt.setDouble(5,song.getSongLength());
             // Run the specified SQL statement
             stmt.executeUpdate();
 
@@ -85,7 +86,7 @@ public class SongDAO_DB implements ISongDataAccess {
                 id = rs.getInt(1);
             }
 
-            // Create movie object and send up the layers
+            // Create Song object and send up the layers
             Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath(), song.getSongLength());
 
             return createdSong;
@@ -95,7 +96,7 @@ public class SongDAO_DB implements ISongDataAccess {
         {
             // create entry in log file
             ex.printStackTrace();
-            throw new Exception("Could not create movie", ex);
+            throw new Exception("Could not create Song", ex);
         }
 
     }
@@ -142,7 +143,7 @@ public class SongDAO_DB implements ISongDataAccess {
         {
             // create entry in log file
             ex.printStackTrace();
-            throw new Exception("Could not delete movie", ex);
+            throw new Exception("Could not delete Song", ex);
         }
     }
 }

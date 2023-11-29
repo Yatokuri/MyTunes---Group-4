@@ -26,12 +26,6 @@ public class Playlist {
     }
 
 
-
-
-
-
-
-
     public double getSongTotalTime() { return songTotalTime; }
     public void setSongTotalTime(double songTotalTime) {this.songTotalTime = songTotalTime;}
     public int getId() { return id;}

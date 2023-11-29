@@ -10,8 +10,8 @@ import java.util.List;
 
 public class PlaylistManager {
 
-    private PlaylistSearcher playlistSearcher = new PlaylistSearcher();
-    private IPlaylistDataAccess playlistDAO;
+    private final PlaylistSearcher playlistSearcher = new PlaylistSearcher();
+    private final IPlaylistDataAccess playlistDAO;
 
     public PlaylistManager() throws IOException {
         playlistDAO = new PlaylistDAO_DB();
@@ -22,8 +22,7 @@ public class PlaylistManager {
 
     public List<Playlist> searchPlaylists(String query) throws Exception {
         List<Playlist> allPlaylists = playlistDAO.getAllPlaylists();
-        List<Playlist> searchResult = playlistSearcher.search(allPlaylists, query);
-        return searchResult;
+        return playlistSearcher.search(allPlaylists, query);
     }
 
     public Playlist createNewPlaylist(Playlist newPlaylist) throws Exception {

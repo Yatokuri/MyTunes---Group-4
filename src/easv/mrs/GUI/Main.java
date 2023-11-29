@@ -1,5 +1,6 @@
 package easv.mrs.GUI;
 
+import easv.mrs.GUI.Controller.MediaPlayerViewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,7 +9,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-
+    private MediaPlayerViewController mediaPlayerViewController;
     @Override
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader loader = new FXMLLoader();

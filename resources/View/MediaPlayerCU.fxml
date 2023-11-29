@@ -33,7 +33,7 @@
             <HBox prefHeight="22.0" prefWidth="368.0" spacing="30.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
                <children>
                   <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#cancel" text="Cancel" />
-                  <Button fx:id="btnSave" mnemonicParsing="false" onAction="#saveSong" text="Save" />
+                  <Button fx:id="btnSave" mnemonicParsing="false" onAction="#save" text="Save" />
                </children>
             </HBox>
             <TextField fx:id="txtInputYear" prefHeight="26.0" prefWidth="73.0" promptText="Year" GridPane.columnIndex="2" GridPane.rowIndex="3" />

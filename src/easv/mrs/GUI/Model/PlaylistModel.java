@@ -4,12 +4,13 @@ import easv.mrs.BE.Playlist;
 import easv.mrs.BE.Song;
 import easv.mrs.BLL.PlaylistManager;
 import easv.mrs.BLL.SongManager;
+import easv.mrs.GUI.Controller.MediaPlayerViewController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TextInputDialog;
+
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 public class PlaylistModel {
 
@@ -17,6 +18,7 @@ public class PlaylistModel {
     private final ObservableList<Song> playlistSongsToBeViewed;
 
     private final PlaylistManager playlistManager;
+    private MediaPlayerViewController mediaPlayerViewController;
     private final SongManager songManager;
 
     public PlaylistModel() throws Exception {
@@ -24,7 +26,7 @@ public class PlaylistModel {
         songManager = new SongManager();
         playlistsToBeViewed = FXCollections.observableArrayList();
         playlistsToBeViewed.addAll(playlistManager.getAllPlaylist());
-
+        mediaPlayerViewController = MediaPlayerViewController.getInstance();
         playlistSongsToBeViewed = FXCollections.observableArrayList();
         for (Playlist p: playlistsToBeViewed) {
             playlistSongsToBeViewed.addAll(songManager.getAllSongsPlaylist(p));
@@ -32,11 +34,18 @@ public class PlaylistModel {
 
     }
 
+    public ObservableList<Playlist> updatePlaylistList() throws Exception {
+        playlistsToBeViewed.addAll(playlistManager.getAllPlaylist());
+        return playlistsToBeViewed;
+    }
     public void playlistSongs(Playlist playlist) throws Exception {
         playlistSongsToBeViewed.clear();
         playlistSongsToBeViewed.addAll(songManager.getAllSongsPlaylist(playlist));
 
     }
+
+
+
 
     public boolean addSongToPlaylist(Song newsong, Playlist playlist) throws Exception {
         for (Song s : playlistSongsToBeViewed) {
@@ -62,6 +71,13 @@ public class PlaylistModel {
 
     public ObservableList<Playlist> getObservablePlaylists() {return playlistsToBeViewed;}
 
+
+    /*     public void searchSong(String query) throws Exception {
+        List<Song> searchResults = songManager.searchSongs(query);
+        songsToBeViewed.clear();
+        songsToBeViewed.addAll(searchResults); */
+
+
     public void searchPlaylist(String query) throws Exception {
         List<Playlist> searchResults = playlistManager.searchPlaylists(query);
         playlistsToBeViewed.clear();
@@ -82,7 +98,7 @@ public class PlaylistModel {
     }
 
 
-    public void deleteSong(Playlist selectedPlaylist) throws Exception {
+    public void deletePlaylist(Playlist selectedPlaylist) throws Exception {
         // delete song in DAL layer (through the layers)
         playlistManager.deletePlaylist(selectedPlaylist);
 

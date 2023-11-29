@@ -13,24 +13,19 @@ import java.util.List;
 
 public class SongManager {
 
-    private SongSearcher songSearcher = new SongSearcher();
+    private final SongSearcher songSearcher = new SongSearcher();
 
-    private ISongDataAccess songDAO;
+    private final ISongDataAccess songDAO;
     private final PlaylistSongDAO_DB playlistSongDAO;
 
     public SongManager() throws IOException {
         songDAO = new SongDAO_DB();
         playlistSongDAO = new PlaylistSongDAO_DB();
     }
-
+    //deleteSongFromPlaylist
     public List<Song> getAllSongs() throws Exception {
         return songDAO.getAllSongs();
     }
-
-
-
-
-
 
     public List<Song> getAllSongsPlaylist(Playlist playlist) throws Exception {
 
@@ -48,8 +43,7 @@ public class SongManager {
 
     public List<Song> searchSongs(String query) throws Exception {
         List<Song> allSongs = getAllSongs();
-        List<Song> searchResult = songSearcher.search(allSongs, query);
-        return searchResult;
+        return songSearcher.search(allSongs, query);
     }
 
     public Song createNewSong(Song newSong) throws Exception {

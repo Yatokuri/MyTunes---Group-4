@@ -5,7 +5,7 @@ public class Song {
     private String title, artist, songPath;
     private int year;
     private double songLength;
-    private final int id;
+    private int id;
 
     public Song(int id, int year, String title, String artist, String songPath, Double songLength) {
         this.id = id;
@@ -26,7 +26,7 @@ public class Song {
     public String getArtist() { return artist; }
     public void setArtist(String artist) { this.artist = artist; }
     public String getSongPath() { return songPath;}
-    public void setSongPath() { this.songPath = songPath;}
+    public void setSongPath(String songPath) { this.songPath = songPath;}
 
     @Override
     public String toString()

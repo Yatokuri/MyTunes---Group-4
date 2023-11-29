@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -11,38 +10,11 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane fx:id="anchorPane" prefHeight="657.0" prefWidth="948.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
    <children>
-      <GridPane alignment="center" hgap="10" prefHeight="308.0" prefWidth="368.0" vgap="10">
-         <columnConstraints>
-            <ColumnConstraints />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" />
-            <RowConstraints />
-            <RowConstraints />
-         </rowConstraints>
-         <children>
-            <ListView fx:id="lstSongs" prefHeight="200.0" prefWidth="72.0" GridPane.rowIndex="2" />
-            <TextField fx:id="txtSongSearch" promptText="Type search filter here" GridPane.rowIndex="1" />
-            <HBox prefHeight="30.0" prefWidth="336.0" spacing="10.0">
-               <children>
-                  <TextField fx:id="txtName" prefHeight="26.0" prefWidth="153.0" promptText="Title" />
-                  <TextField fx:id="txtArtist" promptText="Artist" />
-                  <TextField fx:id="txtYear" prefHeight="26.0" prefWidth="73.0" promptText="Year" />
-               </children>
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </HBox>
-         </children>
-      </GridPane>
       <TableView fx:id="tblSongs" layoutX="389.0" layoutY="14.0" prefHeight="275.0" prefWidth="223.0">
          <columns>
             <TableColumn fx:id="colName" prefWidth="75.0" text="Title" />
@@ -106,12 +78,10 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <HBox layoutX="406.0" layoutY="293.0" prefHeight="30.0" prefWidth="189.0" spacing="10.0">
-         <children>
-            <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
-            <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#updateSong" text="Update" />
-            <Button fx:id="btnCreate" mnemonicParsing="false" onAction="#createNewMovie" text="Create" />
-         </children>
-      </HBox>
+      <Button fx:id="btnCreatePlaylist" layoutX="256.0" layoutY="484.0" mnemonicParsing="false" onAction="#createNewPlaylist" text="Create Playlist" />
+      <Button fx:id="btnDelete" layoutX="279.0" layoutY="419.0" mnemonicParsing="false" onAction="#deleteBtn" text="Delete" />
+      <TextField fx:id="txtSongSearch" layoutX="19.0" layoutY="60.0" prefHeight="25.0" prefWidth="336.0" promptText="Type search filter here" />
+      <TextField fx:id="txtName" editable="false" layoutX="19.0" layoutY="25.0" prefHeight="26.0" prefWidth="223.0" promptText="Title" />
+      <TextField fx:id="txtArtist" editable="false" layoutX="253.0" layoutY="26.0" prefHeight="25.0" prefWidth="103.0" promptText="Artist" />
    </children>
 </AnchorPane>

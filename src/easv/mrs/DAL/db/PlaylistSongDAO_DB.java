@@ -44,7 +44,7 @@ public class PlaylistSongDAO_DB {
 
             while (rs.next()) {
 
-                //Map DB row to Movie object
+                //Map DB row to playlist object
                 int id = rs.getInt("SongId");
 
 
@@ -85,7 +85,7 @@ public class PlaylistSongDAO_DB {
             ResultSet rs = stmt.getGeneratedKeys();
 
 
-            // Create movie object and send up the layers
+            // Create playlist object and send up the layers
            // Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath(), song.getSongLength());
 
            // return createdSong;

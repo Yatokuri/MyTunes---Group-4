@@ -6,10 +6,7 @@ import easv.mrs.GUI.Model.PlaylistModel;
 import easv.mrs.GUI.Model.SongModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -30,60 +27,49 @@ import javafx.util.Duration;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MediaPlayerViewController implements Initializable {
     @FXML
-    public TableView<Playlist> tblPlaylist;
+    private TableView<Playlist> tblPlaylist;
     @FXML
-    public TableColumn<Playlist, String> colPlaylistName;
+    private TableView<Song> tblSongsInPlaylist, tblSongs;
     @FXML
-    public TableColumn<Playlist, Integer> colSongCount;
-
+    private TableColumn<Song, String> colTitlePlaylist, colArtistPlaylist, colName, colArtist, colSongTime, colPlaylistName;
     @FXML
-    public TableColumn<Playlist, String> colSongTime;
-
-    @FXML
-    private TableView<Song> tblSongsInPlaylist;
-    @FXML
-    private TableColumn<Song, String> colTitlePlaylist;
-    @FXML
-    private TableColumn<Song, String> colArtistPlaylist;
-    @FXML
-    private TableColumn<Song, Integer> colYearPlaylist;
+    private TableColumn<Song, Integer> colYearPlaylist, colYear, colSongCount;
     @FXML
     private AnchorPane anchorPane;
     @FXML
     private ImageView btnPlayIcon;
     @FXML
-    private Button btnCreate, btnUpdate, btnPlay, btnDelete;
+    private Button btnPlay, btnDelete;
     @FXML
-    private TextField txtName, txtArtist, txtYear, txtSongSearch;
+    private TextField txtName, txtArtist, txtSongSearch;
     @FXML
     private Label lblPlayingNow, lblSongDuration, lblCurrentSongProgress, lblVolume;
     @FXML
     private Slider sliderProgressSong, sliderProgressVolume;
     @FXML
-    private TableColumn<Song, String> colName, colArtist;
-    @FXML
-    private TableColumn<Song, Integer> colYear;
-    @FXML
-    private TableView<Song> tblSongs;
-    @FXML
-
     private MediaPlayer currentMusic = null;
     private final Map<Integer, MediaPlayer> soundMap = new HashMap<>(); //Every song has a unique id
     private boolean isUserChangingSlider = false;
     private boolean isMusicPaused = false;
 
-    private Playlist currentPlaylist; //The current Playlist there get used
+    private Playlist currentPlaylist; //The current Playlist to be used
+    private Song currentSong; //The current Song that gets used
     private SongModel songModel;
     private PlaylistModel playlistModel;
+    private MediaPlayerCUViewController mediaPlayerCUViewController;
+
+    public Song getCurrentSong() {return currentSong;}
+    public void setCurrentSong(Song currentSong) {this.currentSong = currentSong;}
+
+    private static MediaPlayerViewController instance;
 
     public MediaPlayerViewController()  {
+        instance = this;
+
         try {
             songModel = new SongModel();
             playlistModel = new PlaylistModel();
@@ -95,10 +81,31 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
+    public static MediaPlayerViewController getInstance() {
+        if (instance == null) {
+            instance = new MediaPlayerViewController();
+        }
+        return instance;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
-        // Initialize the person tables with columns.
+        mediaPlayerCUViewController = MediaPlayerCUViewController.getInstance();
+
+
+        try {
+            songModel = new SongModel();
+            playlistModel = new PlaylistModel();
+            currentPlaylist = null;
+        }
+        catch (Exception e) {
+            displayError(e);
+            e.printStackTrace();
+        }
+
+
+        // Initialize the tables with columns.
         colName.setCellValueFactory(new PropertyValueFactory<>("title"));
         colArtist.setCellValueFactory(new PropertyValueFactory<>("artist"));
         colYear.setCellValueFactory(new PropertyValueFactory<>("year"));
@@ -122,7 +129,6 @@ public class MediaPlayerViewController implements Initializable {
             }
             else {
                 txtName.setText(newValue.getPlaylistName());
-                txtYear.setText("");
                 txtArtist.setText("");
             }
         });
@@ -133,8 +139,7 @@ public class MediaPlayerViewController implements Initializable {
             }
             else {
                 txtName.setText(newValue.getTitle());
-                txtArtist.setText(newValue.getArtist());
-                txtYear.setText(Integer.toString(newValue.getYear()));
+                txtArtist.setText(newValue.getArtist());;
             }
         });
         // table view listener (when user selects a song in the tableview)
@@ -143,9 +148,10 @@ public class MediaPlayerViewController implements Initializable {
                 clearSearch();
             }
             else {
+                currentSong = tblSongs.getSelectionModel().getSelectedItem();
+
                 txtName.setText(newValue.getTitle());
                 txtArtist.setText(newValue.getArtist());
-                txtYear.setText(Integer.toString(newValue.getYear()));
             }
         });
         // set default volume to 50 and update song progress
@@ -159,10 +165,23 @@ public class MediaPlayerViewController implements Initializable {
             }
         }
 
-        // Setup context search
+        // Setup context search for the songs
         txtSongSearch.textProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (txtSongSearch.getText().isEmpty())  {
+                try {
+                    System.out.println("Test");
+                    tblPlaylist.getItems().clear();
+                    tblPlaylist.setItems(playlistModel.updatePlaylistList());
+                    tblPlaylist.refresh();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             try {
                 songModel.searchSong(newValue);
+                playlistModel.searchPlaylist(newValue);
             } catch (Exception e) {
                 displayError(e);
                 e.printStackTrace();
@@ -177,7 +196,6 @@ public class MediaPlayerViewController implements Initializable {
     private void clearSearch(){
         txtName.setText("");
         txtArtist.setText("");
-        txtYear.setText("");
     }
     /**
      *
@@ -191,79 +209,25 @@ public class MediaPlayerViewController implements Initializable {
         alert.showAndWait();
     }
 
+    public void refreshEverything() throws Exception {
+        tblSongs.getItems().clear();
+        tblSongs.setItems(songModel.updateSongList());
 
-
-    /**
-     *
-     * @param actionEvent
-     */
-    public void createNewMovie(ActionEvent actionEvent) {
-        // get data from UI
-        String title = txtName.getText();
-        String artist = txtArtist.getText();
-       // String songPath = txtSongPath.getText();
-        String songPath = "";
-        double songTime = 0;
-        int year = Integer.parseInt(txtYear.getText());
-
-        // create movie object to pass to method
-        Song newSong = new Song(-1, year, title, artist, songPath, songTime);
-
-        try {
-            songModel.createNewSong(newSong);
+        if (currentPlaylist == null)   {
+            currentPlaylist = playlistModel.getObservablePlaylists().getFirst();
         }
-        catch (Exception e) {
-            displayError(e);
-            e.printStackTrace();
-        }
+
+            playlistModel.playlistSongs(currentPlaylist);
+        /*
+        tblPlaylist.getItems().clear();
+        tblPlaylist.setItems(playlistModel.updatePlaylistList());
+         */
+
+        tblSongsInPlaylist.setItems(playlistModel.getObservablePlaylistsSong());
+        tblSongs.refresh();
+        tblPlaylist.refresh();
+        tblSongsInPlaylist.refresh();
     }
-
-    /**
-     *
-     * @param actionEvent
-     */
-    public void updateSong(ActionEvent actionEvent) {
-        Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-
-        if (selectedSong != null)
-        {
-            // update movie based on textfield inputs from user
-            selectedSong.setTitle(txtName.getText());
-            selectedSong.setYear(Integer.parseInt(txtYear.getText()));
-
-            try {
-                // Update song in DAL layer (through the layers)
-                songModel.updateSong(selectedSong);
-
-                // ask controls to refresh their content
-                tblSongs.refresh();
-            }
-            catch (Exception e) {
-                displayError(e);
-                e.printStackTrace();
-            }
-        }
-    }
-    /**
-     *
-     * @param actionEvent
-     */
-    public void deleteSong(ActionEvent actionEvent) {
-        Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-
-        if (selectedSong != null)
-        {
-            try {
-                // Delete movie in DAL layer (through the layers)
-                songModel.deleteSong(selectedSong);
-            }
-            catch (Exception e) {
-                displayError(e);
-                e.printStackTrace();
-            }
-        }
-    }
-
 
     private void playSongFromTableView() {
         tblSongs.setOnMouseClicked(event -> {
@@ -360,7 +324,6 @@ public class MediaPlayerViewController implements Initializable {
                 isUserChangingSlider = false;
                 anchorPane.requestFocus();
             }
-
         }
     }
 
@@ -374,17 +337,6 @@ public class MediaPlayerViewController implements Initializable {
     }
 
 
-        private void setSliderVolumeStyle()  {
-            double percentage = sliderProgressVolume.getValue() / (sliderProgressVolume.getMax() - sliderProgressVolume.getMin());
-            String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, blue 0%%, blue %.2f%%, white %.2f%%, white 100%%);", percentage * 100, percentage * 100);
-            sliderProgressVolume.lookup(".track").setStyle(color);
-        }
-
-        private void setSliderSongProgressStyle()  {
-            double percentage = sliderProgressSong.getValue() / (sliderProgressSong.getMax() - sliderProgressSong.getMin());
-            String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, green 0%%, green %.10f%%, red %.10f%%, red 100%%);", percentage * 100, percentage * 100);
-            sliderProgressSong.lookup(".track").setStyle(color);
-        }
 
     private void updateProgressStyle() { //This automatic change the progress bar
 
@@ -399,15 +351,15 @@ public class MediaPlayerViewController implements Initializable {
         tblPlaylist.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 try {
-                    tblSongsInPlaylist.getItems().clear();
+
 
                     playlistModel.playlistSongs(tblPlaylist.getSelectionModel().getSelectedItem());
 
                     currentPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
 
-                    tblSongsInPlaylist.setItems(playlistModel.getObservablePlaylistsSong());
 
 
+                    refreshEverything();
 
 
                 } catch (Exception e) {
@@ -431,7 +383,6 @@ public class MediaPlayerViewController implements Initializable {
 
 
     }
-
     private void updateSongProgressTimer() {
         if (currentMusic != null) {
             double progressValue = sliderProgressSong.getValue();
@@ -447,29 +398,6 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
-    public void testNewWindowCreate() throws IOException {
-        testNewWindow("Song Creator");
-        MediaPlayerCUViewController.setTypeCU(1);
-    }
-
-    public void testNewWindowUpdate() throws IOException {
-        testNewWindow("Song Updater");
-        MediaPlayerCUViewController.setTypeCU(2);
-    }
-
-
-    public void testNewWindow(String windowTitle) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/MediaPlayerCU.fxml"));
-        Parent root = loader.load();
-        Stage stage = new Stage();
-        stage.getIcons().add(new Image("/Icons/mainIcon.png"));
-        stage.setTitle(windowTitle + " NOT WORKING");
-        stage.setScene(new Scene(root));
-        //stage.setMaximized(true);
-        stage.initModality(Modality.APPLICATION_MODAL); //Lock the first window until second is close
-        stage.show();
-
-    }
 
     @FXML
     private void initializeDragAndDrop() {
@@ -576,7 +504,7 @@ public class MediaPlayerViewController implements Initializable {
         });
 
         //Source Stackoverflow
-      /**  tblSongsInPlaylist.setRowFactory(tv -> {
+   /**   tblSongsInPlaylist.setRowFactory(tv -> {
             TableRow<Song> row = new TableRow<>();
             row.setOnDragDetected(event -> {
                 if (!row.isEmpty()) {
@@ -607,7 +535,7 @@ public class MediaPlayerViewController implements Initializable {
                     int draggedIndex = Integer.parseInt(db.getString());
                     int dropIndex = row.isEmpty() ? tblSongsInPlaylist.getItems().size() : row.getIndex();
 
-                        if (dropIndex == tblSongsInPlaylist.getItems().size()) { //Make sure you can not drop a song to a empty spot
+                        if (dropIndex == tblSongsInPlaylist.getItems().size()) { //Make sure you can not drop a song to an empty spot
                             event.setDropCompleted(false);
                             event.consume();
                             return;
@@ -625,9 +553,10 @@ public class MediaPlayerViewController implements Initializable {
 
             return row;
         });
-        **/
 
+ **/
     }
+
 
     private Song getSongById(int songId) { //This is not right layer!
         for (Song s : songModel.getObservableSongs()) {
@@ -650,5 +579,95 @@ public class MediaPlayerViewController implements Initializable {
         tblSongsInPlaylist.refresh();
     }
 
+//******************************BUTTONS*****************************
+    public void testNewWindowCreate() throws IOException {
+    MediaPlayerCUViewController.setTypeCU(1);
+    testNewWindow("Song Creator");
+    }
+
+    public void testNewWindowUpdate() throws IOException {
+        MediaPlayerCUViewController.setTypeCU(2);
+        testNewWindow("Song Updater");
+    }
+
+    public void testNewWindow(String windowTitle) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/MediaPlayerCU.fxml"));
+        Parent root = loader.load();
+        Stage stage = new Stage();
+        stage.getIcons().add(new Image("/Icons/mainIcon.png"));
+        stage.setTitle(windowTitle + " NOT WORKING");
+        stage.setScene(new Scene(root));
+        //stage.setMaximized(true);
+        stage.initModality(Modality.APPLICATION_MODAL); //Lock the first window until second is close
+        stage.show();
+    }
+
+    public void createNewPlaylist(ActionEvent event) throws Exception {
+        TextInputDialog dialog = new TextInputDialog("");
+        dialog.setTitle("New Playlist");
+        dialog.setHeaderText("What do you want to call your new Playlist");
+        dialog.setGraphic(new ImageView(new Image("/Icons/mainIcon.png"))); //This icon is to big?
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            String inputValue = result.get(); // Get the actual value from Optional
+
+            Playlist p = new Playlist(-1, inputValue, 0, 0);
+
+            playlistModel.createNewPlaylist(p);
+
+            System.out.println(inputValue);
+        }
+    }
+
+    public void deleteBtn(ActionEvent actionEvent) {
+        Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
+        Song selectedSongInPlaylist = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null & selectedSongInPlaylist == null)
+        {
+            try {
+                // Delete song in DAL layer (through the layers)
+                songModel.deleteSong(selectedSong);
+                tblSongs.refresh();
+            }
+            catch (Exception e) {
+                displayError(e);
+                e.printStackTrace();
+            }
+        }
+        if (selectedPlaylist != null & selectedSongInPlaylist == null){
+            try {
+                playlistModel.deletePlaylist(selectedPlaylist);
+                tblPlaylist.refresh();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (selectedSongInPlaylist != null){
+            try {
+                playlistModel.deleteSongFromPlaylist(selectedSongInPlaylist, selectedPlaylist);
+                currentPlaylist.setSongCount(currentPlaylist.getSongCount() - 1);
+                currentPlaylist.setSongTotalTime(currentPlaylist.getSongTotalTime() - selectedSong.getSongLength());
+                refreshEverything();
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+
+//**************************THIS*IS*ON*THE*RIGHT*LAYER*CONFIRMED***************************
+    private void setSliderVolumeStyle()  {
+    double percentage = sliderProgressVolume.getValue() / (sliderProgressVolume.getMax() - sliderProgressVolume.getMin());
+    String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, blue 0%%, blue %.2f%%, white %.2f%%, white 100%%);", percentage * 100, percentage * 100);
+    sliderProgressVolume.lookup(".track").setStyle(color);
+    }
+    private void setSliderSongProgressStyle()  {
+        double percentage = sliderProgressSong.getValue() / (sliderProgressSong.getMax() - sliderProgressSong.getMin());
+        String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, green 0%%, green %.10f%%, red %.10f%%, red 100%%);", percentage * 100, percentage * 100);
+        sliderProgressSong.lookup(".track").setStyle(color);
+    }
 
 }
