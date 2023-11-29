@@ -72,16 +72,19 @@ public class PlaylistModel {
     public ObservableList<Playlist> getObservablePlaylists() {return playlistsToBeViewed;}
 
 
-    /*     public void searchSong(String query) throws Exception {
-        List<Song> searchResults = songManager.searchSongs(query);
-        songsToBeViewed.clear();
-        songsToBeViewed.addAll(searchResults); */
-
 
     public void searchPlaylist(String query) throws Exception {
         List<Playlist> searchResults = playlistManager.searchPlaylists(query);
         playlistsToBeViewed.clear();
         playlistsToBeViewed.addAll(searchResults);
+        
+        for (Playlist playlist : playlistsToBeViewed) { // Update playlist statistics
+            List<Song> songsInPlaylist = songManager.getAllSongsPlaylist(playlist);
+            int songCount = songsInPlaylist.size(); //Song count is just the size
+            double totalSongTime = songsInPlaylist.stream().mapToDouble(Song::getSongLength).sum(); //We loop through all song and add the total song time
+            playlist.setSongCount(songCount);
+            playlist.setSongTotalTime(totalSongTime);
+        }
     }
 
     public void createNewPlaylist(Playlist newPlaylist) throws Exception {
