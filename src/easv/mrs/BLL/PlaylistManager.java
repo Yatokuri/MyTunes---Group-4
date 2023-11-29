@@ -1,14 +1,9 @@
 package easv.mrs.BLL;
 
 import easv.mrs.BE.Playlist;
-import easv.mrs.BE.Song;
 import easv.mrs.BLL.util.PlaylistSearcher;
-import easv.mrs.BLL.util.SongSearcher;
 import easv.mrs.DAL.IPlaylistDataAccess;
-import easv.mrs.DAL.ISongDataAccess;
 import easv.mrs.DAL.db.PlaylistDAO_DB;
-import easv.mrs.DAL.db.PlaylistSongDAO_DB;
-import easv.mrs.DAL.db.SongDAO_DB;
 
 import java.io.IOException;
 import java.util.List;

@@ -37,6 +37,14 @@ public class SongManager {
         return playlistSongDAO.getAllSongsPlaylist(playlist);
 
     }
+    public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
+        playlistSongDAO.addSongToPlaylist(song, playlist);
+    }
+
+    public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception {
+        playlistSongDAO.deleteSongFromPlaylist(song, playlist);
+    }
+
 
     public List<Song> searchSongs(String query) throws Exception {
         List<Song> allSongs = getAllSongs();

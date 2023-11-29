@@ -6,7 +6,10 @@ import easv.mrs.BLL.PlaylistManager;
 import easv.mrs.BLL.SongManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TextInputDialog;
+
 import java.util.List;
+import java.util.Optional;
 
 public class PlaylistModel {
 
@@ -35,6 +38,25 @@ public class PlaylistModel {
 
     }
 
+    public boolean addSongToPlaylist(Song newsong, Playlist playlist) throws Exception {
+        for (Song s : playlistSongsToBeViewed) {
+            if (newsong.getId() == s.getId()) {
+
+                return false; // Exit the method fast
+            }
+        }
+        songManager.addSongToPlaylist(newsong, playlist);
+        playlistSongsToBeViewed.add(newsong); // update list
+        return true;
+    }
+
+    public void deleteSongFromPlaylist (Song song, Playlist playlist) throws Exception {
+        songManager.deleteSongFromPlaylist(song , playlist);
+        playlistSongsToBeViewed.clear();
+        playlistSongsToBeViewed.addAll(songManager.getAllSongsPlaylist(playlist));
+    }
+
+
 
     public ObservableList<Song> getObservablePlaylistsSong() {return playlistSongsToBeViewed;}
 
@@ -47,8 +69,7 @@ public class PlaylistModel {
     }
 
     public void createNewPlaylist(Playlist newPlaylist) throws Exception {
-        Playlist p = playlistManager.createNewPlaylist(newPlaylist);
-       playlistsToBeViewed.add(p); // update list
+        Playlist p = playlistManager.createNewPlaylist(newPlaylist);playlistsToBeViewed.add(p); // update list
     }
 
     public void updatePlaylist(Playlist updatedPlaylist) throws Exception {

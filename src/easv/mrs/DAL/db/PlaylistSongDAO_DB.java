@@ -25,7 +25,7 @@ public class PlaylistSongDAO_DB {
     public List<Song> getAllSongsPlaylist(Playlist playlist) throws Exception {
 
         playlist.setSongTotalTime(0);
-        //playlist.setSongCount(0);
+        playlist.setSongCount(0);
 
         ArrayList<Song> allSongsInPlaylist = new ArrayList<>();
 
@@ -39,17 +39,19 @@ public class PlaylistSongDAO_DB {
             ResultSet rs = stmt.executeQuery(sql);
 
             // Loop through rows from the database result set
+
+
+
             while (rs.next()) {
 
                 //Map DB row to Movie object
                 int id = rs.getInt("SongId");
 
+
                 for (Song s  : songDAO_db.getSongsArray())    {
                     if (s.getId() == id)    {
-                                                                    
                         playlist.setSongCount(playlist.getSongCount() + 1);
                         playlist.setSongTotalTime(playlist.getSongTotalTime() + s.getSongLength());
-
                         allSongsInPlaylist.add(s);
                     }
                 }
@@ -63,35 +65,30 @@ public class PlaylistSongDAO_DB {
         }
     }
 
-    public Song addSong(Song song) throws Exception {
+    public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
 
         // SQL command
-        String sql = "INSERT INTO dbo.PlaylistSongs (SongName, SongArtist, SongYear, SongFilepath) VALUES (?,?,?,?);";
+        String sql = "INSERT INTO dbo.PlaylistSongs (SongId, PlaylistId) VALUES (?,?);";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
             // Bind parameters
-            stmt.setString(1, song.getTitle());
-            stmt.setString(2, song.getArtist());
-            stmt.setInt(3, song.getYear());
-            stmt.setString(4, song.getSongPath());
+            stmt.setInt(1, song.getId());
+            stmt.setInt(2, playlist.getId());
+
             // Run the specified SQL statement
             stmt.executeUpdate();
 
 
             // Get the generated ID from the DB
             ResultSet rs = stmt.getGeneratedKeys();
-            int id = 0;
 
-            if (rs.next()) {
-                id = rs.getInt(1);
-            }
 
             // Create movie object and send up the layers
-            Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath(), song.getSongLength());
+           // Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath(), song.getSongLength());
 
-            return createdSong;
+           // return createdSong;
         }
 
         catch (SQLException ex)
@@ -128,16 +125,16 @@ public class PlaylistSongDAO_DB {
         }
     }
 
-    public void deleteSong(Song song) throws Exception {
+    public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception {
         // SQL command
-        String sql = "DELETE FROM dbo.PlaylistSongs WHERE SongID = ?;";
+        String sql = "DELETE FROM dbo.PlaylistSongs WHERE SongID = ? AND PlaylistId = ?;";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))
         {
             // Bind parameters
             stmt.setInt(1, song.getId());
-
+            stmt.setInt(2, playlist.getId());
             // Run the specified SQL statement
             stmt.executeUpdate();
         }

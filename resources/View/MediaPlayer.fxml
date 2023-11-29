@@ -29,7 +29,7 @@
             <RowConstraints />
          </rowConstraints>
          <children>
-            <ListView fx:id="lstSongs" prefHeight="200.0" prefWidth="291.0" GridPane.rowIndex="2" />
+            <ListView fx:id="lstSongs" prefHeight="200.0" prefWidth="72.0" GridPane.rowIndex="2" />
             <TextField fx:id="txtSongSearch" promptText="Type search filter here" GridPane.rowIndex="1" />
             <HBox prefHeight="30.0" prefWidth="336.0" spacing="10.0">
                <children>
@@ -53,8 +53,6 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Button fx:id="btnDelete" layoutX="561.0" layoutY="295.0" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
-      <Button fx:id="btnUpdate" layoutX="14.0" layoutY="295.0" mnemonicParsing="false" onAction="#updateSong" text="Update" />
       <VBox alignment="CENTER" layoutX="612.0" prefHeight="182.0" prefWidth="336.0">
          <children>
             <Label fx:id="lblPlayingNow" text="Choose a song to play!">
@@ -86,9 +84,8 @@
             <Label fx:id="lblVolume" text="50%" />
          </children>
       </HBox>
-      <Button fx:id="btnCreate" layoutX="130.0" layoutY="308.0" mnemonicParsing="false" onAction="#createNewMovie" text="Create" />
-      <Button layoutX="238.0" layoutY="308.0" mnemonicParsing="false" onAction="#testNewWindowCreate" text="Test - Create" />
-      <Button layoutX="361.0" layoutY="308.0" mnemonicParsing="false" onAction="#testNewWindowUpdate" text="Test - Update" />
+      <Button layoutX="738.0" layoutY="472.0" mnemonicParsing="false" onAction="#testNewWindowCreate" text="Test - Create" />
+      <Button layoutX="736.0" layoutY="418.0" mnemonicParsing="false" onAction="#testNewWindowUpdate" text="Test - Update" />
       <TableView fx:id="tblPlaylist" layoutX="19.0" layoutY="359.0" prefHeight="275.0" prefWidth="223.0">
          <columns>
             <TableColumn fx:id="colPlaylistName" prefWidth="75.0" text="Playlist" />
@@ -109,5 +106,12 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
+      <HBox layoutX="406.0" layoutY="293.0" prefHeight="30.0" prefWidth="189.0" spacing="10.0">
+         <children>
+            <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
+            <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#updateSong" text="Update" />
+            <Button fx:id="btnCreate" mnemonicParsing="false" onAction="#createNewMovie" text="Create" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>
