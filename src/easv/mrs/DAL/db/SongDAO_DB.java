@@ -6,6 +6,7 @@ import easv.mrs.DAL.ISongDataAccess;
 
 // Java imports
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +105,7 @@ public class SongDAO_DB implements ISongDataAccess {
     public void updateSong(Song song) throws Exception {
 
         // SQL command
-        String sql = "UPDATE dbo.Songs SET SongName = ?, SongArtist = ?, SongYear = ? WHERE SongID = ?";
+        String sql = "UPDATE dbo.Songs SET SongName = ?, SongArtist = ?, SongYear = ?, SongFilepath = ?, SongLength = ? WHERE SongID = ?";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))
@@ -113,7 +114,9 @@ public class SongDAO_DB implements ISongDataAccess {
             stmt.setString(1, song.getTitle());
             stmt.setString(2, song.getArtist());
             stmt.setInt(3, song.getYear());
-            stmt.setInt(4, song.getId());
+            stmt.setString(4,song.getSongPath());
+            stmt.setBigDecimal(5, BigDecimal.valueOf(song.getSongLength()));
+            stmt.setInt(6, song.getId());
 
             // Run the specified SQL statement
             stmt.executeUpdate();

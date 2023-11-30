@@ -24,12 +24,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
 public class MediaPlayerViewController implements Initializable {
+
     @FXML
     private TableView<Playlist> tblPlaylist;
     @FXML
@@ -43,7 +45,7 @@ public class MediaPlayerViewController implements Initializable {
     @FXML
     private ImageView btnPlayIcon;
     @FXML
-    private Button btnPlay, btnDelete;
+    private Button btnPlay, btnDelete, btnCreatePlaylist, btnUpdatePlaylist;
     @FXML
     private TextField txtName, txtArtist, txtSongSearch;
     @FXML
@@ -196,10 +198,7 @@ public class MediaPlayerViewController implements Initializable {
         txtName.setText("");
         txtArtist.setText("");
     }
-    /**
-     *
-     * @param t
-     */
+
     private void displayError(Throwable t)
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -232,8 +231,6 @@ public class MediaPlayerViewController implements Initializable {
         tblSongs.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) { // Check for double-click
                 Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-
-
                 if (selectedSong != null && currentMusic != soundMap.get(selectedSong.getId())) {
                     sliderProgressSong.setValue(0);
                     playSong();
@@ -246,8 +243,6 @@ public class MediaPlayerViewController implements Initializable {
         tblSongsInPlaylist.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) { // Check for double-click
                 Song selectedSong = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
-
-
                 if (selectedSong != null && currentMusic != soundMap.get(selectedSong.getId())) {
                     sliderProgressSong.setValue(0);
                     playSong();
@@ -257,54 +252,112 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     public void playSong()    {
-        if (tblSongs.getSelectionModel().getSelectedItem() != null) {
-            MediaPlayer newSong = soundMap.get(tblSongs.getSelectionModel().getSelectedItem().getId());
+       if (tblSongs.getSelectionModel().getSelectedItem() != null) {
+           Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+           if (selectedSong != null) {
+               MediaPlayer newSong = soundMap.get(selectedSong.getId());
             if (currentMusic != newSong && newSong != null) {
-                if (currentMusic != null) {
-                    currentMusic.stop();
-                }
-                sliderProgressSong.setDisable(false);
-                currentMusic = newSong;
-
-                sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
-                lblPlayingNow.setText("Now playing: " + tblSongs.getSelectionModel().getSelectedItem().getTitle() + " - " + tblSongs.getSelectionModel().getSelectedItem().getArtist());
-                currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
-                currentMusic.play();
-                btnPlayIcon.setImage(new Image("Icons/pause.png"));
-
-
-                currentMusic.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-                    // Update the slider value as the song progresses
-                    if (!isUserChangingSlider) {
-                        sliderProgressSong.setValue(newValue.toSeconds());
-                    }
-                });
-
-                currentMusic.setOnEndOfMedia(() -> { //Do these when song is finish
-                    currentMusic = null;
-                    sliderProgressSong.setValue(0);
-                    lblPlayingNow.setText("No song playing");
-                    sliderProgressSong.setDisable(true);
-                    updateSongProgressTimer();
-                    btnPlayIcon.setImage(new Image("Icons/play.png"));
-                });
+                handleNewSong(newSong, selectedSong);
                 return;
+                }
             }
         }
-            if (currentMusic != null) {
-                if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was paused now play
-                    currentMusic.pause();
-                    isMusicPaused = true;
-                    btnPlayIcon.setImage(new Image("Icons/play.png"));
-                    //currentMusic.seek(Duration.ZERO); //Mark these two out, and then you can now pause when you use the button instead of start again
-                    //currentMusic.play();
-                } else {
-                    currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()));
-                    currentMusic.play();
-                    isMusicPaused = false;
-                    btnPlayIcon.setImage(new Image("Icons/pause.png"));
-            }
+        if (currentMusic != null) {
+            togglePlayPause();
         }
+    }
+
+    public void PlaySong(Song song) {
+        MediaPlayer newMusic = soundMap.get(song.getId());
+        handleNewSong(newMusic, song);
+    }
+
+    private boolean notLastSong, notFirstSong = true;
+
+    public void nextSong() {
+        TableView<Song> selectedTable = (tblPlaylist.getSelectionModel().getSelectedItem() == null) ? tblSongs : tblSongsInPlaylist;
+        boolean isLastSong = selectedTable.getSelectionModel().isSelected(selectedTable.getItems().size() - 1);
+
+        if (isLastSong && !notLastSong) {
+            notLastSong = true;
+            selectedTable.getSelectionModel().selectFirst();
+        } else {
+            notLastSong = false;
+            selectedTable.getSelectionModel().selectNext();
+        }
+
+        PlaySong(selectedTable.getSelectionModel().getSelectedItem());
+    }
+
+    public void previousSong() {
+        TableView<Song> selectedTable = (tblPlaylist.getSelectionModel().getSelectedItem() == null) ? tblSongs : tblSongsInPlaylist;
+        boolean isFirstSong = selectedTable.getSelectionModel().isSelected(0);
+
+        if (isFirstSong && !notFirstSong) {
+            notFirstSong = true;
+            selectedTable.getSelectionModel().selectLast();
+        } else {
+            notFirstSong = false;
+            selectedTable.getSelectionModel().selectPrevious();
+        }
+
+        PlaySong(selectedTable.getSelectionModel().getSelectedItem());
+    }
+
+
+
+
+
+    private void togglePlayPause()   {
+        if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was paused now play
+            currentMusic.pause();
+            isMusicPaused = true;
+            btnPlayIcon.setImage(new Image("Icons/play.png"));
+            //currentMusic.seek(Duration.ZERO); //Mark these two out, and then you can now pause when you use the button instead of start again
+            //currentMusic.play();
+        } else {
+            currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()));
+            currentMusic.play();
+            isMusicPaused = false;
+            btnPlayIcon.setImage(new Image("Icons/pause.png"));
+        }
+    }
+
+
+    private void handleNewSong(MediaPlayer newSong, Song selectedSong) {
+        if (currentMusic != null) {
+            currentMusic.stop();
+        }
+        sliderProgressSong.setDisable(false);
+        currentMusic = newSong;
+
+        sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
+        lblPlayingNow.setText("Now playing: " + selectedSong.getTitle() + " - " + selectedSong.getArtist());
+        currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
+        currentMusic.play();
+        btnPlayIcon.setImage(new Image("Icons/pause.png"));
+
+        currentMusic.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+            // Update the slider value as the song progresses
+            if (!isUserChangingSlider) {
+                sliderProgressSong.setValue(newValue.toSeconds());
+            }
+        });
+        //Do these when song is finished
+        currentMusic.setOnEndOfMedia(this::onEndOfSong);
+
+
+    }
+
+    public void onEndOfSong(){
+            currentMusic = null;
+            sliderProgressSong.setValue(0);
+            lblPlayingNow.setText("No song playing");
+            sliderProgressSong.setDisable(true);
+            updateSongProgressTimer();
+            btnPlayIcon.setImage(new Image("Icons/play.png"));
+
+            nextSong();
     }
 
     public void onSlideProgressPressed() {
@@ -334,7 +387,6 @@ public class MediaPlayerViewController implements Initializable {
             lblVolume.setText(String.format("%d%%", percentage));
         }
     }
-
 
 
     private void updateProgressStyle() { //This automatic change the progress bar
@@ -586,6 +638,10 @@ public class MediaPlayerViewController implements Initializable {
 
     public void testNewWindowUpdate() throws IOException {
         MediaPlayerCUViewController.setTypeCU(2);
+        if (currentSong == null)  {
+            testNewWindowCreate();
+            return;
+        }
         testNewWindow("Song Updater");
     }
 
@@ -594,18 +650,28 @@ public class MediaPlayerViewController implements Initializable {
         Parent root = loader.load();
         Stage stage = new Stage();
         stage.getIcons().add(new Image("/Icons/mainIcon.png"));
-        stage.setTitle(windowTitle + " NOT WORKING");
+        stage.setTitle(windowTitle);
         stage.setScene(new Scene(root));
         //stage.setMaximized(true);
         stage.initModality(Modality.APPLICATION_MODAL); //Lock the first window until second is close
         stage.show();
     }
 
-    public void createNewPlaylist(ActionEvent event) throws Exception {
+    public void createUpdatePlaylist(ActionEvent event) throws Exception {
+        Button clickedButton = (Button) event.getSource(); // Get the button that triggered the event
+        String buttonText = clickedButton.getText(); // Get the text of the button
         TextInputDialog dialog = new TextInputDialog("");
-        dialog.setTitle("New Playlist");
-        dialog.setHeaderText("What do you want to call your new Playlist");
-        // dialog.setGraphic(new ImageView(new Image("/Icons/mainIcon.png"))); //Maybe?
+
+        if (buttonText.equals(btnCreatePlaylist.getText())) {
+            dialog.setTitle("New Playlist");
+            dialog.setHeaderText("What do you want to call your new Playlist");
+        }
+        if (buttonText.equals(btnUpdatePlaylist.getText())) {
+            dialog.setTitle("Update Playlist " + currentPlaylist);
+            dialog.setHeaderText("What should the new name be for the Playlist");
+        }
+
+            // dialog.setGraphic(new ImageView(new Image("/Icons/mainIcon.png"))); //Maybe?
 
         // Set the icon for the dialog window
         Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
@@ -614,22 +680,48 @@ public class MediaPlayerViewController implements Initializable {
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             String inputValue = result.get(); // Get the actual value from Optional
-            Playlist p = new Playlist(-1, inputValue, 0, 0);
-            playlistModel.createNewPlaylist(p);
+
+            if (buttonText.equals(btnCreatePlaylist.getText())) {
+                Playlist p = new Playlist(-1, inputValue, 0, 0);
+                playlistModel.createNewPlaylist(p);
+            }
+            if (buttonText.equals(btnUpdatePlaylist.getText())) {
+                currentPlaylist.setPlaylistName(inputValue);
+                playlistModel.updatePlaylist(currentPlaylist);
+            }
         }
+        refreshEverything();
+    }
+    public void forwardSong(ActionEvent event) {
+        nextSong();
     }
 
+    public void backwardSong(ActionEvent event) {
+        previousSong();
+    }
     public void deleteBtn(ActionEvent actionEvent) {
         Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
         Playlist selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
         Song selectedSongInPlaylist = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
 
-        if (selectedSong != null & selectedSongInPlaylist == null)
-        {
+        if (selectedSong != null & selectedSongInPlaylist == null) {
+
+
+
             try {
-                // Delete song in DAL layer (through the layers)
-                songModel.deleteSong(selectedSong);
-                tblSongs.refresh();
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Song");
+                alert.setHeaderText("You want to delete " + currentSong.getTitle());
+                alert.setContentText("Are you ok with this?");
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image("/Icons/mainIcon.png"));
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+                    songModel.deleteSong(selectedSong);
+                    tblSongs.refresh();
+                }
+
             }
             catch (Exception e) {
                 displayError(e);
@@ -669,5 +761,4 @@ public class MediaPlayerViewController implements Initializable {
         String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, green 0%%, green %.10f%%, red %.10f%%, red 100%%);", percentage * 100, percentage * 100);
         sliderProgressSong.lookup(".track").setStyle(color);
     }
-
 }

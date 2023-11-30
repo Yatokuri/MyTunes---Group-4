@@ -45,9 +45,7 @@ public class MediaPlayerCUViewController implements Initializable {
 
 
 
-    public int getTypeCU() {
-        return typeCU;
-    }
+
     public static void setTypeCU(int typeCU) {MediaPlayerCUViewController.typeCU = typeCU;}
 
 
@@ -72,12 +70,7 @@ public class MediaPlayerCUViewController implements Initializable {
         mediaPlayerViewController = MediaPlayerViewController.getInstance();
         currentSelectedSong = mediaPlayerViewController.getCurrentSong();
 
-        if (currentSelectedSong == null)  {
-            typeCU = 1; //If user forgot to choose a song to update they can create instead
 
-            Stage parent = (Stage) txtInputYear.getScene().getWindow();
-            parent.setTitle("Song Creator" + " NOT WORKING");
-        }
 
         addValidationListener(txtInputName, isNameValid);
         addValidationListener(txtInputArtist, isArtistValid);
@@ -131,10 +124,10 @@ public class MediaPlayerCUViewController implements Initializable {
         boolean isYearValid = validateModel.validateInput(txtInputYear, txtInputYear.getText());
 
         if (isNameValid && isArtistValid && isFilepathValid && isYearValid) {
-            if (this.getTypeCU() == 1) {
+            if (typeCU == 1) {
                 createNewSong();
             }
-            if (this.getTypeCU() == 2) {
+            if (typeCU == 2) {
                 updateSong();
             }
         }
@@ -146,7 +139,6 @@ public class MediaPlayerCUViewController implements Initializable {
         String songPath = txtInputFilepath.getText();
         double songTime = currentSongLength;
         int year = Integer.parseInt(txtInputYear.getText());
-
         Song newSong = new Song(-1, year, title, artist, songPath, songTime);
 
         try {
@@ -156,14 +148,13 @@ public class MediaPlayerCUViewController implements Initializable {
             e.printStackTrace();
         }
     }
-
     private void updateSong() {
         if (currentSelectedSong != null) {
             currentSelectedSong.setTitle(txtInputName.getText());
             currentSelectedSong.setArtist(txtInputArtist.getText());
             currentSelectedSong.setYear(Integer.parseInt(txtInputYear.getText()));
             currentSelectedSong.setSongPath(txtInputFilepath.getText());
-
+            currentSelectedSong.setSongLength(currentSongLength);
             try {
                 songModel.updateSong(currentSelectedSong);
                 closeWindow();
@@ -179,17 +170,21 @@ public class MediaPlayerCUViewController implements Initializable {
         parent.close();
     }
 
-    public void btnChoose() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav"));//Have a place where all valid format is stored
-        // Show the file chooser dialog
-        File selectedFile = fileChooser.showOpenDialog(null);
+    public void btnChoose() { //We pass the info to ValidateModel class
 
-        if (selectedFile != null) {
-            txtInputFilepath.setText(selectedFile.getAbsolutePath());  // Get the selected file path and save it
-            updateTimeText();
+        //  txtInputFilepath.setText(validateModel.btnChoose());  //
+        //  updateTimeText();
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav"));//Have a place where all valid format is stored
+            // Show the file chooser dialog
+            File selectedFile = fileChooser.showOpenDialog(null);
+
+            if (selectedFile != null) {                                     //
+                txtInputFilepath.setText(selectedFile.getAbsolutePath());  // Get the selected file path and save it
+                updateTimeText();
+            }
         }
-    }
 
     private void updateTimeText() { //We pass the info to ValidateModel class
         MediaPlayer newSong = new MediaPlayer(new Media(new File(txtInputFilepath.getText()).toURI().toString()));

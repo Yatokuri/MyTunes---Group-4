@@ -17,9 +17,9 @@
    <children>
       <TableView fx:id="tblSongs" layoutX="389.0" layoutY="14.0" prefHeight="275.0" prefWidth="223.0">
          <columns>
-            <TableColumn fx:id="colName" prefWidth="75.0" text="Title" />
-            <TableColumn fx:id="colArtist" prefWidth="75.0" text="Artist" />
-            <TableColumn fx:id="colYear" prefWidth="75.0" text="Year" />
+            <TableColumn fx:id="colName" editable="false" prefWidth="75.0" text="Title" />
+            <TableColumn fx:id="colArtist" editable="false" prefWidth="75.0" text="Artist" />
+            <TableColumn fx:id="colYear" editable="false" prefWidth="75.0" text="Year" />
          </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -32,15 +32,37 @@
                   <Insets bottom="5.0" />
                </padding>
             </Label>
-            <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#playSong" prefHeight="30.0" prefWidth="14.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css">
-               <graphic>
-                  <ImageView fx:id="btnPlayIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../Icons/play.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
+            <HBox alignment="CENTER" prefHeight="11.0" prefWidth="336.0">
+               <children>
+                  <Button fx:id="btnBackward" mnemonicParsing="false" onAction="#backwardSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css">
+                     <graphic>
+                        <ImageView fx:id="btnBackwardIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../Icons/backward.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#playSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css">
+                     <graphic>
+                        <ImageView fx:id="btnPlayIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../Icons/play.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="btnForward" mnemonicParsing="false" onAction="#forwardSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css">
+                     <graphic>
+                        <ImageView fx:id="btnForwardIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../Icons/forward.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+            </HBox>
             <HBox alignment="CENTER" prefHeight="30.0" prefWidth="239.0">
                <children>
                   <Label fx:id="lblCurrentSongProgress" text="00:00:00" />
@@ -60,9 +82,9 @@
       <Button layoutX="736.0" layoutY="418.0" mnemonicParsing="false" onAction="#testNewWindowUpdate" text="Test - Update" />
       <TableView fx:id="tblPlaylist" layoutX="19.0" layoutY="359.0" prefHeight="275.0" prefWidth="223.0">
          <columns>
-            <TableColumn fx:id="colPlaylistName" prefWidth="75.0" text="Playlist" />
-            <TableColumn fx:id="colSongCount" prefWidth="75.0" text="SongCount" />
-            <TableColumn fx:id="colSongTime" prefWidth="75.0" text="SongTime" />
+            <TableColumn fx:id="colPlaylistName" editable="false" prefWidth="75.0" text="Playlist" />
+            <TableColumn fx:id="colSongCount" editable="false" prefWidth="75.0" text="SongCount" />
+            <TableColumn fx:id="colSongTime" editable="false" prefWidth="75.0" text="SongTime" />
          </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -70,18 +92,19 @@
       </TableView>
       <TableView fx:id="tblSongsInPlaylist" layoutX="389.0" layoutY="359.0" prefHeight="275.0" prefWidth="223.0">
          <columns>
-            <TableColumn fx:id="colTitlePlaylist" prefWidth="75.0" text="Title" />
-            <TableColumn fx:id="colArtistPlaylist" prefWidth="75.0" text="Artist" />
-            <TableColumn fx:id="colYearPlaylist" prefWidth="75.0" text="Year" />
+            <TableColumn fx:id="colTitlePlaylist" editable="false" prefWidth="75.0" sortable="false" text="Title" />
+            <TableColumn fx:id="colArtistPlaylist" editable="false" prefWidth="75.0" sortable="false" text="Artist" />
+            <TableColumn fx:id="colYearPlaylist" editable="false" prefWidth="75.0" sortable="false" text="Year" />
          </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Button fx:id="btnCreatePlaylist" layoutX="256.0" layoutY="484.0" mnemonicParsing="false" onAction="#createNewPlaylist" text="Create Playlist" />
-      <Button fx:id="btnDelete" layoutX="279.0" layoutY="419.0" mnemonicParsing="false" onAction="#deleteBtn" text="Delete" />
+      <Button fx:id="btnCreatePlaylist" layoutX="256.0" layoutY="484.0" mnemonicParsing="false" onAction="#createUpdatePlaylist" text="Create Playlist" />
+      <Button fx:id="btnDelete" layoutX="276.0" layoutY="406.0" mnemonicParsing="false" onAction="#deleteBtn" text="Delete" />
       <TextField fx:id="txtSongSearch" layoutX="19.0" layoutY="60.0" prefHeight="25.0" prefWidth="336.0" promptText="Type search filter here" />
       <TextField fx:id="txtName" editable="false" layoutX="19.0" layoutY="25.0" prefHeight="26.0" prefWidth="223.0" promptText="Title" />
       <TextField fx:id="txtArtist" editable="false" layoutX="253.0" layoutY="26.0" prefHeight="25.0" prefWidth="103.0" promptText="Artist" />
+      <Button fx:id="btnUpdatePlaylist" layoutX="256.0" layoutY="447.0" mnemonicParsing="false" onAction="#createUpdatePlaylist" text="Update Playlist" />
    </children>
 </AnchorPane>
