@@ -56,10 +56,6 @@ public class SongDAO_DB implements ISongDataAccess {
             ex.printStackTrace();
             throw new Exception("Could not get songs from database", ex);
         }
-
-
-        //TODO Do this
-        //throw new UnsupportedOperationException();
     }
 
     public Song createSong(Song song) throws Exception {
@@ -99,7 +95,6 @@ public class SongDAO_DB implements ISongDataAccess {
             ex.printStackTrace();
             throw new Exception("Could not create Song", ex);
         }
-
     }
 
     public void updateSong(Song song) throws Exception {

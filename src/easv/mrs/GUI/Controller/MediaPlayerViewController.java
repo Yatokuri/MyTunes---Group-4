@@ -6,7 +6,11 @@ import easv.mrs.GUI.Model.PlaylistModel;
 import easv.mrs.GUI.Model.SongModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -22,6 +26,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import javax.swing.*;
@@ -29,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class MediaPlayerViewController implements Initializable {
 
@@ -37,15 +43,15 @@ public class MediaPlayerViewController implements Initializable {
     @FXML
     private TableView<Song> tblSongsInPlaylist, tblSongs;
     @FXML
-    private TableColumn<Song, String> colTitlePlaylist, colArtistPlaylist, colName, colArtist, colSongTime, colPlaylistName;
+    private TableColumn<Song, String> colTitleInPlaylist, colArtistInPlaylist, colName, colArtist, colPlaylistTime, colSongTime, colPlaylistName;
     @FXML
-    private TableColumn<Song, Integer> colYearPlaylist, colYear, colSongCount;
+    private TableColumn<Song, Integer> colYear, colSongCount;
     @FXML
     private AnchorPane anchorPane;
     @FXML
-    private ImageView btnPlayIcon;
+    private ImageView btnPlayIcon, btnRepeatIcon, btnShuffleIcon;
     @FXML
-    private Button btnPlay, btnDelete, btnCreatePlaylist, btnUpdatePlaylist;
+    private Button btnPlay, btnDelete, btnCreatePlaylist, btnUpdatePlaylist, btnRepeat, btnShuffle;
     @FXML
     private TextField txtName, txtArtist, txtSongSearch;
     @FXML
@@ -58,16 +64,23 @@ public class MediaPlayerViewController implements Initializable {
     private boolean isUserChangingSlider = false;
     private boolean isMusicPaused = false;
 
+    private int repeatMode = 0;
     private Playlist currentPlaylist; //The current Playlist to be used
     private Song currentSong; //The current Song that gets used
     private SongModel songModel;
     private PlaylistModel playlistModel;
     private MediaPlayerCUViewController mediaPlayerCUViewController;
 
+    private static MediaPlayerViewController instance;
+
+    private static final Image shuffleIcon = new Image("Icons/shuffle.png");
+    private static final Image shuffleIconDisable = new Image("Icons/shuffle-disable.png");
+    private static final Image repeatIcon = new Image("/Icons/repeat.png");
+    private static final Image repeat1Icon = new Image("/Icons/repeat-once.png");
+    private static final Image repeatDisableIcon = new Image("/Icons/repeat-disable.png");
+
     public Song getCurrentSong() {return currentSong;}
     public void setCurrentSong(Song currentSong) {this.currentSong = currentSong;}
-
-    private static MediaPlayerViewController instance;
 
     public MediaPlayerViewController()  {
         instance = this;
@@ -95,6 +108,19 @@ public class MediaPlayerViewController implements Initializable {
     {
         mediaPlayerCUViewController = MediaPlayerCUViewController.getInstance();
 
+        btnRepeatIcon.setImage(repeatIcon);
+        btnShuffleIcon.setImage(shuffleIcon);
+
+        // Initializes the Observable list into a Filtered list for use in the search function
+        FilteredList<Song> filteredSongs = new FilteredList<>(FXCollections.observableList(songModel.getObservableSongs()));
+        tblSongs.setItems(filteredSongs);
+
+        // Adds a FilterList to the tblSongs that will automatically filter based on search input through the use
+        // of a FilteredList made from our observable list of songs
+        txtSongSearch.textProperty().addListener((observable, oldValue, newValue) ->
+                tblSongs.setItems(filterList(songModel.getObservableSongs(), newValue.toLowerCase()))
+        );
+
 
         try {
             songModel = new SongModel();
@@ -105,20 +131,8 @@ public class MediaPlayerViewController implements Initializable {
             displayError(e);
             e.printStackTrace();
         }
-
-
         // Initialize the tables with columns.
-        colName.setCellValueFactory(new PropertyValueFactory<>("title"));
-        colArtist.setCellValueFactory(new PropertyValueFactory<>("artist"));
-        colYear.setCellValueFactory(new PropertyValueFactory<>("year"));
-
-        colPlaylistName.setCellValueFactory(new PropertyValueFactory<>("playlistName"));
-        colSongCount.setCellValueFactory(new PropertyValueFactory<>("songCount"));
-        colSongTime.setCellValueFactory(new PropertyValueFactory<>("SongLengthHHMMSS"));
-
-        colTitlePlaylist.setCellValueFactory(new PropertyValueFactory<>("title"));
-        colArtistPlaylist.setCellValueFactory(new PropertyValueFactory<>("artist"));
-        colYearPlaylist.setCellValueFactory(new PropertyValueFactory<>("year"));
+        initializeTableColumns();
 
         // add data from observable list
         tblSongs.setItems(songModel.getObservableSongs());
@@ -142,6 +156,7 @@ public class MediaPlayerViewController implements Initializable {
             else {
                 txtName.setText(newValue.getTitle());
                 txtArtist.setText(newValue.getArtist());;
+
             }
         });
         // table view listener (when user selects a song in the tableview)
@@ -166,39 +181,60 @@ public class MediaPlayerViewController implements Initializable {
                 soundMap.put(s.getId(), new MediaPlayer(new Media(new File(s.getSongPath()).toURI().toString())));
             }
         }
-
-        // Setup context search for the songs
-        txtSongSearch.textProperty().addListener((observableValue, oldValue, newValue) -> {
-
-            if (txtSongSearch.getText().isEmpty())  {
-                try {
-                    tblPlaylist.getItems().clear();
-                    tblPlaylist.setItems(playlistModel.updatePlaylistList());
-                    tblPlaylist.refresh();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            try {
-                songModel.searchSong(newValue);
-                playlistModel.searchPlaylist(newValue);
-            } catch (Exception e) {
-                displayError(e);
-                e.printStackTrace();
-            }
-        });
-
         // Add tableview functionality
         playSongFromTableViewPlaylist();
         playSongFromTableView();
+        contexSystem();
         initializeDragAndDrop();
     }
+
+    private void contexSystem() {
+        ContextMenu contextMenu = new ContextMenu();
+
+        contextMenu.setStyle("-fx-background-color: aqua; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;");
+
+
+        MenuItem menuItem1 = new MenuItem("Create");
+        MenuItem menuItem2 = new MenuItem("Update");
+        MenuItem menuItem3 = new MenuItem("Delete");
+        contextMenu.getItems().addAll(menuItem1,menuItem2,menuItem3);
+
+        tblSongs.setContextMenu(contextMenu);
+        tblSongsInPlaylist.setContextMenu(contextMenu);
+
+        menuItem1.setOnAction((event) -> {
+            System.out.println("Choice 1 clicked!");
+        });
+
+
+        menuItem2.setOnAction((event) -> {
+            System.out.println("Choice 2 clicked!");
+        });
+
+        menuItem3.setOnAction((event) -> {
+            System.out.println("Choice 3 clicked!");
+        });
+    }
+
+    //Searches through the titles and artists of all the songs to be used in the filterList method underneath
+    private boolean searchFindsSongs(Song song, String searchText){
+        return (song.getTitle().toLowerCase().contains(searchText.toLowerCase()))|| (song.getArtist().toLowerCase().contains(searchText.toLowerCase()));
+    }
+    private ObservableList<Song> filterList(List<Song> song, String searchText){
+        List<Song> filteredList = new ArrayList<>();
+        for (Song s: song) {
+            if (searchFindsSongs(s, searchText)){
+                filteredList.add(s);
+            }
+        }
+        return FXCollections.observableList(filteredList);
+    }
+
+
     private void clearSearch(){
         txtName.setText("");
         txtArtist.setText("");
     }
-
     private void displayError(Throwable t)
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -216,10 +252,6 @@ public class MediaPlayerViewController implements Initializable {
         }
 
             playlistModel.playlistSongs(currentPlaylist);
-        /*
-        tblPlaylist.getItems().clear();
-        tblPlaylist.setItems(playlistModel.updatePlaylistList());
-         */
 
         tblSongsInPlaylist.setItems(playlistModel.getObservablePlaylistsSong());
         tblSongs.refresh();
@@ -227,33 +259,59 @@ public class MediaPlayerViewController implements Initializable {
         tblSongsInPlaylist.refresh();
     }
 
+
+    private void initializeTableColumns(){
+        // Initialize the tables with columns.
+        colName.setCellValueFactory(new PropertyValueFactory<>("title"));
+        colArtist.setCellValueFactory(new PropertyValueFactory<>("artist"));
+        colYear.setCellValueFactory(new PropertyValueFactory<>("year"));
+        colSongTime.setCellValueFactory(new PropertyValueFactory<>("SongLengthHHMMSS"));
+
+        colPlaylistName.setCellValueFactory(new PropertyValueFactory<>("playlistName"));
+        colSongCount.setCellValueFactory(new PropertyValueFactory<>("songCount"));
+        colPlaylistTime.setCellValueFactory(new PropertyValueFactory<>("SongLengthHHMMSS"));
+
+        colTitleInPlaylist.setCellValueFactory(new PropertyValueFactory<>("title"));
+        colArtistInPlaylist.setCellValueFactory(new PropertyValueFactory<>("artist"));
+    }
+
+
     private void playSongFromTableView() {
         tblSongs.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // Check for double-click
+            if (event.getClickCount() == 1 && event.getButton() == MouseButton.PRIMARY){
+                tblSongsInPlaylist.getSelectionModel().clearSelection();
+            }
+            if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) { // Check for double-click
                 Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
                 if (selectedSong != null && currentMusic != soundMap.get(selectedSong.getId())) {
                     sliderProgressSong.setValue(0);
-                    playSong();
+                    PlaySong(selectedSong);
                 }
             }
         });
     }
-
     private void playSongFromTableViewPlaylist() {
         tblSongsInPlaylist.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 1 && event.getButton() == MouseButton.PRIMARY)
+                tblSongs.getSelectionModel().clearSelection();
             if (event.getClickCount() == 2) { // Check for double-click
                 Song selectedSong = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
-                if (selectedSong != null && currentMusic != soundMap.get(selectedSong.getId())) {
+                if (selectedSong != null) {
                     sliderProgressSong.setValue(0);
-                    playSong();
+                    PlaySong(selectedSong);
                 }
             }
         });
     }
 
     public void playSong()    {
-       if (tblSongs.getSelectionModel().getSelectedItem() != null) {
-           Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+        Song selectedSong = null;
+        if (tblSongs.getSelectionModel().getSelectedItem() != null)
+           selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+        if (tblSongsInPlaylist.getSelectionModel().getSelectedItem() != null)
+            selectedSong = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
+
+
            if (selectedSong != null) {
                MediaPlayer newSong = soundMap.get(selectedSong.getId());
             if (currentMusic != newSong && newSong != null) {
@@ -261,7 +319,7 @@ public class MediaPlayerViewController implements Initializable {
                 return;
                 }
             }
-        }
+
         if (currentMusic != null) {
             togglePlayPause();
         }
@@ -273,6 +331,9 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     private boolean notLastSong, notFirstSong = true;
+
+
+    //Den skal ikke kører på selected men på liste over alle sange
 
     public void nextSong() {
         TableView<Song> selectedTable = (tblPlaylist.getSelectionModel().getSelectedItem() == null) ? tblSongs : tblSongsInPlaylist;
@@ -304,10 +365,6 @@ public class MediaPlayerViewController implements Initializable {
         PlaySong(selectedTable.getSelectionModel().getSelectedItem());
     }
 
-
-
-
-
     private void togglePlayPause()   {
         if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was paused now play
             currentMusic.pause();
@@ -330,7 +387,6 @@ public class MediaPlayerViewController implements Initializable {
         }
         sliderProgressSong.setDisable(false);
         currentMusic = newSong;
-
         sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
         lblPlayingNow.setText("Now playing: " + selectedSong.getTitle() + " - " + selectedSong.getArtist());
         currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
@@ -350,12 +406,25 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     public void onEndOfSong(){
+        if (repeatMode == 2)    {//Repeat 1
+            handleNewSong(currentMusic, getSongById(currentSong.getId()));
+            return;
+        }
+
+
+
+
             currentMusic = null;
             sliderProgressSong.setValue(0);
             lblPlayingNow.setText("No song playing");
             sliderProgressSong.setDisable(true);
             updateSongProgressTimer();
             btnPlayIcon.setImage(new Image("Icons/play.png"));
+
+        if (repeatMode == 3)    {//Repeat 1
+            handleNewSong(currentMusic, getSongById(currentSong.getId()));
+            return;
+        }
 
             nextSong();
     }
@@ -390,11 +459,9 @@ public class MediaPlayerViewController implements Initializable {
 
 
     private void updateProgressStyle() { //This automatic change the progress bar
-
         Timeline updater = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             setSliderVolumeStyle();
             setSliderSongProgressStyle();
-
         }));
         //updater.setCycleCount(Timeline.INDEFINITE); //The way to run it so many times u want
         updater.play();
@@ -403,15 +470,9 @@ public class MediaPlayerViewController implements Initializable {
             if (newSelection != null) {
                 try {
 
-
                     playlistModel.playlistSongs(tblPlaylist.getSelectionModel().getSelectedItem());
-
                     currentPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
-
-
-
                     refreshEverything();
-
 
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -448,7 +509,6 @@ public class MediaPlayerViewController implements Initializable {
             lblSongDuration.setText("00:00:00");
         }
     }
-
 
     @FXML
     private void initializeDragAndDrop() {
@@ -553,9 +613,9 @@ public class MediaPlayerViewController implements Initializable {
             event.setDropCompleted(true);
             event.consume();
         });
-
+/**
         //Source Stackoverflow
-   /**   tblSongsInPlaylist.setRowFactory(tv -> {
+     tblSongsInPlaylist.setRowFactory(tv -> {
             TableRow<Song> row = new TableRow<>();
             row.setOnDragDetected(event -> {
                 if (!row.isEmpty()) {
@@ -604,8 +664,8 @@ public class MediaPlayerViewController implements Initializable {
 
             return row;
         });
+**/
 
- **/
     }
 
 
@@ -760,5 +820,36 @@ public class MediaPlayerViewController implements Initializable {
         double percentage = sliderProgressSong.getValue() / (sliderProgressSong.getMax() - sliderProgressSong.getMin());
         String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, green 0%%, green %.10f%%, red %.10f%%, red 100%%);", percentage * 100, percentage * 100);
         sliderProgressSong.lookup(".track").setStyle(color);
+    }
+
+    public void btnShuffleSong(ActionEvent event) {
+        if (btnShuffleIcon.getImage().equals(shuffleIcon))    {
+            btnShuffleIcon.setImage(shuffleIconDisable);
+            //Udføre shuffle disable metode
+        }
+        else if (btnShuffleIcon.getImage().equals(shuffleIconDisable))    {
+            btnShuffleIcon.setImage(shuffleIcon);
+            //Udføre shuffle metode
+        }
+
+    }
+
+    public void btnRepeatSong(ActionEvent event) {
+        if (btnRepeatIcon.getImage().equals(repeatDisableIcon))    {
+            btnRepeatIcon.setImage(repeatIcon);
+            repeatMode = 1;
+            //Udføre repeat metode
+        }
+        else if (btnRepeatIcon.getImage().equals(repeatIcon))    {
+            btnRepeatIcon.setImage(repeat1Icon);
+            repeatMode = 2;
+            //Udføre repeat 1 metode
+        }
+
+        else if (btnRepeatIcon.getImage().equals(repeat1Icon))    {
+            btnRepeatIcon.setImage(repeatDisableIcon);
+            repeatMode = 3;
+            //Udføre repeat disable metode
+        }
     }
 }

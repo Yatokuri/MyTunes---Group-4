@@ -17,7 +17,16 @@ public class Song {
     }
 
     public double getSongLength() {return songLength;}
+
     public void setSongLength(double songLength) {this.songLength = songLength;}
+
+    public String getSongLengthHHMMSS() {
+        long hours = (long) (songLength / 3600);
+        long minutes = (long) ((songLength % 3600) / 60);
+        long remainingSeconds = (long) (songLength % 60);
+
+        return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds);
+    }
     public int getId() {return id;}
     public String getTitle() {return title;}
     public void setTitle(String title) {this.title = title;}

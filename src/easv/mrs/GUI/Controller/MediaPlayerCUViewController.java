@@ -10,7 +10,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -45,6 +44,7 @@ public class MediaPlayerCUViewController implements Initializable {
 
 
 
+    public static int getTypeCU() {return typeCU;}
 
     public static void setTypeCU(int typeCU) {MediaPlayerCUViewController.typeCU = typeCU;}
 
@@ -171,19 +171,9 @@ public class MediaPlayerCUViewController implements Initializable {
     }
 
     public void btnChoose() { //We pass the info to ValidateModel class
-
-        //  txtInputFilepath.setText(validateModel.btnChoose());  //
-        //  updateTimeText();
-
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav"));//Have a place where all valid format is stored
-            // Show the file chooser dialog
-            File selectedFile = fileChooser.showOpenDialog(null);
-
-            if (selectedFile != null) {                                     //
-                txtInputFilepath.setText(selectedFile.getAbsolutePath());  // Get the selected file path and save it
-                updateTimeText();
-            }
+        txtInputFilepath.setText(validateModel.btnChoose());  //
+        if(!txtInputFilepath.getText().isEmpty())
+            updateTimeText();
         }
 
     private void updateTimeText() { //We pass the info to ValidateModel class

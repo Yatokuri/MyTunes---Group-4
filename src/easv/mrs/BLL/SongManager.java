@@ -2,7 +2,6 @@ package easv.mrs.BLL;
 
 import easv.mrs.BE.Playlist;
 import easv.mrs.BE.Song;
-import easv.mrs.BLL.util.SongSearcher;
 import easv.mrs.DAL.ISongDataAccess;
 import easv.mrs.DAL.db.PlaylistSongDAO_DB;
 import easv.mrs.DAL.db.SongDAO_DB;
@@ -13,7 +12,6 @@ import java.util.List;
 
 public class SongManager {
 
-    private final SongSearcher songSearcher = new SongSearcher();
 
     private final ISongDataAccess songDAO;
     private final PlaylistSongDAO_DB playlistSongDAO;
@@ -38,12 +36,6 @@ public class SongManager {
 
     public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception {
         playlistSongDAO.deleteSongFromPlaylist(song, playlist);
-    }
-
-
-    public List<Song> searchSongs(String query) throws Exception {
-        List<Song> allSongs = getAllSongs();
-        return songSearcher.search(allSongs, query);
     }
 
     public Song createNewSong(Song newSong) throws Exception {

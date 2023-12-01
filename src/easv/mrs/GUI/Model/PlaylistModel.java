@@ -8,10 +8,6 @@ import easv.mrs.GUI.Controller.MediaPlayerViewController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-
-import java.util.List;
-import java.util.Objects;
-
 public class PlaylistModel {
 
     private final ObservableList<Playlist> playlistsToBeViewed;
@@ -70,22 +66,6 @@ public class PlaylistModel {
     public ObservableList<Song> getObservablePlaylistsSong() {return playlistSongsToBeViewed;}
 
     public ObservableList<Playlist> getObservablePlaylists() {return playlistsToBeViewed;}
-
-
-
-    public void searchPlaylist(String query) throws Exception {
-        List<Playlist> searchResults = playlistManager.searchPlaylists(query);
-        playlistsToBeViewed.clear();
-        playlistsToBeViewed.addAll(searchResults);
-        
-        for (Playlist playlist : playlistsToBeViewed) { // Update playlist statistics
-            List<Song> songsInPlaylist = songManager.getAllSongsPlaylist(playlist);
-            int songCount = songsInPlaylist.size(); //Song count is just the size
-            double totalSongTime = songsInPlaylist.stream().mapToDouble(Song::getSongLength).sum(); //We loop through all song and add the total song time
-            playlist.setSongCount(songCount);
-            playlist.setSongTotalTime(totalSongTime);
-        }
-    }
 
     public void createNewPlaylist(Playlist newPlaylist) throws Exception {
         Playlist p = playlistManager.createNewPlaylist(newPlaylist);playlistsToBeViewed.add(p); // update list
