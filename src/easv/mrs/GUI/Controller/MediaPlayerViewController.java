@@ -60,6 +60,7 @@ public class MediaPlayerViewController implements Initializable {
     private boolean isUserChangingSlider = false;
     private boolean isMusicPaused = false;
 
+    private float volume = 0.5F; //Default song volume
     private int repeatMode = 0; //Default repeat mode
     private int shuffleMode = 0; //Default shuffle
     private Playlist currentPlaylist; //The current Playlist to be used
@@ -174,7 +175,7 @@ public class MediaPlayerViewController implements Initializable {
             }
         });
         // set default volume to 10 and update song progress
-        sliderProgressVolume.setValue(0.05);
+        sliderProgressVolume.setValue(volume);
         setVolume();
         updateProgressStyle();
 
@@ -296,8 +297,7 @@ public class MediaPlayerViewController implements Initializable {
             }
             if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) { // Check for double-click
                 currentSongList = songModel.getObservableSongs();
-                currentIndex = 0;
-                PlaySong(currentSongList.get(currentIndex));
+                currentIndex = currentSongList.indexOf(currentSong);
                 Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
                 if (selectedSong != null && currentMusic != soundMap.get(selectedSong.getId())) {
                     sliderProgressSong.setValue(0);
@@ -313,9 +313,7 @@ public class MediaPlayerViewController implements Initializable {
             if (event.getClickCount() == 2) { // Check for double-click
                 currentSongList = playlistModel.getObservablePlaylistsSong();
                 currentPlaylistPlaying = currentPlaylist;
-                currentIndex = 0;
-                PlaySong(currentSongList.get(currentIndex));
-
+                currentIndex = currentSongList.indexOf(tblSongsInPlaylist.getSelectionModel().getSelectedItem());
                 Song selectedSong = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
                 if (selectedSong != null) {
                     sliderProgressSong.setValue(0);
@@ -346,29 +344,6 @@ public class MediaPlayerViewController implements Initializable {
 
     }
 
-    public void PlaySong(Song song) {
-        MediaPlayer newMusic = soundMap.get(song.getId());
-        handleNewSong(newMusic, song);
-    }
-    public void nextSong() {
-
-        if (!currentSongList.isEmpty()) {
-            currentIndex = (currentIndex + 1) % currentSongList.size();
-            Song nextSong = currentSongList.get(currentIndex);
-            PlaySong(nextSong);
-
-            System.out.println(nextSong.getTitle());
-        }
-    }
-
-    public void previousSong() {
-        if (!currentSongList.isEmpty()) {
-            currentIndex = (currentIndex - 1 + currentSongList.size()) % currentSongList.size();
-            Song previousSong = currentSongList.get(currentIndex);
-            PlaySong(previousSong);
-        }
-    }
-
     private void togglePlayPause()   {
         if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was playing we pause it
             currentMusic.pause();
@@ -386,14 +361,29 @@ public class MediaPlayerViewController implements Initializable {
         if (currentMusic != null) {
             currentMusic.stop();
         }
+
         currentSongPlaying = selectedSong;
         sliderProgressSong.setDisable(false);
         currentMusic = newSong;
+        currentMusic.setVolume((sliderProgressVolume.getValue())); //We set the volume
         sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
         lblPlayingNow.setText("Now playing: " + selectedSong.getTitle() + " - " + selectedSong.getArtist());
         currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
-        currentMusic.play();
-        btnPlayIcon.setImage(new Image("Icons/pause.png"));
+
+        // Check if the MediaPlayer is ready before interacting with it
+        if (currentMusic.getStatus() == MediaPlayer.Status.READY) {
+            // Play or pause based on the isMusicPaused flag
+            if (isMusicPaused) {
+                currentMusic.pause();
+                btnPlayIcon.setImage(new Image("Icons/play.png"));
+            } else {
+                currentMusic.play();
+                btnPlayIcon.setImage(new Image("Icons/pause.png"));
+            }
+        }
+
+
+
 
         currentMusic.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
             // Update the slider value as the song progresses
@@ -405,43 +395,38 @@ public class MediaPlayerViewController implements Initializable {
         currentMusic.setOnEndOfMedia(this::onEndOfSong);
     }
 
+    public void PlaySong(Song song) {
+        MediaPlayer newMusic = soundMap.get(song.getId());
+        handleNewSong(newMusic, song);
+    }
+
+    private void handleSongSwitch(int newIndex) {
+        if (shuffleMode == 1) { //If shuffle is enable shuffle
+            shuffleMode();
+        }
+        if (repeatMode == 0 && currentSongList !=  songModel.getObservableSongs()) {//If repeat is disable do it
+            if (repeatModeDisable())  {
+                return;
+            }
+        }
+        if (!currentSongList.isEmpty()) {
+            currentIndex = newIndex % currentSongList.size();
+            Song switchedSong  = currentSongList.get(currentIndex);
+            PlaySong(switchedSong );
+        }
+    }
+
+
     public void onEndOfSong(){
         if (repeatMode == 2)    {//Repeat 1
             handleNewSong(currentMusic, getSongById(currentSongPlaying.getId()));
             return;
         }
         if (shuffleMode == 1) {
-            currentIndex = getRandomSong();
-            currentIndex = (currentIndex) % currentSongList.size();
-            Song nextSong = currentSongList.get(currentIndex);
-            PlaySong(nextSong);
-            return;
+            shuffleMode();
         }
-        if (repeatMode == 0) {//Repeat disable
-            if (currentSongList.indexOf(currentSongPlaying)+1 == currentSongList.size()) {
-
-                Playlist currentNextPlaylist = null;
-                for (Playlist p : playlistModel.getObservablePlaylists()) {
-                    if (p.getId() > currentPlaylistPlaying.getId()) {
-
-
-
-                        currentNextPlaylist = p;
-                    } else {
-                        currentNextPlaylist = playlistModel.getObservablePlaylists().getFirst();
-
-                    }
-                }
-                try {
-                    playlistModel.playlistSongs(currentNextPlaylist);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-                currentPlaylistPlaying = currentNextPlaylist;
-                currentSongList = playlistModel.getObservablePlaylistsSong();
-                PlaySong(currentSongList.getFirst());
-                return;
-            }
+        if (repeatMode == 0 && currentSongList !=  songModel.getObservableSongs()) {//Repeat disable
+            repeatModeDisable();
         }
 
         currentMusic = null;
@@ -451,7 +436,46 @@ public class MediaPlayerViewController implements Initializable {
         updateSongProgressTimer();
         btnPlayIcon.setImage(new Image("Icons/play.png"));
 
-        nextSong();
+        handleSongSwitch(currentIndex + 1); //Next song
+    }
+
+    public boolean repeatModeDisable(){
+        Playlist nextPlaylistToGoTo = null;
+        if (previousPress && currentIndex == 0) {
+            Optional<Playlist> optionalNextPlaylist = playlistModel.getObservablePlaylists().stream()
+                    .filter(p -> p.getId() < currentPlaylistPlaying.getId())
+                    .max(Comparator.comparing(Playlist::getId));
+
+            nextPlaylistToGoTo = optionalNextPlaylist.orElse(playlistModel.getObservablePlaylists().getLast());
+        }
+
+        else if (currentSongList.indexOf(currentSongPlaying)+1 == currentSongList.size() && !previousPress) {
+            Optional<Playlist> optionalNextPlaylist = playlistModel.getObservablePlaylists().stream()
+                    .filter(p -> p.getId() > currentPlaylistPlaying.getId())
+                    .min(Comparator.comparing(Playlist::getId));
+
+            nextPlaylistToGoTo = optionalNextPlaylist.orElse(playlistModel.getObservablePlaylists().getFirst());
+        }
+            if (nextPlaylistToGoTo != null) {
+                try {
+                    playlistModel.playlistSongs(nextPlaylistToGoTo);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                currentPlaylistPlaying = nextPlaylistToGoTo;
+                currentSongList = playlistModel.getObservablePlaylistsSong();
+                currentIndex = 0;
+                PlaySong(currentSongList.getFirst());
+                return true;
+            }
+        return false;
+    }
+
+    public void shuffleMode(){
+        currentIndex = getRandomSong();
+        currentIndex = (currentIndex) % currentSongList.size();
+        Song randomSong = currentSongList.get(currentIndex);
+        PlaySong(randomSong);
     }
 
     public int getRandomSong(){
@@ -508,11 +532,12 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     public void setVolume() {
+        double progress = sliderProgressVolume.getValue();
+        int percentage = (int) (progress * 100);
+        lblVolume.setText(String.format("%d%%", percentage));
+
         if (currentMusic != null) {
             currentMusic.setVolume((sliderProgressVolume.getValue()));
-            double progress = sliderProgressVolume.getValue();
-            int percentage = (int) (progress * 100);
-            lblVolume.setText(String.format("%d%%", percentage));
         }
     }
 
@@ -869,11 +894,18 @@ public class MediaPlayerViewController implements Initializable {
         refreshEverything();
     }
     public void forwardSong() {
-        nextSong();
+        previousPress = false;
+        handleSongSwitch(currentIndex + 1);
+
     }
+    private boolean previousPress = false;
 
     public void backwardSong() {
-        previousSong();
+        previousPress = true;
+        handleSongSwitch(currentIndex - 1 + currentSongList.size());
+
+
+
     }
     public void deleteBtn() {
         deleteMethod();
