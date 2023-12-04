@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -18,13 +19,15 @@ import java.util.ResourceBundle;
 
 public class MediaPlayerCUViewController implements Initializable {
     @FXML
+    private AnchorPane anchorPane;
+    @FXML
     private TextField lblTime;
     @FXML
     private ComboBox<String> comCategory;
     @FXML
     private TextField txtInputName, txtInputArtist, txtInputYear, txtInputFilepath;
     @FXML
-    private Button btnCancel, btnSave, btnChoose;
+    private Button btnSave;
 
     private MediaPlayerViewController mediaPlayerViewController;
     private long currentSongLength;

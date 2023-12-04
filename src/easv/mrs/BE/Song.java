@@ -24,7 +24,6 @@ public class Song {
         long hours = (long) (songLength / 3600);
         long minutes = (long) ((songLength % 3600) / 60);
         long remainingSeconds = (long) (songLength % 60);
-
         return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds);
     }
     public int getId() {return id;}

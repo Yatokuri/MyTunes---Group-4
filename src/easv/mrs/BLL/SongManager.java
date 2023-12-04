@@ -26,9 +26,7 @@ public class SongManager {
     }
 
     public List<Song> getAllSongsPlaylist(Playlist playlist) throws Exception {
-
         return playlistSongDAO.getAllSongsPlaylist(playlist);
-
     }
     public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
         playlistSongDAO.addSongToPlaylist(song, playlist);
@@ -36,6 +34,10 @@ public class SongManager {
 
     public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception {
         playlistSongDAO.deleteSongFromPlaylist(song, playlist);
+    }
+
+    public void deleteAllSongsFromPlaylist(Playlist playlist) throws Exception {
+        playlistSongDAO.deleteAllSongsFromPlaylist(playlist);
     }
 
     public Song createNewSong(Song newSong) throws Exception {
@@ -46,10 +48,7 @@ public class SongManager {
         songDAO.updateSong(selectedSong);
     }
 
-
     public void deleteSong(Song selectedSong) throws Exception {
         songDAO.deleteSong(selectedSong);
     }
-
-
 }

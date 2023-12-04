@@ -26,7 +26,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <VBox alignment="CENTER" layoutX="288.0" layoutY="465.0" prefHeight="182.0" prefWidth="336.0">
+      <VBox alignment="CENTER" layoutX="227.0" layoutY="465.0" prefHeight="182.0" prefWidth="453.0">
          <children>
             <Label fx:id="lblPlayingNow" text="Choose a song to play!">
                <padding>
@@ -82,23 +82,23 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="30.0" prefWidth="239.0">
+            <HBox alignment="CENTER" prefHeight="30.0" prefWidth="524.0">
                <children>
                   <Label fx:id="lblCurrentSongProgress" text="00:00:00" />
-                  <Slider fx:id="sliderProgressSong" disable="true" onKeyPressed="#onSlideProgressPressed" onKeyReleased="#onSlideProgressReleased" onMousePressed="#onSlideProgressPressed" onMouseReleased="#onSlideProgressReleased" onTouchPressed="#onSlideProgressPressed" onTouchReleased="#onSlideProgressReleased" />
+                  <Slider fx:id="sliderProgressSong" disable="true" onKeyPressed="#onSlideProgressPressed" onKeyReleased="#onSlideProgressReleased" onMousePressed="#onSlideProgressPressed" onMouseReleased="#onSlideProgressReleased" onTouchPressed="#onSlideProgressPressed" onTouchReleased="#onSlideProgressReleased" prefHeight="14.0" prefWidth="349.0" />
                   <Label fx:id="lblSongDuration" text="00:00:00" />
                </children>
             </HBox>
          </children>
       </VBox>
-      <HBox layoutX="677.0" layoutY="556.0" prefHeight="22.0" prefWidth="200.0">
+      <HBox layoutX="700.0" layoutY="534.0" prefHeight="22.0" prefWidth="200.0">
          <children>
             <Slider fx:id="sliderProgressVolume" max="1.0" />
             <Label fx:id="lblVolume" text="50%" />
          </children>
       </HBox>
-      <Button layoutX="389.0" layoutY="60.0" mnemonicParsing="false" onAction="#testNewWindowCreate" text="Create Song" />
-      <Button layoutX="474.0" layoutY="60.0" mnemonicParsing="false" onAction="#testNewWindowUpdate" text="Update song" />
+      <Button layoutX="389.0" layoutY="60.0" mnemonicParsing="false" onAction="#newWindowCreate" text="Create Song" />
+      <Button layoutX="474.0" layoutY="60.0" mnemonicParsing="false" onAction="#newWindowUpdate" text="Update song" />
       <TableView fx:id="tblPlaylist" layoutX="19.0" layoutY="105.0" prefHeight="387.0" prefWidth="223.0">
          <columns>
             <TableColumn fx:id="colPlaylistName" editable="false" prefWidth="118.0" text="Playlist" />
@@ -123,6 +123,6 @@
       <TextField fx:id="txtSongSearch" layoutX="700.0" layoutY="26.0" prefHeight="25.0" prefWidth="177.0" promptText="Type search filter here" />
       <TextField fx:id="txtName" editable="false" layoutX="19.0" layoutY="25.0" prefHeight="26.0" prefWidth="223.0" promptText="Title" />
       <TextField fx:id="txtArtist" editable="false" layoutX="253.0" layoutY="26.0" prefHeight="25.0" prefWidth="103.0" promptText="Artist" />
-      <Button fx:id="btnUpdatePlaylist" layoutX="148.0" layoutY="499.0" mnemonicParsing="false" onAction="#createUpdatePlaylist" text="Update Playlist" />
+      <Button fx:id="btnUpdatePlaylist" layoutX="131.0" layoutY="499.0" mnemonicParsing="false" onAction="#createUpdatePlaylist" text="Update Playlist" />
    </children>
 </AnchorPane>

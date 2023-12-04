@@ -71,7 +71,8 @@ public class PlaylistDAO_DB implements IPlaylistDataAccess {
             }
 
             // Create song object and send up the layers
-            Playlist createdPlaylist = new Playlist(id, playlist.getPlaylistName(),playlist.getSongCount(),playlist.getSongTotalTime());
+            Playlist createdPlaylist;
+            createdPlaylist = new Playlist(id, playlist.getPlaylistName(),playlist.getSongCount(),playlist.getSongTotalTime());
 
             return createdPlaylist;
         }
@@ -111,7 +112,6 @@ public class PlaylistDAO_DB implements IPlaylistDataAccess {
     public void deletePlaylist(Playlist playlist) throws Exception {
         // SQL command
         String  sql = "DELETE FROM dbo.PlaylistSongs WHERE PlaylistId = ?;";
-        String sqltest = "DELETE dbo.Playlist, dbo.PlaylistSongs FROM dbo.Playlist INNER JOIN dbo.PlaylistSongs ON Playlist.Id = PlaylistSongs.PlaylistId WHERE Playlist.Id = ?";
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))
 

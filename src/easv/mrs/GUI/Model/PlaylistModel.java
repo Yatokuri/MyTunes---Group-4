@@ -14,7 +14,7 @@ public class PlaylistModel {
     private final ObservableList<Song> playlistSongsToBeViewed;
 
     private final PlaylistManager playlistManager;
-    private MediaPlayerViewController mediaPlayerViewController;
+    private final MediaPlayerViewController mediaPlayerViewController;
     private final SongManager songManager;
 
     public PlaylistModel() throws Exception {
@@ -27,6 +27,8 @@ public class PlaylistModel {
         for (Playlist p: playlistsToBeViewed) {
             playlistSongsToBeViewed.addAll(songManager.getAllSongsPlaylist(p));
         }
+
+
 
     }
 
@@ -50,6 +52,7 @@ public class PlaylistModel {
                 return false; // Exit the method fast
             }
         }
+
         songManager.addSongToPlaylist(newsong, playlist);
         playlistSongsToBeViewed.add(newsong); // update list
         return true;
@@ -61,6 +64,9 @@ public class PlaylistModel {
         playlistSongsToBeViewed.addAll(songManager.getAllSongsPlaylist(playlist));
     }
 
+    public void deleteAllSongsFromPlaylist (Playlist playlist) throws Exception {
+        songManager.deleteAllSongsFromPlaylist(playlist);
+    }
 
 
     public ObservableList<Song> getObservablePlaylistsSong() {return playlistSongsToBeViewed;}

@@ -1,12 +1,9 @@
 package easv.mrs.GUI.Model;
 
-
-
 import easv.mrs.BE.Song;
 import javafx.scene.control.TextField;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
-
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -21,7 +18,7 @@ public class ValidateModel {
     private boolean setupUpdateOriginal = true;
 
     private static final String[]validFiles  = {"wav" , "mp3"};
-    private static final String[] validFiles2 = generateValidFiles2(validFiles);
+
 
     public ValidateModel()  {
         try {
@@ -109,10 +106,11 @@ public class ValidateModel {
     }
 
     //Convert validFiles where mp3 be to *.mp3
-    private static String[] generateValidFiles2(String[] validFiles) {
-        String[] validFiles2 = new String[validFiles.length];
-        for (int i = 0; i < validFiles.length; i++) {
-            validFiles2[i] = "*." + validFiles[i];
+    private static final String[] validFiles2 = generateValidFiles2();
+    private static String[] generateValidFiles2() {
+        String[] validFiles2 = new String[ValidateModel.validFiles.length];
+        for (int i = 0; i < ValidateModel.validFiles.length; i++) {
+            validFiles2[i] = "*." + ValidateModel.validFiles[i];
         }
         return validFiles2;
     }

@@ -2,10 +2,7 @@ package easv.mrs.BE;
 
 public class Playlist {
 
-
-
     private String playlistName, songTotalTimeHHMMSS;
-
     private int id;
     private int songCount;
     private double songTotalTime;
@@ -21,10 +18,8 @@ public class Playlist {
         long hours = (long) (songTotalTime / 3600);
         long minutes = (long) ((songTotalTime % 3600) / 60);
         long remainingSeconds = (long) (songTotalTime % 60);
-
         return songTotalTimeHHMMSS = String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds);
     }
-
 
     public double getSongTotalTime() { return songTotalTime; }
     public void setSongTotalTime(double songTotalTime) {this.songTotalTime = songTotalTime;}
