@@ -3,7 +3,6 @@ package easv.mrs.DAL.db;
 // Project imports
 import easv.mrs.BE.Playlist;
 import easv.mrs.BE.Song;
-import easv.mrs.BLL.SongManager;
 
 // Java imports
 import java.io.IOException;
@@ -15,21 +14,16 @@ public class PlaylistSongDAO_DB {
 
     private MyDatabaseConnector databaseConnector;
     private SongDAO_DB songDAO_db;
-    private SongManager songManager;
 
     public PlaylistSongDAO_DB() throws IOException {
         databaseConnector = new MyDatabaseConnector();
         songDAO_db = new SongDAO_DB();
     }
 
-
-
     public List<Song> getAllSongsPlaylist(Playlist playlist) throws Exception {
 
         playlist.setSongTotalTime(0);
         playlist.setSongCount(0);
-
-
 
         ArrayList<Song> allSongsInPlaylist = new ArrayList<>();
 
@@ -37,21 +31,15 @@ public class PlaylistSongDAO_DB {
                     "JOIN PlaylistSongs S1 ON Songs.SongId = S1.SongId\n" +
                     "WHERE S1.PlayListId =" + playlist.getId() + "\n" +
                     "ORDER BY S1.playlistorder ASC";
-
         try (Connection conn = databaseConnector.getConnection();
              Statement stmt = conn.createStatement())
         {
             ResultSet rs = stmt.executeQuery(sql);
 
             // Loop through rows from the database result set
-
-
-
             while (rs.next()) {
-
                 //Map DB row to playlist object
                 int id = rs.getInt("SongId");
-
 
                 for (Song s  : songDAO_db.getSongsArray())    {
                     if (s.getId() == id)    {
@@ -84,7 +72,6 @@ public class PlaylistSongDAO_DB {
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
              Statement stmt2 = conn.createStatement())
-
         {
             ResultSet rs2 = stmt2.executeQuery(sql2);
 
@@ -94,7 +81,6 @@ public class PlaylistSongDAO_DB {
                 nextIdNumber = rs2.getInt("highest_value");
             }
 
-
             // Bind parameters
             stmt.setInt(1, song.getId());
             stmt.setInt(2, playlist.getId());
@@ -103,15 +89,8 @@ public class PlaylistSongDAO_DB {
             // Run the specified SQL statement
             stmt.executeUpdate();
 
-
             // Get the generated ID from the DB
             ResultSet rs = stmt.getGeneratedKeys();
-
-
-            // Create playlist object and send up the layers
-           // Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath(), song.getSongLength());
-
-           // return createdSong;
         }
         catch (SQLException ex)
         {
@@ -121,19 +100,31 @@ public class PlaylistSongDAO_DB {
         }
     }
 
-    public void updateSongInPlaylist(Song song, Playlist playlist) throws Exception {
-
+    public void updateSongInPlaylist(Song song, Song oldSong, Playlist playlist) throws Exception {
         // SQL command
-        String sql = "UPDATE dbo.PlaylistSongs SET PlayListOrder WHERE SongID = ? AND PlaylistId = ?";
-
+        String sql = "UPDATE dbo.PlaylistSongs SET PlayListOrder = ? WHERE SongId = ? AND PlaylistId = ?";
+        String sqlOldSong = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = "+ oldSong.getId() + " AND PlaylistId = "+ playlist.getId();
         try (Connection conn = databaseConnector.getConnection();
+             Statement stmt2 = conn.createStatement();
              PreparedStatement stmt = conn.prepareStatement(sql))
         {
+            ResultSet rs = stmt2.executeQuery(sqlOldSong);
+            int playOrderOld = 1;
+            while (rs.next()) {
+                //Map DB row to playlist object
+                playOrderOld = rs.getInt("PlayListOrder");
+            }
+            System.out.println(playOrderOld);
+
             // Bind parameters
-            stmt.setInt(1, song.getId());
+            stmt.setInt(1, playOrderOld);
             stmt.setInt(2, song.getId());
             stmt.setInt(3, playlist.getId());
 
+            String sqlUpdatePlaylist = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder + 1 WHERE PlaylistId =" + playlist.getId() + "AND PlaylistOrder >= " + playOrderOld;
+            try (PreparedStatement stmt3 = conn.prepareStatement(sqlUpdatePlaylist)){
+                stmt3.executeUpdate();
+            }
             // Run the specified SQL statement
             stmt.executeUpdate();
         }
@@ -185,5 +176,4 @@ public class PlaylistSongDAO_DB {
             throw new Exception("Could not delete playlist", ex);
         }
     }
-
 }

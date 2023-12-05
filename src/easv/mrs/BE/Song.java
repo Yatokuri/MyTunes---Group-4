@@ -6,8 +6,7 @@ public class Song {
     private int year;
     private double songLength;
     private int id;
-
-    public Song(int id, int year, String title, String artist, String songPath, Double songLength) {
+       public Song(int id, int year, String title, String artist, String songPath, Double songLength) {
         this.id = id;
         this.title = title;
         this.year = year;
@@ -15,7 +14,6 @@ public class Song {
         this.songLength = songLength;
         this.songPath = songPath;
     }
-
     public double getSongLength() {return songLength;}
 
     public void setSongLength(double songLength) {this.songLength = songLength;}

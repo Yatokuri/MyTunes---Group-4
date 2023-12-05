@@ -13,9 +13,7 @@ import java.util.List;
 
 public class SongDAO_DB implements ISongDataAccess {
 
-
     private ArrayList<Song> allSongs;
-
     private MyDatabaseConnector databaseConnector;
 
     public SongDAO_DB() throws IOException {

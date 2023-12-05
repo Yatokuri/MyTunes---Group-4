@@ -47,7 +47,7 @@ public class MediaPlayerViewController implements Initializable {
     @FXML
     private ImageView btnPlayIcon, btnRepeatIcon, btnShuffleIcon;
     @FXML
-    private Button btnPlay, btnDelete, btnCreatePlaylist, btnUpdatePlaylist, btnRepeat, btnShuffle;
+    private Button btnDelete, btnCreatePlaylist, btnUpdatePlaylist;
     @FXML
     private TextField txtName, txtArtist, txtSongSearch;
     @FXML
@@ -71,7 +71,8 @@ public class MediaPlayerViewController implements Initializable {
     private SongModel songModel;
     private PlaylistModel playlistModel;
     private MediaPlayerCUViewController mediaPlayerCUViewController;
-
+    private Song draggedSong;
+    private String currentTableview;
     private static MediaPlayerViewController instance;
 
     private static final Image shuffleIcon = new Image("Icons/shuffle.png");
@@ -124,7 +125,6 @@ public class MediaPlayerViewController implements Initializable {
                 tblSongs.setItems(filterList(songModel.getObservableSongs(), newValue.toLowerCase()))
         );
 
-
         try {
             songModel = new SongModel();
             playlistModel = new PlaylistModel();
@@ -140,7 +140,6 @@ public class MediaPlayerViewController implements Initializable {
         // add data from observable list
         tblSongs.setItems(songModel.getObservableSongs());
         tblPlaylist.setItems(playlistModel.getObservablePlaylists());
-
 
         tblPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (tblPlaylist.getSelectionModel().getSelectedItem() == null)   {
@@ -159,7 +158,6 @@ public class MediaPlayerViewController implements Initializable {
             else {
                 txtName.setText(newValue.getTitle());
                 txtArtist.setText(newValue.getArtist());;
-
             }
         });
         // table view listener (when user selects a song in the tableview)
@@ -174,6 +172,7 @@ public class MediaPlayerViewController implements Initializable {
                 txtArtist.setText(newValue.getArtist());
             }
         });
+
         // set default volume to 10 and update song progress
         sliderProgressVolume.setValue(volume);
         setVolume();
@@ -187,15 +186,13 @@ public class MediaPlayerViewController implements Initializable {
         // Add tableview functionality
         playSongFromTableViewPlaylist();
         playSongFromTableView();
-        contexSystem();
+        contextSystem();
         initializeDragAndDrop();
     }
 
-    private void contexSystem() {
+    private void contextSystem() {
         ContextMenu contextMenu = new ContextMenu();
-
         contextMenu.setStyle("-fx-background-color: aqua; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;");
-
 
         MenuItem menuItem1 = new MenuItem("Create");
         MenuItem menuItem2 = new MenuItem("Update");
@@ -244,7 +241,6 @@ public class MediaPlayerViewController implements Initializable {
         return FXCollections.observableList(filteredList);
     }
 
-
     private void clearSearch(){
         txtName.setText("");
         txtArtist.setText("");
@@ -273,7 +269,6 @@ public class MediaPlayerViewController implements Initializable {
         tblSongsInPlaylist.refresh();
     }
 
-
     private void initializeTableColumns(){
         // Initialize the tables with columns.
         colName.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -288,7 +283,6 @@ public class MediaPlayerViewController implements Initializable {
         colTitleInPlaylist.setCellValueFactory(new PropertyValueFactory<>("title"));
         colArtistInPlaylist.setCellValueFactory(new PropertyValueFactory<>("artist"));
     }
-
 
     private void playSongFromTableView() {
         tblSongs.setOnMouseClicked(event -> {
@@ -401,12 +395,18 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     private void handleSongSwitch(int newIndex) {
+
+        System.out.println(currentIndex);
+
         if (shuffleMode == 1) { //If shuffle is enable shuffle
             shuffleMode();
+            System.out.println(currentIndex);
+            return;
+
         }
         if (repeatMode == 0 && currentSongList !=  songModel.getObservableSongs()) {//If repeat is disable do it
             if (repeatModeDisable())  {
-                return;
+            return;
             }
         }
         if (!currentSongList.isEmpty()) {
@@ -415,7 +415,6 @@ public class MediaPlayerViewController implements Initializable {
             PlaySong(switchedSong );
         }
     }
-
 
     public void onEndOfSong(){
         if (repeatMode == 2)    {//Repeat 1
@@ -491,34 +490,6 @@ public class MediaPlayerViewController implements Initializable {
             currentMusic.pause();
         }
     }
-
-    private void saveCurrentPlaylist()  {
-
-        List<Song> newSuperNiceList = playlistModel.getObservablePlaylistsSong();
-        System.out.println(newSuperNiceList);
-        try {
-            playlistModel.deleteAllSongsFromPlaylist(currentPlaylist);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-
-
-        for (Song s : newSuperNiceList)   {
-            try {
-                playlistModel.addSongToPlaylist(s, currentPlaylist);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        System.out.println(newSuperNiceList);
-
-
-
-
-    }
-
 
     public void onSlideProgressReleased() {
         if (currentMusic != null) {
@@ -598,166 +569,6 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
-    @FXML
-    private void initializeDragAndDrop() {
-        tblSongsInPlaylist.setOnDragDetected(event -> { //When user drag a song from playlist song list
-            Song selectedSong = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
-            if (selectedSong != null) {
-                Dragboard db = tblSongsInPlaylist.startDragAndDrop(TransferMode.MOVE);
-                ClipboardContent content = new ClipboardContent();
-                content.put(DataFormat.PLAIN_TEXT, Integer.toString(selectedSong.getId()));
-                db.setContent(content);
-                event.consume();
-            }
-
-
-
-
-
-        });
-
-        tblSongs.setOnDragDetected(event -> { //When user drag a song from song list
-            Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-            if (selectedSong != null) {
-                Dragboard db = tblSongs.startDragAndDrop(TransferMode.MOVE);
-                ClipboardContent content = new ClipboardContent();
-                content.put(DataFormat.PLAIN_TEXT, Integer.toString(selectedSong.getId()));
-                db.setContent(content);
-                event.consume();
-            }
-        });
-
-        tblSongsInPlaylist.setOnDragOver(event -> {
-
-
-            if (event.getGestureSource() != tblSongsInPlaylist && event.getDragboard().hasString()) {
-                event.acceptTransferModes(TransferMode.MOVE);
-            }
-            event.consume();
-        });
-
-
-        anchorPane.setOnDragOver(event -> { // Allowing drop only if the source is tblSongsInPlaylist and has a string
-            if (event.getGestureSource() == tblSongsInPlaylist && event.getDragboard().hasString()) {
-                event.acceptTransferModes(TransferMode.MOVE);
-            }
-                event.consume();
-        });
-
-
-
-        tblSongsInPlaylist.setOnDragDropped(event -> { //When user drop a song from song list into playlist song
-            Dragboard db = event.getDragboard();
-            boolean success = false;
-
-            if (db.hasString()) {
-                int songId = Integer.parseInt(db.getString());
-                Song selectedSong = getSongById(songId);
-
-                if (selectedSong != null) {
-                    try {
-                        if (playlistModel.addSongToPlaylist(selectedSong, currentPlaylist)) { //We first need to make sure it not already in the playlist
-                            playlistModel.playlistSongs(tblPlaylist.getSelectionModel().getSelectedItem());
-                                tblPlaylist.refresh();
-                          //  saveCurrentPlaylist();
-                                success = true;
-
-                        }
-                        else if (currentPlaylist == null) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Playlist System");
-                            alert.setHeaderText("You need to choose a playlist");
-                            alert.showAndWait();
-                        }
-                        else {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Playlist System");
-                            alert.setHeaderText("The song is already in the playlist");
-                            alert.showAndWait();
-                        }
-
-                    } catch (Exception e) {
-                        displayError(e);
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            event.setDropCompleted(success);
-            event.consume();
-        });
-
-
-        anchorPane.setOnDragDropped(event -> { //When user drop a song from playlist song list into background
-            Dragboard db = event.getDragboard();
-            int songId = Integer.parseInt(db.getString());
-
-            Song selectedSong = getSongById(songId);
-
-            if (selectedSong != null) {
-                currentPlaylist.setSongCount(currentPlaylist.getSongCount() - 1);
-                currentPlaylist.setSongTotalTime(currentPlaylist.getSongTotalTime() - selectedSong.getSongLength());
-                tblPlaylist.refresh();
-
-                try {
-                    playlistModel.deleteSongFromPlaylist(selectedSong, currentPlaylist);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            anchorPane.requestFocus();
-            event.setDropCompleted(true);
-            event.consume();
-        });
-
-        //Source Stackoverflow
-        /**
-        tblSongsInPlaylist.setRowFactory(tv -> {
-            TableRow<Song> row = new TableRow<>();
-            row.setOnDragDetected(event -> {
-                if (!row.isEmpty()) {
-                    int index = row.getIndex();
-                    Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
-                    ClipboardContent cc = new ClipboardContent();
-                    cc.putString(Integer.toString(index));
-                    db.setContent(cc);
-                    event.consume();
-                }
-            });
-
-            row.setOnDragOver(event -> {
-                Dragboard db = event.getDragboard();
-                if (db.hasString()) {
-                    int draggedIndex = Integer.parseInt(db.getString());
-                    if (row.isEmpty() || row.getIndex() != draggedIndex) {
-                        event.acceptTransferModes(TransferMode.MOVE);
-                        event.consume();
-                    }
-                }
-            });
-
-            row.setOnDragDropped(event -> {
-                Dragboard db = event.getDragboard();
-                if (db.hasString()) {
-                    int draggedIndex = Integer.parseInt(db.getString());
-                    int dropIndex = row.isEmpty() ? tblSongsInPlaylist.getItems().size() : row.getIndex();
-
-                    if (dropIndex != draggedIndex) {
-                        // Perform the reordering in your data model
-                        moveSongInPlaylist(draggedIndex, dropIndex);
-                        event.setDropCompleted(true);
-                        tblSongsInPlaylist.getSelectionModel().select(dropIndex);
-                        event.consume();
-                    }
-                }
-            });
-
-            return row;
-        });
-         */
-
-    }
-
     private Song getSongById(int songId) { //This is not right layer!
         for (Song s : songModel.getObservableSongs()) {
             if (s.getId() == songId) {
@@ -767,21 +578,7 @@ public class MediaPlayerViewController implements Initializable {
         return null;
     }
 
-    public void moveSongInPlaylist(int fromIndex, int toIndex) {
-        // Get the selected song
-        Song selectedSong = tblSongsInPlaylist.getItems().remove(fromIndex);
-
-        System.out.println("Fra " + fromIndex + " Til " + toIndex + " Hvem? " + selectedSong);
-
-        //Database skal opdatere eller bare gemme listen forfra hver gang?
-
-
-
-
-        tblSongsInPlaylist.getItems().add(toIndex, selectedSong);
-        tblSongsInPlaylist.refresh();
-    }
-    public void deleteMethod(){
+    public void     deleteMethod(){
 
         Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
         Playlist selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
@@ -831,6 +628,157 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
+
+//******************************DRAG-DROP-DETECT*****************************
+
+    @FXML
+    private void initializeDragAndDrop() {
+        tblSongs.setOnDragDetected(event -> { //When user drag a song from song list
+            Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+            currentTableview = "tblSongs";
+            if (selectedSong != null) {
+                Dragboard db = tblSongs.startDragAndDrop(TransferMode.MOVE);
+                ClipboardContent content = new ClipboardContent();
+                content.put(DataFormat.PLAIN_TEXT, Integer.toString(selectedSong.getId()));
+                db.setContent(content);
+                event.consume();
+            }
+        });
+
+        tblSongsInPlaylist.setOnDragOver(event -> {
+            if (event.getGestureSource() != tblSongsInPlaylist && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.MOVE);
+            }
+            event.consume();
+        });
+
+        anchorPane.setOnDragOver(event -> { // Allowing drop only if the source is tblSongsInPlaylist and has a string
+            if (event.getGestureSource() == tblSongsInPlaylist && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.MOVE);
+            }
+            event.consume();
+        });
+
+
+        tblSongsInPlaylist.setOnDragDropped(event -> { //When user drop a song from song list into playlist song
+            Dragboard db = event.getDragboard();
+            boolean success = false;
+
+            if (db.hasString()) {
+                int songId = Integer.parseInt(db.getString());
+                Song selectedSong = getSongById(songId);
+
+                if (selectedSong != null) {
+                    try {
+                        if (playlistModel.addSongToPlaylist(selectedSong, currentPlaylist)) { //We first need to make sure it not already in the playlist
+                            playlistModel.playlistSongs(tblPlaylist.getSelectionModel().getSelectedItem());
+                            tblPlaylist.refresh();
+                            success = true;
+
+                        } else if (currentPlaylist == null) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Playlist System");
+                            alert.setHeaderText("You need to choose a playlist");
+                            alert.showAndWait();
+                        } else {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Playlist System");
+                            alert.setHeaderText("The song is already in the playlist");
+                            alert.showAndWait();
+                        }
+
+                    } catch (Exception e) {
+                        displayError(e);
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            event.setDropCompleted(success);
+            event.consume();
+        });
+
+        anchorPane.setOnDragDropped(event -> { //When user drop a song from playlist song list into background
+            if (draggedSong != null) {
+                currentPlaylist.setSongCount(currentPlaylist.getSongCount() - 1);
+                currentPlaylist.setSongTotalTime(currentPlaylist.getSongTotalTime() - draggedSong.getSongLength());
+                tblPlaylist.refresh();
+
+                try {
+                    playlistModel.deleteSongFromPlaylist(draggedSong, currentPlaylist);
+                    draggedSong = null;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            anchorPane.requestFocus();
+            event.setDropCompleted(true);
+            event.consume();
+        });
+
+        //Source Stackoverflow
+
+        tblSongsInPlaylist.setRowFactory(tv -> {
+            TableRow<Song> row = new TableRow<>();
+            row.setOnDragDetected(event -> {
+                draggedSong = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
+                currentTableview = "tbBlSongsInPlaylist";
+                if (!row.isEmpty()) {
+                    int index = row.getIndex();
+                    Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
+                    ClipboardContent cc = new ClipboardContent();
+                    cc.putString(Integer.toString(index));
+                    db.setContent(cc);
+                    event.consume();
+                }
+            });
+
+            row.setOnDragOver(event -> {
+                Dragboard db = event.getDragboard();
+                if (db.hasString()) {
+                    int draggedIndex = Integer.parseInt(db.getString());
+                    if (row.isEmpty() || row.getIndex() != draggedIndex) {
+                        event.acceptTransferModes(TransferMode.MOVE);
+                        event.consume();
+                    }
+                }
+            });
+
+            row.setOnDragDropped(event -> {
+                if (currentTableview.equals("tblSongs"))  {}
+                else {
+
+                    Dragboard db = event.getDragboard();
+                    if (db.hasString()) {
+                        int draggedIndex = Integer.parseInt(db.getString());
+                        int dropIndex = row.isEmpty() ? tblSongsInPlaylist.getItems().size() : row.getIndex();
+
+                        if (dropIndex != draggedIndex) {
+                            // Perform the reordering in your data model
+                            moveSongInPlaylist(draggedIndex, dropIndex);
+                            event.setDropCompleted(true);
+                            tblSongsInPlaylist.getSelectionModel().select(dropIndex);
+                            event.consume();
+                        }
+                    }
+                }
+            });
+            return row;
+        });
+    }
+
+         public void moveSongInPlaylist(int fromIndex, int toIndex) {
+             // Get the selected song
+             Song selectedSong = tblSongsInPlaylist.getItems().remove(fromIndex);
+
+             try {
+                 playlistModel.updateSongInPlaylist(selectedSong, playlistModel.getObservablePlaylistsSong().get(toIndex), currentPlaylist);
+             } catch (Exception e) {
+                 throw new RuntimeException(e);
+             }
+             tblSongsInPlaylist.getItems().add(toIndex, selectedSong);
+             tblSongsInPlaylist.refresh();
+         }
 //******************************BUTTONS*****************************
     public void newWindowCreate() throws IOException {
         MediaPlayerCUViewController.setTypeCU(1);
@@ -929,21 +877,20 @@ public class MediaPlayerViewController implements Initializable {
          if (btnRepeatIcon.getImage().equals(repeat1Icon))    {
             btnRepeatIcon.setImage(repeatDisableIcon);
             repeatMode = 0;
-            //Execute repeat disable method
+            //Change repeat mode to disabled so system know
         }
 
          else if (btnRepeatIcon.getImage().equals(repeatDisableIcon))    {
             btnRepeatIcon.setImage(repeatIcon);
             repeatMode = 1;
-            //Udføre repeat metode
+             //Change repeat mode to repeat same song so system know
         }
         else if (btnRepeatIcon.getImage().equals(repeatIcon))    {
             btnRepeatIcon.setImage(repeat1Icon);
             repeatMode = 2;
-            //Udføre repeat 1 metode
+             //Change repeat mode to repeat playlist so system know
         }
     }
-
 
 //**************************THIS*IS*ON*THE*RIGHT*LAYER*CONFIRMED***************************
     private void setSliderVolumeStyle()  {

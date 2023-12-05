@@ -20,7 +20,6 @@ public class SongManager {
         songDAO = new SongDAO_DB();
         playlistSongDAO = new PlaylistSongDAO_DB();
     }
-    //deleteSongFromPlaylist
     public List<Song> getAllSongs() throws Exception {
         return songDAO.getAllSongs();
     }
@@ -30,6 +29,9 @@ public class SongManager {
     }
     public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
         playlistSongDAO.addSongToPlaylist(song, playlist);
+    }
+    public void updateSongInPlaylist(Song song, Song oldsong, Playlist playlist) throws Exception {
+        playlistSongDAO.updateSongInPlaylist(song, oldsong, playlist);
     }
 
     public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception {

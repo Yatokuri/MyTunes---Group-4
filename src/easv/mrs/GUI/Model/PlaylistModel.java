@@ -14,7 +14,6 @@ public class PlaylistModel {
     private final ObservableList<Song> playlistSongsToBeViewed;
 
     private final PlaylistManager playlistManager;
-    private final MediaPlayerViewController mediaPlayerViewController;
     private final SongManager songManager;
 
     public PlaylistModel() throws Exception {
@@ -22,14 +21,11 @@ public class PlaylistModel {
         songManager = new SongManager();
         playlistsToBeViewed = FXCollections.observableArrayList();
         playlistsToBeViewed.addAll(playlistManager.getAllPlaylist());
-        mediaPlayerViewController = MediaPlayerViewController.getInstance();
+        MediaPlayerViewController mediaPlayerViewController = MediaPlayerViewController.getInstance();
         playlistSongsToBeViewed = FXCollections.observableArrayList();
         for (Playlist p: playlistsToBeViewed) {
             playlistSongsToBeViewed.addAll(songManager.getAllSongsPlaylist(p));
         }
-
-
-
     }
 
     public ObservableList<Playlist> updatePlaylistList() throws Exception {
@@ -41,9 +37,6 @@ public class PlaylistModel {
         playlistSongsToBeViewed.addAll(songManager.getAllSongsPlaylist(playlist));
 
     }
-
-
-
 
     public boolean addSongToPlaylist(Song newsong, Playlist playlist) throws Exception {
         for (Song s : playlistSongsToBeViewed) {
@@ -63,6 +56,11 @@ public class PlaylistModel {
         playlistSongsToBeViewed.clear();
         playlistSongsToBeViewed.addAll(songManager.getAllSongsPlaylist(playlist));
     }
+
+    public void updateSongInPlaylist (Song song, Song oldsong, Playlist playlist) throws Exception {
+        songManager.updateSongInPlaylist(song, oldsong, playlist);
+    }
+
 
     public void deleteAllSongsFromPlaylist (Playlist playlist) throws Exception {
         songManager.deleteAllSongsFromPlaylist(playlist);
@@ -85,6 +83,9 @@ public class PlaylistModel {
         Playlist p = playlistsToBeViewed.get(playlistsToBeViewed.indexOf(updatedPlaylist));
         p.setPlaylistName(updatedPlaylist.getPlaylistName());
     }
+
+
+
 
 
     public void deletePlaylist(Playlist selectedPlaylist) throws Exception {
