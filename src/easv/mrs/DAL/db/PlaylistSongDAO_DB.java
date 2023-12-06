@@ -104,26 +104,40 @@ public class PlaylistSongDAO_DB {
         // SQL command
         String sql = "UPDATE dbo.PlaylistSongs SET PlayListOrder = ? WHERE SongId = ? AND PlaylistId = ?";
         String sqlOldSong = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = "+ oldSong.getId() + " AND PlaylistId = "+ playlist.getId();
+        String sqlNewSong = "SELECT PlaylistOrder FROM dbo.PlaylistSongs WHERE SongId = "+ song.getId() + "AND PlaylistId = "+ playlist.getId();
         try (Connection conn = databaseConnector.getConnection();
              Statement stmt2 = conn.createStatement();
+             Statement stmt3 = conn.createStatement();
              PreparedStatement stmt = conn.prepareStatement(sql))
         {
             ResultSet rs = stmt2.executeQuery(sqlOldSong);
+            ResultSet rs2 = stmt3.executeQuery(sqlNewSong);
             int playOrderOld = 1;
+            int playOrderNewSong = 1;
             while (rs.next()) {
                 //Map DB row to playlist object
                 playOrderOld = rs.getInt("PlayListOrder");
             }
-            System.out.println(playOrderOld);
+            while (rs2.next()){
+                playOrderNewSong = rs2.getInt("PlayListOrder");
+            }
 
             // Bind parameters
             stmt.setInt(1, playOrderOld);
             stmt.setInt(2, song.getId());
             stmt.setInt(3, playlist.getId());
 
-            String sqlUpdatePlaylist = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder + 1 WHERE PlaylistId =" + playlist.getId() + "AND PlaylistOrder >= " + playOrderOld;
-            try (PreparedStatement stmt3 = conn.prepareStatement(sqlUpdatePlaylist)){
-                stmt3.executeUpdate();
+            if (playOrderNewSong < playOrderOld) {
+                String sqlUpdatePlaylist = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder - 1 WHERE PlaylistId =" + playlist.getId() + "AND PlaylistOrder <= " + playOrderOld + "AND PlaylistOrder >=" + playOrderNewSong;
+                try (PreparedStatement stmt4 = conn.prepareStatement(sqlUpdatePlaylist)) {
+                    stmt4.executeUpdate();
+                }
+            }
+            if (playOrderNewSong > playOrderOld){
+                String sqlUpdatePlaylist = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder + 1 WHERE PlaylistId =" + playlist.getId() + "AND PlaylistOrder >= " + playOrderOld + "AND PlaylistOrder <=" + playOrderNewSong;
+                try (PreparedStatement stmt4 = conn.prepareStatement(sqlUpdatePlaylist)) {
+                    stmt4.executeUpdate();
+                }
             }
             // Run the specified SQL statement
             stmt.executeUpdate();
@@ -141,13 +155,26 @@ public class PlaylistSongDAO_DB {
         String sql = "DELETE FROM dbo.PlaylistSongs WHERE SongID = ? AND PlaylistId = ?;";
 
         try (Connection conn = databaseConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql))
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             Statement stmt2 = conn.createStatement())
         {
             // Bind parameters
             stmt.setInt(1, song.getId());
             stmt.setInt(2, playlist.getId());
             // Run the specified SQL statement
             stmt.executeUpdate();
+
+            String sqlPlayOrder = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = "+ song.getId() + " AND PlaylistId = "+ playlist.getId();
+            ResultSet rs = stmt2.executeQuery(sqlPlayOrder);
+            int playOrder = 1;
+            while (rs.next()) {
+                //Map DB row to playlist object
+                playOrder = rs.getInt("PlayListOrder");
+            }
+            String sqlUpdatePlayOrder = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder + - WHERE PlaylistId =" + playlist.getId() + "AND PlaylistOrder >= " + playOrder;
+            try (PreparedStatement stmt3 = conn.prepareStatement(sqlUpdatePlayOrder)) {
+                stmt3.executeUpdate();
+            }
         }
         catch (SQLException ex)
         {
