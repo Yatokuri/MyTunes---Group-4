@@ -24,11 +24,12 @@ public class SongModel {
         return songsToBeViewed;
     }
     public ObservableList<Song> getObservableSongs() { return songsToBeViewed; }
-    public void createNewSong(Song newSong) throws Exception {
+    public Song createNewSong(Song newSong) throws Exception {
         Song s = songManager.createNewSong(newSong);
         songsToBeViewed.add(s); // update list
         songsToBeViewed.clear();
         songsToBeViewed.addAll(songManager.getAllSongs());
+        return s;
     }
 
 

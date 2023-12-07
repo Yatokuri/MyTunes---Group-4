@@ -38,7 +38,7 @@ public class MediaPlayerCUViewController implements Initializable {
     private final BooleanProperty isFilepathValid = new SimpleBooleanProperty(true);
     private final BooleanProperty isYearValid = new SimpleBooleanProperty(true);
 
-
+    private Song newCreatedSong;
 
     private static int typeCU = 0;
     private static Song currentSelectedSong = null;
@@ -72,7 +72,6 @@ public class MediaPlayerCUViewController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         mediaPlayerViewController = MediaPlayerViewController.getInstance();
         currentSelectedSong = mediaPlayerViewController.getCurrentSong();
-
 
 
         addValidationListener(txtInputName, isNameValid);
@@ -142,10 +141,11 @@ public class MediaPlayerCUViewController implements Initializable {
         String songPath = txtInputFilepath.getText();
         double songTime = currentSongLength;
         int year = Integer.parseInt(txtInputYear.getText());
-        Song newSong = new Song(-1, year, title, artist, songPath, songTime);
+        Song song = new Song(-1, year, title, artist, songPath, songTime);
 
         try {
-            songModel.createNewSong(newSong);
+            newCreatedSong = songModel.createNewSong(song);
+            mediaPlayerViewController.addSongToSoundMap(newCreatedSong);
             closeWindow();
         } catch (Exception e) {
             e.printStackTrace();
@@ -160,6 +160,7 @@ public class MediaPlayerCUViewController implements Initializable {
             currentSelectedSong.setSongLength(currentSongLength);
             try {
                 songModel.updateSong(currentSelectedSong);
+                mediaPlayerViewController.updateSongPathSoundMap(currentSelectedSong);
                 closeWindow();
             } catch (Exception e) {
                 e.printStackTrace();

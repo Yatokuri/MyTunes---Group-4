@@ -125,14 +125,20 @@ public class PlaylistSongDAO_DB {
             stmt.setInt(3, playlist.getId());
 
             if (playOrderNewSong < playOrderOld) {
-                String sqlUpdatePlaylist = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder - 1 WHERE PlaylistId =" + playlist.getId() + "AND PlaylistOrder <= " + playOrderOld + "AND PlaylistOrder >=" + playOrderNewSong;
+                String sqlUpdatePlaylist = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder - 1 WHERE PlaylistId =? AND PlaylistOrder <= ? AND PlaylistOrder >=?";
                 try (PreparedStatement stmt4 = conn.prepareStatement(sqlUpdatePlaylist)) {
+                    stmt4.setInt(1, playlist.getId());
+                    stmt4.setInt(2, playOrderOld);
+                    stmt4.setInt(3, playOrderNewSong);
                     stmt4.executeUpdate();
                 }
             }
             if (playOrderNewSong > playOrderOld){
-                String sqlUpdatePlaylist = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder + 1 WHERE PlaylistId =" + playlist.getId() + "AND PlaylistOrder >= " + playOrderOld + "AND PlaylistOrder <=" + playOrderNewSong;
+                String sqlUpdatePlaylist = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder + 1 WHERE PlaylistId = ? AND PlaylistOrder >= ? AND PlaylistOrder <=?";
                 try (PreparedStatement stmt4 = conn.prepareStatement(sqlUpdatePlaylist)) {
+                    stmt4.setInt(1, playlist.getId());
+                    stmt4.setInt(2, playOrderOld);
+                    stmt4.setInt(3, playOrderNewSong);
                     stmt4.executeUpdate();
                 }
             }
@@ -148,57 +154,39 @@ public class PlaylistSongDAO_DB {
     }
 
     public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception {
+        //When we delete a song we also need to change there order
+
         // SQL command
-        String sql = "DELETE FROM dbo.PlaylistSongs WHERE SongID = ? AND PlaylistId = ?;";
+        String sqlSongsPlayOrder = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = ? AND PlaylistId = ?";
+        String sqlDeleteSong = "DELETE FROM dbo.PlaylistSongs WHERE SongID = ? AND PlaylistId = ?;";
 
         try (Connection conn = databaseConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             Statement stmt2 = conn.createStatement();
-             Statement stmtSongSearch = conn.createStatement()) {
+            PreparedStatement stmtDeleteSong = conn.prepareStatement(sqlDeleteSong);
+             PreparedStatement  stmtSongsPlayOrder = conn.prepareStatement(sqlSongsPlayOrder)) {
             // Bind parameters
-            stmt.setInt(1, song.getId());
-            stmt.setInt(2, playlist.getId());
+            stmtDeleteSong.setInt(1, song.getId());
+            stmtDeleteSong.setInt(2, playlist.getId());
+            stmtSongsPlayOrder.setInt(1, song.getId());
+            stmtSongsPlayOrder.setInt(2, playlist.getId());
             // Run the specified SQL statement
-            stmt.executeUpdate();
+            ResultSet rs = stmtSongsPlayOrder.executeQuery();
+            stmtDeleteSong.executeUpdate(); //We delete song after cause otherwise we cannot find the right playlist order
 
-            String sqlPlayOrder = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = " + song.getId() + " AND PlaylistId = " + playlist.getId();
-            ResultSet rs = stmt2.executeQuery(sqlPlayOrder);
-            int playOrder = 1;
+            int playOrder = -1; //Default if no one is found
             while (rs.next()) {
                 //Map DB row to playlist object
                 playOrder = rs.getInt("PlayListOrder");
             }
-
-
-            String sqlPlaylistHaveSong = "SELECT CASE WHEN EXISTS (SELECT 1 FROM dbo.PlaylistSongs WHERE PlayListId =" + playlist.getId() + "AND SongId = " + song.getId() + ") THEN 1 ELSE 0 END AS SongExists";
-
-            //     ResultSet searchResult = stmtSongSearch.executeQuery(sqlPlaylistHaveSong);
-
-
-
-
-            try (PreparedStatement preparedStatement = conn.prepareStatement(sqlPlaylistHaveSong)) {
-            try (ResultSet searchResult = preparedStatement.executeQuery()) {
-
-                System.out.println(searchResult.getInt("SongExists"));
-
-                if (searchResult.next()) {
-
-                    int SongExists = searchResult.getInt("SongExists");
-
-                    if (SongExists == 1) {
-                        System.out.println(playlist.getPlaylistName() + "havdesangen");
-                        String sqlUpdatePlayOrder = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder - 1 WHERE PlaylistId =" + playlist.getId() + "AND PlaylistOrder >= " + playOrder;
-                        try (PreparedStatement stmt3 = conn.prepareStatement(sqlUpdatePlayOrder)) {
-                            stmt3.executeUpdate();
-                        }
-                    }
+            if (playOrder > -1) {
+                String sqlUpdatePlayOrder = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder - 1 WHERE PlaylistId = ? AND PlaylistOrder >= ?";
+                try (PreparedStatement stmt3 = conn.prepareStatement(sqlUpdatePlayOrder)) {
+                    stmt3.setInt(1, playlist.getId());
+                    stmt3.setInt(2, playOrder);
+                    stmt3.executeUpdate();
                 }
-
             }
+        }
 
-        }
-        }
         catch (SQLException ex)
         {
             // create entry in log file
