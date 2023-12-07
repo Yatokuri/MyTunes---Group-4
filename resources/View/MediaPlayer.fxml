@@ -15,7 +15,7 @@
 
 <AnchorPane fx:id="anchorPane" prefHeight="657.0" prefWidth="948.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
    <children>
-      <TableView fx:id="tblSongs" layoutX="501.0" layoutY="105.0" prefHeight="387.0" prefWidth="412.0">
+      <TableView fx:id="tblSongs" layoutX="501.0" layoutY="62.0" prefHeight="430.0" prefWidth="412.0">
          <columns>
             <TableColumn fx:id="colName" editable="false" prefWidth="183.0" text="Title" />
             <TableColumn fx:id="colArtist" editable="false" prefWidth="119.0" text="Artist" />
@@ -91,15 +91,15 @@
             </HBox>
          </children>
       </VBox>
-      <HBox layoutX="700.0" layoutY="534.0" prefHeight="22.0" prefWidth="200.0">
+      <HBox layoutX="712.0" layoutY="556.0" prefHeight="22.0" prefWidth="200.0">
          <children>
             <Slider fx:id="sliderProgressVolume" max="1.0" />
             <Label fx:id="lblVolume" text="50%" />
          </children>
       </HBox>
-      <Button layoutX="389.0" layoutY="60.0" mnemonicParsing="false" onAction="#newWindowCreate" text="Create Song" />
-      <Button layoutX="474.0" layoutY="60.0" mnemonicParsing="false" onAction="#newWindowUpdate" text="Update song" />
-      <TableView fx:id="tblPlaylist" layoutX="19.0" layoutY="105.0" prefHeight="387.0" prefWidth="223.0">
+      <Button layoutX="567.0" layoutY="492.0" mnemonicParsing="false" onAction="#newWindowCreate" text="Create Song" />
+      <Button layoutX="685.0" layoutY="492.0" mnemonicParsing="false" onAction="#newWindowUpdate" text="Update song" />
+      <TableView fx:id="tblPlaylist" layoutX="19.0" layoutY="62.0" prefHeight="430.0" prefWidth="223.0">
          <columns>
             <TableColumn fx:id="colPlaylistName" editable="false" prefWidth="118.0" text="Playlist" />
             <TableColumn fx:id="colSongCount" editable="false" prefWidth="40.0" text="Songs" />
@@ -109,7 +109,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <TableView fx:id="tblSongsInPlaylist" layoutX="256.0" layoutY="105.0" prefHeight="387.0" prefWidth="223.0">
+      <TableView fx:id="tblSongsInPlaylist" layoutX="256.0" layoutY="62.0" prefHeight="430.0" prefWidth="223.0">
          <columns>
             <TableColumn fx:id="colTitleInPlaylist" editable="false" prefWidth="117.0" sortable="false" text="Title" />
             <TableColumn fx:id="colArtistInPlaylist" editable="false" prefWidth="81.0" sortable="false" text="Artist" />
@@ -119,10 +119,8 @@
          </columnResizePolicy>
       </TableView>
       <Button fx:id="btnCreatePlaylist" layoutX="19.0" layoutY="499.0" mnemonicParsing="false" onAction="#createUpdatePlaylist" text="Create Playlist" />
-      <Button fx:id="btnDelete" layoutX="573.0" layoutY="60.0" mnemonicParsing="false" onAction="#deleteBtn" text="Delete" />
-      <TextField fx:id="txtSongSearch" layoutX="700.0" layoutY="26.0" prefHeight="25.0" prefWidth="177.0" promptText="Type search filter here" />
-      <TextField fx:id="txtName" editable="false" layoutX="19.0" layoutY="25.0" prefHeight="26.0" prefWidth="223.0" promptText="Title" />
-      <TextField fx:id="txtArtist" editable="false" layoutX="253.0" layoutY="26.0" prefHeight="25.0" prefWidth="103.0" promptText="Artist" />
+      <Button fx:id="btnDelete" layoutX="806.0" layoutY="492.0" mnemonicParsing="false" onAction="#deleteBtn" text="Delete" />
+      <TextField fx:id="txtSongSearch" layoutX="735.0" layoutY="14.0" prefHeight="25.0" prefWidth="177.0" promptText="Type search filter here" />
       <Button fx:id="btnUpdatePlaylist" layoutX="131.0" layoutY="499.0" mnemonicParsing="false" onAction="#createUpdatePlaylist" text="Update Playlist" />
    </children>
 </AnchorPane>

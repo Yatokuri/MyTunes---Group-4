@@ -14,7 +14,7 @@ import java.util.List;
 public class SongDAO_DB implements ISongDataAccess {
 
     private ArrayList<Song> allSongs;
-    private MyDatabaseConnector databaseConnector;
+    private final MyDatabaseConnector databaseConnector;
 
     public SongDAO_DB() throws IOException {
         databaseConnector = new MyDatabaseConnector();
@@ -123,17 +123,22 @@ public class SongDAO_DB implements ISongDataAccess {
     }
 
     public void deleteSong(Song song) throws Exception {
+
         // SQL command
-        String sql = "DELETE FROM dbo.Songs WHERE SongID = ?;";
+        String sqlSongs = "DELETE FROM dbo.Songs WHERE SongID = ?;";
+        String sqlPlaylistSongs = "DELETE FROM dbo.PlaylistSongs WHERE SongID = ?";
 
         try (Connection conn = databaseConnector.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql))
-        {
+             PreparedStatement stmt = conn.prepareStatement(sqlSongs);
+             PreparedStatement stmt2 = conn.prepareStatement(sqlPlaylistSongs)) {
             // Bind parameters
             stmt.setInt(1, song.getId());
+            stmt2.setInt(1, song.getId());
 
             // Run the specified SQL statement
+            stmt2.executeUpdate();
             stmt.executeUpdate();
+
         }
         catch (SQLException ex)
         {

@@ -169,7 +169,7 @@ public class MediaPlayerCUViewController implements Initializable {
 
     public void closeWindow() throws Exception {
         Stage parent = (Stage) txtInputYear.getScene().getWindow();
-        mediaPlayerViewController.refreshEverything();
+        mediaPlayerViewController.refreshSonglist();
         parent.close();
     }
 

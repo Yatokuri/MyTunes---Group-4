@@ -12,8 +12,8 @@ import java.util.List;
 
 public class PlaylistSongDAO_DB {
 
-    private MyDatabaseConnector databaseConnector;
-    private SongDAO_DB songDAO_db;
+    private final MyDatabaseConnector databaseConnector;
+    private final SongDAO_DB songDAO_db;
 
     public PlaylistSongDAO_DB() throws IOException {
         databaseConnector = new MyDatabaseConnector();
@@ -60,7 +60,7 @@ public class PlaylistSongDAO_DB {
 
     public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
 
-        System.out.println("Jeg vil tilføje " + song.getTitle() + "til"  + playlist.getPlaylistName());
+        System.out.println("Jeg vil tilføje " + song.getTitle() + "til "  + playlist.getPlaylistName());
 
         // SQL command
         String sql = "INSERT INTO dbo.PlaylistSongs (SongId, PlaylistId, PlayListOrder) VALUES (?,?,?);";
@@ -88,9 +88,6 @@ public class PlaylistSongDAO_DB {
 
             // Run the specified SQL statement
             stmt.executeUpdate();
-
-            // Get the generated ID from the DB
-            ResultSet rs = stmt.getGeneratedKeys();
         }
         catch (SQLException ex)
         {
@@ -156,25 +153,51 @@ public class PlaylistSongDAO_DB {
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
-             Statement stmt2 = conn.createStatement())
-        {
+             Statement stmt2 = conn.createStatement();
+             Statement stmtSongSearch = conn.createStatement()) {
             // Bind parameters
             stmt.setInt(1, song.getId());
             stmt.setInt(2, playlist.getId());
             // Run the specified SQL statement
             stmt.executeUpdate();
 
-            String sqlPlayOrder = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = "+ song.getId() + " AND PlaylistId = "+ playlist.getId();
+            String sqlPlayOrder = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = " + song.getId() + " AND PlaylistId = " + playlist.getId();
             ResultSet rs = stmt2.executeQuery(sqlPlayOrder);
             int playOrder = 1;
             while (rs.next()) {
                 //Map DB row to playlist object
                 playOrder = rs.getInt("PlayListOrder");
             }
-            String sqlUpdatePlayOrder = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder + - WHERE PlaylistId =" + playlist.getId() + "AND PlaylistOrder >= " + playOrder;
-            try (PreparedStatement stmt3 = conn.prepareStatement(sqlUpdatePlayOrder)) {
-                stmt3.executeUpdate();
+
+
+            String sqlPlaylistHaveSong = "SELECT CASE WHEN EXISTS (SELECT 1 FROM dbo.PlaylistSongs WHERE PlayListId =" + playlist.getId() + "AND SongId = " + song.getId() + ") THEN 1 ELSE 0 END AS SongExists";
+
+            //     ResultSet searchResult = stmtSongSearch.executeQuery(sqlPlaylistHaveSong);
+
+
+
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(sqlPlaylistHaveSong)) {
+            try (ResultSet searchResult = preparedStatement.executeQuery()) {
+
+                System.out.println(searchResult.getInt("SongExists"));
+
+                if (searchResult.next()) {
+
+                    int SongExists = searchResult.getInt("SongExists");
+
+                    if (SongExists == 1) {
+                        System.out.println(playlist.getPlaylistName() + "havdesangen");
+                        String sqlUpdatePlayOrder = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder - 1 WHERE PlaylistId =" + playlist.getId() + "AND PlaylistOrder >= " + playOrder;
+                        try (PreparedStatement stmt3 = conn.prepareStatement(sqlUpdatePlayOrder)) {
+                            stmt3.executeUpdate();
+                        }
+                    }
+                }
+
             }
+
+        }
         }
         catch (SQLException ex)
         {
@@ -186,7 +209,7 @@ public class PlaylistSongDAO_DB {
 
     public void deleteAllSongsFromPlaylist(Playlist playlist) throws Exception {
         // SQL command
-        String sql = "DELETE FROM dbo.PlaylistSongs  WHERE PlaylistId = ?;";
+        String sql = "DELETE FROM dbo.PlaylistSongs WHERE PlaylistId = ?;";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))
