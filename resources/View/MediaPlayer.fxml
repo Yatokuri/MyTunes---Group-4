@@ -15,18 +15,43 @@
 
 <AnchorPane fx:id="anchorPane" prefHeight="657.0" prefWidth="948.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
    <children>
-      <TableView fx:id="tblSongs" layoutX="501.0" layoutY="62.0" prefHeight="430.0" prefWidth="412.0">
-         <columns>
-            <TableColumn fx:id="colName" editable="false" prefWidth="183.0" text="Title" />
-            <TableColumn fx:id="colArtist" editable="false" prefWidth="119.0" text="Artist" />
-            <TableColumn fx:id="colYear" editable="false" prefWidth="53.0" text="Year" />
-            <TableColumn fx:id="colSongTime" prefWidth="55.0" text="Time" />
-         </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
-      </TableView>
-      <VBox alignment="CENTER" layoutX="227.0" layoutY="465.0" prefHeight="182.0" prefWidth="453.0">
+      <TextField fx:id="txtSongSearch" layoutX="735.0" layoutY="14.0" prefHeight="25.0" prefWidth="200.0" promptText="Type search filter here" AnchorPane.rightAnchor="36.0" />
+      <HBox layoutX="7.0" layoutY="49.0" prefHeight="441.0" prefWidth="940.0" spacing="20.0" AnchorPane.bottomAnchor="167.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="49.0">
+         <children>
+            <TableView fx:id="tblPlaylist" prefHeight="430.0" prefWidth="248.0" HBox.hgrow="ALWAYS">
+               <columns>
+                  <TableColumn fx:id="colPlaylistName" editable="false" prefWidth="118.0" text="Playlist" />
+                  <TableColumn fx:id="colSongCount" editable="false" prefWidth="40.0" text="Songs" />
+                  <TableColumn fx:id="colPlaylistTime" editable="false" prefWidth="63.0" text="SongTime" />
+               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+            <TableView fx:id="tblSongsInPlaylist" prefHeight="430.0" prefWidth="223.0" HBox.hgrow="ALWAYS">
+               <columns>
+                  <TableColumn fx:id="colTitleInPlaylist" editable="false" prefWidth="117.0" sortable="false" text="Title" />
+                  <TableColumn fx:id="colArtistInPlaylist" editable="false" prefWidth="81.0" sortable="false" text="Artist" />
+               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+            <TableView fx:id="tblSongs" prefHeight="430.0" prefWidth="416.0" HBox.hgrow="ALWAYS">
+               <columns>
+                  <TableColumn fx:id="colName" editable="false" prefWidth="183.0" text="Title" />
+                  <TableColumn fx:id="colArtist" editable="false" prefWidth="119.0" text="Artist" />
+                  <TableColumn fx:id="colYear" editable="false" prefWidth="53.0" text="Year" />
+                  <TableColumn fx:id="colCategory" prefWidth="75.0" text="Category" />
+                  <TableColumn fx:id="colSongTime" prefWidth="55.0" text="Time" />
+               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+         </children>
+      </HBox>
+      <VBox alignment="CENTER" layoutX="227.0" layoutY="465.0" prefHeight="129.0" prefWidth="553.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="227.0" AnchorPane.rightAnchor="268.0">
          <children>
             <Label fx:id="lblPlayingNow" text="Choose a song to play!">
                <padding>
@@ -35,7 +60,7 @@
             </Label>
             <HBox alignment="CENTER" prefHeight="11.0" prefWidth="336.0">
                <children>
-                  <Button fx:id="btnShuffle" mnemonicParsing="false" onAction="#btnShuffleSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css">
+                  <Button fx:id="btnShuffle" mnemonicParsing="false" onAction="#btnShuffleSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
                      <graphic>
                         <ImageView fx:id="btnShuffleIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -44,7 +69,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="btnBackward" mnemonicParsing="false" onAction="#backwardSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css">
+                  <Button fx:id="btnBackward" mnemonicParsing="false" onAction="#backwardSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
                      <graphic>
                         <ImageView fx:id="btnBackwardIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -53,7 +78,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#playSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css">
+                  <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#playSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
                      <graphic>
                         <ImageView fx:id="btnPlayIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -62,7 +87,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="btnForward" mnemonicParsing="false" onAction="#forwardSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css">
+                  <Button fx:id="btnForward" mnemonicParsing="false" onAction="#forwardSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
                      <graphic>
                         <ImageView fx:id="btnForwardIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -71,7 +96,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="btnRepeat" mnemonicParsing="false" onAction="#btnRepeatSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css">
+                  <Button fx:id="btnRepeat" mnemonicParsing="false" onAction="#btnRepeatSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
                      <graphic>
                         <ImageView fx:id="btnRepeatIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -82,45 +107,49 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="30.0" prefWidth="524.0">
+            <HBox alignment="CENTER">
                <children>
                   <Label fx:id="lblCurrentSongProgress" text="00:00:00" />
-                  <Slider fx:id="sliderProgressSong" disable="true" onKeyPressed="#onSlideProgressPressed" onKeyReleased="#onSlideProgressReleased" onMousePressed="#onSlideProgressPressed" onMouseReleased="#onSlideProgressReleased" onTouchPressed="#onSlideProgressPressed" onTouchReleased="#onSlideProgressReleased" prefHeight="14.0" prefWidth="349.0" />
+                  <Slider fx:id="sliderProgressSong" disable="true" onKeyPressed="#onSlideProgressPressed" onKeyReleased="#onSlideProgressReleased" onMousePressed="#onSlideProgressPressed" onMouseReleased="#onSlideProgressReleased" onTouchPressed="#onSlideProgressPressed" onTouchReleased="#onSlideProgressReleased" prefHeight="14.0" prefWidth="349.0" HBox.hgrow="ALWAYS" />
                   <Label fx:id="lblSongDuration" text="00:00:00" />
                </children>
             </HBox>
          </children>
       </VBox>
-      <HBox layoutX="712.0" layoutY="556.0" prefHeight="22.0" prefWidth="200.0">
+      <HBox layoutX="712.0" layoutY="556.0" prefHeight="22.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
          <children>
             <Slider fx:id="sliderProgressVolume" max="1.0" />
             <Label fx:id="lblVolume" text="50%" />
          </children>
       </HBox>
-      <Button layoutX="567.0" layoutY="492.0" mnemonicParsing="false" onAction="#newWindowCreate" text="Create Song" />
-      <Button layoutX="685.0" layoutY="492.0" mnemonicParsing="false" onAction="#newWindowUpdate" text="Update song" />
-      <TableView fx:id="tblPlaylist" layoutX="19.0" layoutY="62.0" prefHeight="430.0" prefWidth="223.0">
-         <columns>
-            <TableColumn fx:id="colPlaylistName" editable="false" prefWidth="118.0" text="Playlist" />
-            <TableColumn fx:id="colSongCount" editable="false" prefWidth="40.0" text="Songs" />
-            <TableColumn fx:id="colPlaylistTime" editable="false" prefWidth="63.0" text="SongTime" />
-         </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
-      </TableView>
-      <TableView fx:id="tblSongsInPlaylist" layoutX="256.0" layoutY="62.0" prefHeight="430.0" prefWidth="223.0">
-         <columns>
-            <TableColumn fx:id="colTitleInPlaylist" editable="false" prefWidth="117.0" sortable="false" text="Title" />
-            <TableColumn fx:id="colArtistInPlaylist" editable="false" prefWidth="81.0" sortable="false" text="Artist" />
-         </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
-      </TableView>
-      <Button fx:id="btnCreatePlaylist" layoutX="19.0" layoutY="499.0" mnemonicParsing="false" onAction="#createUpdatePlaylist" text="Create Playlist" />
-      <Button fx:id="btnDelete" layoutX="806.0" layoutY="492.0" mnemonicParsing="false" onAction="#deleteBtn" text="Delete" />
-      <TextField fx:id="txtSongSearch" layoutX="735.0" layoutY="14.0" prefHeight="25.0" prefWidth="177.0" promptText="Type search filter here" />
-      <Button fx:id="btnUpdatePlaylist" layoutX="131.0" layoutY="499.0" mnemonicParsing="false" onAction="#createUpdatePlaylist" text="Update Playlist" />
+      <HBox alignment="TOP_CENTER" layoutX="629.0" layoutY="488.0" prefHeight="25.0" prefWidth="948.0" AnchorPane.bottomAnchor="130.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
+         <children>
+            <HBox alignment="TOP_CENTER" prefHeight="25.0" prefWidth="0.0" spacing="10.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="btnCreatePlaylist" mnemonicParsing="false" onAction="#createUpdatePlaylist" text="Create Playlist" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="btnUpdatePlaylist" mnemonicParsing="false" onAction="#createUpdatePlaylist" text="Update Playlist" HBox.hgrow="ALWAYS" />
+               </children>
+               <HBox.margin>
+                  <Insets right="-6.0" />
+               </HBox.margin>
+            </HBox>
+            <HBox prefHeight="25.0" prefWidth="275.0" />
+            <HBox alignment="TOP_CENTER" prefHeight="25.0" prefWidth="261.0" spacing="10.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#deleteBtn" text="Delete" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets left="4.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#newWindowUpdate" text="Update song" HBox.hgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" onAction="#newWindowCreate" text="Create Song" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

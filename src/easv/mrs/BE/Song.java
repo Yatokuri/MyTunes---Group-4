@@ -1,18 +1,22 @@
+/**
+ * @author Daniel, Rune, og Thomas
+ **/
 package easv.mrs.BE;
 
 public class Song {
 
-    private String title, artist, songPath;
+    private String title, artist, songPath, songCategory;
     private int year;
     private double songLength;
     private int id;
-       public Song(int id, int year, String title, String artist, String songPath, Double songLength) {
+       public Song(int id, int year, String title, String artist, String songPath, Double songLength, String category) {
         this.id = id;
         this.title = title;
         this.year = year;
         this.artist = artist;
         this.songLength = songLength;
         this.songPath = songPath;
+        this.songCategory = category;
     }
     public double getSongLength() {return songLength;}
 
@@ -33,10 +37,12 @@ public class Song {
     public void setArtist(String artist) { this.artist = artist; }
     public String getSongPath() { return songPath;}
     public void setSongPath(String songPath) { this.songPath = songPath;}
-
     @Override
     public String toString()
     {
         return id + ": " + title + " ("+year+")";
     }
+
+    public String getSongCategory() { return songCategory; }
+    public void setSongCategory(String songCategory){ this.songCategory = songCategory;}
 }

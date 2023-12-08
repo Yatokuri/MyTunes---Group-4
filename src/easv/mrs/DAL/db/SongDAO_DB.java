@@ -1,3 +1,6 @@
+/**
+ * @author Daniel, Rune, og Thomas
+ **/
 package easv.mrs.DAL.db;
 
 // Project imports
@@ -13,7 +16,6 @@ import java.util.List;
 
 public class SongDAO_DB implements ISongDataAccess {
 
-    private ArrayList<Song> allSongs;
     private final MyDatabaseConnector databaseConnector;
 
     public SongDAO_DB() throws IOException {
@@ -25,7 +27,7 @@ public class SongDAO_DB implements ISongDataAccess {
 
     public List<Song> getAllSongs() throws Exception {
 
-        allSongs = new ArrayList<>();
+        ArrayList<Song> allSongs = new ArrayList<>();
 
         try (Connection conn = databaseConnector.getConnection();
              Statement stmt = conn.createStatement())
@@ -43,7 +45,8 @@ public class SongDAO_DB implements ISongDataAccess {
                 int year = rs.getInt("SongYear");
                 String songPath = rs.getString("SongFilepath");
                 double songLength = rs.getDouble("SongLength");
-                Song song = new Song(id, year, title, artist, songPath, songLength);
+                String songCategory = rs.getString("SongCategory");
+                Song song = new Song(id, year, title, artist, songPath, songLength, songCategory);
                 allSongs.add(song);
             }
             return allSongs;
@@ -59,7 +62,7 @@ public class SongDAO_DB implements ISongDataAccess {
     public Song createSong(Song song) throws Exception {
 
         // SQL command
-        String sql = "INSERT INTO dbo.Songs (SongName, SongArtist, SongYear, SongFilepath, songLength) VALUES (?,?,?,?,?);";
+        String sql = "INSERT INTO dbo.Songs (SongName, SongArtist, SongYear, SongFilepath, songLength, songCategory) VALUES (?,?,?,?,?,?);";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
@@ -70,6 +73,7 @@ public class SongDAO_DB implements ISongDataAccess {
             stmt.setInt(3, song.getYear());
             stmt.setString(4, song.getSongPath());
             stmt.setDouble(5,song.getSongLength());
+            stmt.setString(6,song.getSongCategory());
             // Run the specified SQL statement
             stmt.executeUpdate();
 
@@ -82,9 +86,8 @@ public class SongDAO_DB implements ISongDataAccess {
             }
 
             // Create Song object and send up the layers
-            Song createdSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath(), song.getSongLength());
 
-            return createdSong;
+            return new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath(), song.getSongLength(), song.getSongCategory());
         }
 
         catch (SQLException ex)
@@ -98,7 +101,7 @@ public class SongDAO_DB implements ISongDataAccess {
     public void updateSong(Song song) throws Exception {
 
         // SQL command
-        String sql = "UPDATE dbo.Songs SET SongName = ?, SongArtist = ?, SongYear = ?, SongFilepath = ?, SongLength = ? WHERE SongID = ?";
+        String sql = "UPDATE dbo.Songs SET SongName = ?, SongArtist = ?, SongYear = ?, SongFilepath = ?, SongLength = ?, SongCategory = ? WHERE SongID = ?";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))
@@ -109,7 +112,8 @@ public class SongDAO_DB implements ISongDataAccess {
             stmt.setInt(3, song.getYear());
             stmt.setString(4,song.getSongPath());
             stmt.setBigDecimal(5, BigDecimal.valueOf(song.getSongLength()));
-            stmt.setInt(6, song.getId());
+            stmt.setString(6,song.getSongCategory());
+            stmt.setInt(7, song.getId());
 
             // Run the specified SQL statement
             stmt.executeUpdate();

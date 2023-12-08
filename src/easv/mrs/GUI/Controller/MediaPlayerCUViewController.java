@@ -1,6 +1,12 @@
+/**
+ * @author Daniel, Rune, og Thomas
+ **/
 package easv.mrs.GUI.Controller;
 
+import easv.mrs.BE.Category;
 import easv.mrs.BE.Song;
+import easv.mrs.GUI.Model.CategoryModel;
+import easv.mrs.GUI.Model.DisplayErrorModel;
 import easv.mrs.GUI.Model.SongModel;
 import easv.mrs.GUI.Model.ValidateModel;
 import javafx.beans.property.BooleanProperty;
@@ -8,6 +14,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -15,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MediaPlayerCUViewController implements Initializable {
@@ -23,7 +31,7 @@ public class MediaPlayerCUViewController implements Initializable {
     @FXML
     private TextField lblTime;
     @FXML
-    private ComboBox<String> comCategory;
+    private ComboBox<Category> comCategory;
     @FXML
     private TextField txtInputName, txtInputArtist, txtInputYear, txtInputFilepath;
     @FXML
@@ -32,22 +40,18 @@ public class MediaPlayerCUViewController implements Initializable {
     private MediaPlayerViewController mediaPlayerViewController;
     private long currentSongLength;
     private final SongModel songModel;
+    private final DisplayErrorModel displayErrorModel;
+    private final CategoryModel categoryModel;
     private final ValidateModel validateModel = new ValidateModel();
     private final BooleanProperty isNameValid = new SimpleBooleanProperty(true);
     private final BooleanProperty isArtistValid = new SimpleBooleanProperty(true);
     private final BooleanProperty isFilepathValid = new SimpleBooleanProperty(true);
     private final BooleanProperty isYearValid = new SimpleBooleanProperty(true);
-
-    private Song newCreatedSong;
-
+    private static final Image mainIcon = new Image ("Icons/mainIcon.png");
     private static int typeCU = 0;
     private static Song currentSelectedSong = null;
     private static MediaPlayerCUViewController instance;
 
-
-
-
-    public static int getTypeCU() {return typeCU;}
 
     public static void setTypeCU(int typeCU) {MediaPlayerCUViewController.typeCU = typeCU;}
 
@@ -55,6 +59,8 @@ public class MediaPlayerCUViewController implements Initializable {
     public MediaPlayerCUViewController() {
         try {
             songModel = new SongModel();
+            categoryModel = new CategoryModel();
+            displayErrorModel = new DisplayErrorModel();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -67,20 +73,22 @@ public class MediaPlayerCUViewController implements Initializable {
         return instance;
     }
 
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        mediaPlayerViewController = MediaPlayerViewController.getInstance();
+        try {
+            mediaPlayerViewController = MediaPlayerViewController.getInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         currentSelectedSong = mediaPlayerViewController.getCurrentSong();
-
 
         addValidationListener(txtInputName, isNameValid);
         addValidationListener(txtInputArtist, isArtistValid);
         addValidationListener(txtInputFilepath, isFilepathValid);
         addValidationListener(txtInputYear, isYearValid);
-
+        contextSystem();
         //Should be loaded for database?
-        comCategory.getItems().addAll("Pop", "Rock", "Disco");
+        comCategory.getItems().addAll(CategoryModel.getObservableCategories().sorted());
 
         // Add a listener to the filepath input to make sure its valid and update time automatic
         txtInputFilepath.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -101,8 +109,6 @@ public class MediaPlayerCUViewController implements Initializable {
         });
     }
 
-
-
     public void startupSetup() {
         if (typeCU == 1) //1 mean create song
             btnSave.setText("Create");
@@ -115,8 +121,6 @@ public class MediaPlayerCUViewController implements Initializable {
             updateTimeText();
         }
     }
-
-
 
     public void save() {
         // Validate all inputs before saving
@@ -141,10 +145,12 @@ public class MediaPlayerCUViewController implements Initializable {
         String songPath = txtInputFilepath.getText();
         double songTime = currentSongLength;
         int year = Integer.parseInt(txtInputYear.getText());
-        Song song = new Song(-1, year, title, artist, songPath, songTime);
+        String category = String.valueOf(comCategory.getSelectionModel().getSelectedItem());
+
+        Song song = new Song(-1, year, title, artist, songPath, songTime, category);
 
         try {
-            newCreatedSong = songModel.createNewSong(song);
+            Song newCreatedSong = songModel.createNewSong(song);
             mediaPlayerViewController.addSongToSoundMap(newCreatedSong);
             closeWindow();
         } catch (Exception e) {
@@ -158,6 +164,7 @@ public class MediaPlayerCUViewController implements Initializable {
             currentSelectedSong.setYear(Integer.parseInt(txtInputYear.getText()));
             currentSelectedSong.setSongPath(txtInputFilepath.getText());
             currentSelectedSong.setSongLength(currentSongLength);
+            currentSelectedSong.setSongCategory(String.valueOf(comCategory.getSelectionModel().getSelectedItem()));
             try {
                 songModel.updateSong(currentSelectedSong);
                 mediaPlayerViewController.updateSongPathSoundMap(currentSelectedSong);
@@ -170,7 +177,7 @@ public class MediaPlayerCUViewController implements Initializable {
 
     public void closeWindow() throws Exception {
         Stage parent = (Stage) txtInputYear.getScene().getWindow();
-        mediaPlayerViewController.refreshSonglist();
+        mediaPlayerViewController.refreshSongList();
         parent.close();
     }
 
@@ -178,7 +185,7 @@ public class MediaPlayerCUViewController implements Initializable {
         txtInputFilepath.setText(validateModel.btnChoose());  //
         if(!txtInputFilepath.getText().isEmpty())
             updateTimeText();
-        }
+    }
 
     private void updateTimeText() { //We pass the info to ValidateModel class
         MediaPlayer newSong = new MediaPlayer(new Media(new File(txtInputFilepath.getText()).toURI().toString()));
@@ -188,6 +195,67 @@ public class MediaPlayerCUViewController implements Initializable {
             currentSongLength = Long.parseLong(parts[1]);
         });
     }
+
+    private void contextSystem() {
+        ContextMenu contextMenu = new ContextMenu();
+        contextMenu.setStyle("-fx-background-color: purple; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;");
+
+        MenuItem createCategory = new MenuItem("Create Category");
+        MenuItem deleteCategory = new MenuItem("Delete Category");
+
+        contextMenu.getItems().addAll(deleteCategory,createCategory);
+        comCategory.setContextMenu(contextMenu);
+
+        createCategory.setOnAction((event) -> {
+            try {
+                btnMoreCategory();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            contextMenu.hide();
+        });
+
+        deleteCategory.setOnAction((event) -> {
+            try {
+                categoryModel.deleteCatogory(comCategory.getSelectionModel().getSelectedItem());
+                comCategory.getItems().addAll(CategoryModel.getObservableCategories().sorted());
+                contextMenu.hide();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+
+
+    public void btnMoreCategory() throws Exception {
+
+        TextInputDialog dialog = new TextInputDialog("");
+
+        dialog.setTitle("New Category - Not Working");
+        dialog.setHeaderText("What do you want to call your new category");
+
+        // Set the icon for the dialog window
+        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(mainIcon);
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            String inputValue = result.get(); // Get the actual value from Optional
+            if (inputValue.length() > 20)   {
+                displayErrorModel.displayErrorC("Maks 20 character");
+            }
+            else {
+                Category newCategory = new Category(inputValue);
+                categoryModel.createNewCategory(newCategory);
+                comCategory.getItems().add(newCategory);
+            }
+
+        }
+    }
+
+
+
 
 
     private void setBorderStyle(TextField textField, boolean isValid) {

@@ -1,3 +1,6 @@
+/**
+ * @author Daniel, Rune, og Thomas
+ **/
 package easv.mrs.GUI.Model;
 
 import com.microsoft.sqlserver.jdbc.SQLServerException;
@@ -9,7 +12,14 @@ import javafx.stage.Stage;
 public class DisplayErrorModel {
     private static final Image programIcon = new Image ("/Icons/mainIcon.png");
 
+    public void displayErrorC(String t) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        setIcon(alert);
+        alert.setTitle("Something went wrong");
+        alert.setHeaderText(t);
+        alert.showAndWait();
 
+    }
 
 
     public void displayError(Throwable t) {

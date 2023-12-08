@@ -1,3 +1,6 @@
+/**
+ * @author Daniel, Rune, og Thomas
+ **/
 package easv.mrs.DAL.db;
 
 // Project imports
@@ -27,14 +30,16 @@ public class PlaylistSongDAO_DB {
 
         ArrayList<Song> allSongsInPlaylist = new ArrayList<>();
 
-        String sql = "SELECT Songs.SongId, Songs.SongName FROM Songs\n" +
-                    "JOIN PlaylistSongs S1 ON Songs.SongId = S1.SongId\n" +
-                    "WHERE S1.PlayListId =" + playlist.getId() + "\n" +
-                    "ORDER BY S1.playlistorder ASC";
+        String sql = """
+                SELECT Songs.SongId, Songs.SongName FROM Songs
+                JOIN PlaylistSongs S1 ON Songs.SongId = S1.SongId
+                WHERE S1.PlayListId = ?
+                ORDER BY S1.playlistorder ASC""";
         try (Connection conn = databaseConnector.getConnection();
-             Statement stmt = conn.createStatement())
+             PreparedStatement stmt = conn.prepareStatement(sql))
         {
-            ResultSet rs = stmt.executeQuery(sql);
+            stmt.setInt(1,playlist.getId());
+            ResultSet rs = stmt.executeQuery();
 
             // Loop through rows from the database result set
             while (rs.next()) {
@@ -60,20 +65,16 @@ public class PlaylistSongDAO_DB {
 
     public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
 
-        System.out.println("Jeg vil tilføje " + song.getTitle() + "til "  + playlist.getPlaylistName());
-
         // SQL command
-        String sql = "INSERT INTO dbo.PlaylistSongs (SongId, PlaylistId, PlayListOrder) VALUES (?,?,?);";
-
-        String sql2 = "SELECT MAX(PlayListOrder) AS highest_value FROM dbo.PlaylistSongs  WHERE PlayListId = "+ playlist.getId() + ";";
-
-        System.out.println(sql2);
+        String sql = "INSERT INTO dbo.PlaylistSongs (SongId, PlaylistId, PlayListOrder) VALUES (?,?,?)";
+        String sql2 = "SELECT MAX(PlayListOrder) AS highest_value FROM dbo.PlaylistSongs  WHERE PlayListId = ?";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-             Statement stmt2 = conn.createStatement())
+             PreparedStatement stmt2 = conn.prepareStatement(sql2))
         {
-            ResultSet rs2 = stmt2.executeQuery(sql2);
+            stmt2.setInt(1,playlist.getId());
+            ResultSet rs2 = stmt2.executeQuery();
 
             int nextIdNumber = 1;
             while (rs2.next()) {
@@ -100,15 +101,20 @@ public class PlaylistSongDAO_DB {
     public void updateSongInPlaylist(Song song, Song oldSong, Playlist playlist) throws Exception {
         // SQL command
         String sql = "UPDATE dbo.PlaylistSongs SET PlayListOrder = ? WHERE SongId = ? AND PlaylistId = ?";
-        String sqlOldSong = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = "+ oldSong.getId() + " AND PlaylistId = "+ playlist.getId();
-        String sqlNewSong = "SELECT PlaylistOrder FROM dbo.PlaylistSongs WHERE SongId = "+ song.getId() + "AND PlaylistId = "+ playlist.getId();
+        String sqlOldSong = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = ? AND PlaylistId = ?";
+        String sqlNewSong = "SELECT PlaylistOrder FROM dbo.PlaylistSongs WHERE SongId = ? AND PlaylistId = ?";
         try (Connection conn = databaseConnector.getConnection();
-             Statement stmt2 = conn.createStatement();
-             Statement stmt3 = conn.createStatement();
+             PreparedStatement oldSongPlayOrder = conn.prepareStatement(sqlOldSong);
+             PreparedStatement newSongPlayOrder = conn.prepareStatement(sqlNewSong);
              PreparedStatement stmt = conn.prepareStatement(sql))
         {
-            ResultSet rs = stmt2.executeQuery(sqlOldSong);
-            ResultSet rs2 = stmt3.executeQuery(sqlNewSong);
+            oldSongPlayOrder.setInt(1,oldSong.getId());
+            oldSongPlayOrder.setInt(2,playlist.getId());
+            newSongPlayOrder.setInt(1,song.getId());
+            newSongPlayOrder.setInt(2,playlist.getId());
+
+            ResultSet rs = oldSongPlayOrder.executeQuery();
+            ResultSet rs2 = newSongPlayOrder.executeQuery();
             int playOrderOld = 1;
             int playOrderNewSong = 1;
             while (rs.next()) {
@@ -158,7 +164,7 @@ public class PlaylistSongDAO_DB {
 
         // SQL command
         String sqlSongsPlayOrder = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = ? AND PlaylistId = ?";
-        String sqlDeleteSong = "DELETE FROM dbo.PlaylistSongs WHERE SongID = ? AND PlaylistId = ?;";
+        String sqlDeleteSong = "DELETE FROM dbo.PlaylistSongs WHERE SongID = ? AND PlaylistId = ?";
 
         try (Connection conn = databaseConnector.getConnection();
             PreparedStatement stmtDeleteSong = conn.prepareStatement(sqlDeleteSong);
@@ -197,7 +203,7 @@ public class PlaylistSongDAO_DB {
 
     public void deleteAllSongsFromPlaylist(Playlist playlist) throws Exception {
         // SQL command
-        String sql = "DELETE FROM dbo.PlaylistSongs WHERE PlaylistId = ?;";
+        String sql = "DELETE FROM dbo.PlaylistSongs WHERE PlaylistId = ?";
 
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql))

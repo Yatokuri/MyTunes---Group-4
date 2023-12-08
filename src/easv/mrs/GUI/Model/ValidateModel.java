@@ -1,3 +1,6 @@
+/**
+ * @author Daniel, Rune, og Thomas
+ **/
 package easv.mrs.GUI.Model;
 
 import easv.mrs.BE.Song;
@@ -16,9 +19,7 @@ public class ValidateModel {
     private SongModel songModel;
     private String setupUpdateOriginalName = "";
     private boolean setupUpdateOriginal = true;
-
     private static final String[]validFiles  = {"wav" , "mp3"};
-
 
     public ValidateModel()  {
         try {
@@ -28,21 +29,19 @@ public class ValidateModel {
             e.printStackTrace();
         }
     }
-
-    //Method to check valid to CU is correct
+    //Method to check valid data to CU is correct
     public boolean validateInput(TextField textField, String value) { //Valid input
-
         switch (textField.getId()) {
             case "txtInputName":
-                return !value.isEmpty() && value.length() <= 150;
+                return !value.isEmpty() && value.length() <= 150; //The same number we have set in the nvarchar in SQL
             case "txtInputArtist":
-                return !value.isEmpty() && value.length() <= 100;
+                return !value.isEmpty() && value.length() <= 100; // -||-
             case "txtInputFilepath":
                 if (setupUpdateOriginal) {
                     setupUpdateOriginalName = value;
                     setupUpdateOriginal = false;
                 }
-                if (setupUpdateOriginalName.equals(value))  { //When updating a song the filepath can be the same
+                if (setupUpdateOriginalName.equals(value))  { //When updating a song the filepath can be the same as before of cause
                     return isValidMediaPath(value);
                 }
                 for  (Song s : songModel.getObservableSongs()) { //We don't want people to have the same song path twice
@@ -53,9 +52,9 @@ public class ValidateModel {
                 return isValidMediaPath(value);
             case "txtInputYear":
                 try {
-                    int year = Integer.parseInt(value.replaceFirst("0",""));
+                    int year = Integer.parseInt(value);
                     int currentYear = Year.now().getValue();
-                    return year >= 1 && year <= 2025;
+                    return year >= 1 && year <= currentYear;
                 } catch (NumberFormatException e) {
                     return false; // Not a valid integer
                 }
@@ -81,7 +80,7 @@ public class ValidateModel {
 
     //Method to check if a file is valid
     public boolean isValidMediaPath(String path) {
-        List<String> supportedExtensions = Arrays.asList(validFiles); //Have a place where all valid format is stored
+        List<String> supportedExtensions = Arrays.asList(validFiles);
         try {
             Path filePath = FileSystems.getDefault().getPath(path);
             String fileName = filePath.getFileName().toString();

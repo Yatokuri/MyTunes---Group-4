@@ -1,3 +1,6 @@
+/**
+ * @author Daniel, Rune, og Thomas
+ **/
 package easv.mrs.BLL;
 
 import easv.mrs.BE.Playlist;
@@ -14,12 +17,13 @@ public class PlaylistManager {
     public PlaylistManager() throws IOException {
         playlistDAO = new PlaylistDAO_DB();
     }
-    public List<Playlist> getAllPlaylist() throws Exception {
-        return playlistDAO.getAllPlaylists();
-    }
 
     public Playlist createNewPlaylist(Playlist newPlaylist) throws Exception {
         return playlistDAO.createPlaylist(newPlaylist);
+    }
+
+    public List<Playlist> getAllPlaylist() throws Exception {
+        return playlistDAO.getAllPlaylists();
     }
 
     public void updatePlaylist(Playlist selectedPlaylist) throws Exception {

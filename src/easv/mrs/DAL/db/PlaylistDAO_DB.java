@@ -1,10 +1,13 @@
+/**
+ * @author Daniel, Rune, og Thomas
+ **/
 package easv.mrs.DAL.db;
 
 // Project imports
-
 import easv.mrs.BE.Playlist;
 import easv.mrs.DAL.IPlaylistDataAccess;
 
+//Java imports
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
