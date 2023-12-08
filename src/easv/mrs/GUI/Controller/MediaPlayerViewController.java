@@ -24,6 +24,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -148,9 +149,14 @@ public class MediaPlayerViewController implements Initializable {
 
         for (Song s : songModel.getObservableSongs()) {
             if (s.getSongPath() != null) {
-                soundMap.put(s.getId(), new MediaPlayer(new Media(new File(s.getSongPath()).toURI().toString())));
+                try {
+                    soundMap.put(s.getId(), new MediaPlayer(new Media(new File(s.getSongPath()).toURI().toString())));
+                } catch (MediaException e) {
+                    soundMap.put(s.getId(), new MediaPlayer(new Media(new File("resources/Sounds/missingFileErrorSound.mp3").toURI().toString())));
+                }
             }
         }
+
         // Add tableview functionality
         playSongFromTableViewPlaylist();
         clearSelectionForPlaylistSelect();
@@ -184,9 +190,9 @@ public class MediaPlayerViewController implements Initializable {
     private void contextSystem() {
         ContextMenu contextMenu = new ContextMenu();
         ContextMenu contextMenuPlaylist = new ContextMenu();
-        contextMenu.setStyle("-fx-background-color: lightgreen; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;");
-        contextMenuPlaylist.setStyle("-fx-background-color: aqua; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;");
-        contextMenuSongs.setStyle("-fx-background-color: pink; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;");
+        contextMenu.setStyle("-fx-background-color: lightgreen; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 6 6 6 6, 5 5 5 5, 4 4 4 4;");
+        contextMenuPlaylist.setStyle("-fx-background-color: aqua; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 6 6 6 6, 5 5 5 5, 4 4 4 4;");
+        contextMenuSongs.setStyle("-fx-background-color: pink; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 6 6 6 6, 5 5 5 5, 4 4 4 4;");
 
         MenuItem createSong = new MenuItem("Create Song");
         MenuItem updateSong = new MenuItem("Update Song");

@@ -15,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -87,8 +88,15 @@ public class MediaPlayerCUViewController implements Initializable {
         addValidationListener(txtInputFilepath, isFilepathValid);
         addValidationListener(txtInputYear, isYearValid);
         contextSystem();
-        //Should be loaded for database?
         comCategory.getItems().addAll(CategoryModel.getObservableCategories().sorted());
+
+
+        comCategory.setOnMouseClicked(event -> { // Consume the event to prevent the ComboBox from opening
+            if (event.getButton() == MouseButton.SECONDARY) {
+                event.consume();
+                comCategory.hide();
+            }
+        });
 
         // Add a listener to the filepath input to make sure its valid and update time automatic
         txtInputFilepath.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -198,7 +206,7 @@ public class MediaPlayerCUViewController implements Initializable {
 
     private void contextSystem() {
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.setStyle("-fx-background-color: purple; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;");
+        contextMenu.setStyle("-fx-background-color: yellow; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 6 6 6 6, 5 5 5 5, 4 4 4 4;");
 
         MenuItem createCategory = new MenuItem("Create Category");
         MenuItem deleteCategory = new MenuItem("Delete Category");
@@ -225,7 +233,6 @@ public class MediaPlayerCUViewController implements Initializable {
             }
         });
     }
-
 
 
     public void btnMoreCategory() throws Exception {
