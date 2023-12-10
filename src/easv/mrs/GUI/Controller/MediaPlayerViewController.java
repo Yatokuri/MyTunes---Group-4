@@ -68,10 +68,6 @@ public class MediaPlayerViewController implements Initializable {
     private int shuffleMode = 0; //Default shuffle
     private Playlist currentPlaylist, currentPlaylistPlaying; //The current playing selected and playing from
     private int currentIndex = 0;
-    private int currentSongPlayingRow = -1;
-    private TableView<Song>  currentSongPlayingTable = null;
-    private int tempSongPlayingRow = -1;
-    private TableView<Song> tempSongPlayingTable = null;
     private Song currentSong, currentSongPlaying; //The current Song selected and playing
     private final SongModel songModel;
     private final PlaylistModel playlistModel;
@@ -90,8 +86,7 @@ public class MediaPlayerViewController implements Initializable {
     private static final Image playIcon = new Image("Icons/play.png");
     private static final Image pauseIcon = new Image("Icons/pause.png");
     private static final Image mainIcon = new Image("Icons/mainIcon.png");
-    static String nonPlayingSongStyle = "-fx-background-color: #ec0745;"; // Green color
-    static String playingSongStyle = "-fx-background-color: #00FF00;"; // Green color
+
 
 
     public Song getCurrentSong() {
@@ -212,8 +207,6 @@ public class MediaPlayerViewController implements Initializable {
             row.setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     currentSong = row.getItem();
-                    //tempSongPlayingRow = row.getIndex();
-                    //tempSongPlayingTable = row.getTableView();
                 }
                 else if (event.getButton() == MouseButton.SECONDARY) {
                     contextMenu.getItems().clear();
@@ -286,7 +279,7 @@ public class MediaPlayerViewController implements Initializable {
 
         updatePlaylist.setOnAction((event) -> {
             try {
-                btnCreatePlaylist.fireEvent(event);
+                btnUpdatePlaylist.fireEvent(event);
                 contextMenu.hide();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -335,7 +328,8 @@ public class MediaPlayerViewController implements Initializable {
                 tblSongsInPlaylist.getSelectionModel().clearSelection();
             if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) { // Check for double-click
                 currentSongList = songModel.getObservableSongs();
-                currentIndex = currentSongList.indexOf(currentSong);
+                currentIndex = currentSongList.indexOf(tblSongs.getSelectionModel().getSelectedItem());
+                currentPlaylistPlaying = null;
                 Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
                 if (selectedSong != null && currentMusic != soundMap.get(selectedSong.getId())) {
                     sliderProgressSong.setValue(0);
@@ -403,24 +397,43 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
-    public static <T> void changeRowColor(TableView<T> tableView, int rowNumber, String songStyle) {
 
-        System.out.println("jeg er" + tableView + "jeg bor i" + rowNumber);
-
+    // This method changes the color of the row where the playing song is located
+    public static <T> void changeRowColor(TableView<T> tableView, int rowNumber) {
         tableView.setRowFactory(tv -> new TableRow<T>() {
             @Override
             protected void updateItem(T item, boolean empty) {
                 super.updateItem(item, empty);
 
-                if (getIndex() == rowNumber) {
-                    setStyle(songStyle);
-                } else {
-                    setStyle("");
-                }
+                // Reset the style for all rows
+                setStyle("");
+
+                // Set the style for the row where the playing song is located
+                if (!empty && getIndex() == rowNumber) {
+                    setStyle("-fx-background-color: rgb(42,194,42); -fx-border-color: #1aa115; -fx-text-fill: #02522b");
+                 }
             }
         });
         tableView.refresh();
     }
+
+
+
+   private void handlePlayingSongColor()    {
+      if (currentPlaylistPlaying == null && currentSongPlaying != null) {
+           changeRowColor(tblSongs, currentIndex);
+           changeRowColor(tblSongsInPlaylist, -1);
+       }
+
+       else if (currentPlaylist == currentPlaylistPlaying){
+           changeRowColor(tblSongs, -1);
+           changeRowColor(tblSongsInPlaylist, currentIndex);
+       }
+       else {
+           changeRowColor(tblSongsInPlaylist, -1);
+       }
+   }
+
 
     private void handleNewSong(MediaPlayer newSong, Song selectedSong) {
         if (currentMusic != null) {
@@ -434,16 +447,7 @@ public class MediaPlayerViewController implements Initializable {
         sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
         lblPlayingNow.setText("Now playing: " + selectedSong.getTitle() + " - " + selectedSong.getArtist());
         currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
-
-        System.out.println(tempSongPlayingRow);
-
-        if (currentSongPlayingTable != null)
-            changeRowColor(currentSongPlayingTable, currentSongPlayingRow, nonPlayingSongStyle);
-        currentSongPlayingRow = tempSongPlayingRow;
-        currentSongPlayingTable = tempSongPlayingTable;
-        if (tempSongPlayingTable != null)
-            changeRowColor(tempSongPlayingTable, tempSongPlayingRow, playingSongStyle);
-
+        handlePlayingSongColor();
 
         // Play or pause based on the isMusicPaused flag
         if (isMusicPaused) {
@@ -471,7 +475,6 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     private void handleSongSwitch(int newIndex) {
-
         if (shuffleMode == 1) { //If shuffle is enable shuffle
             shuffleMode();
             return;
@@ -479,16 +482,16 @@ public class MediaPlayerViewController implements Initializable {
         }
         if (repeatMode == 0 && currentSongList !=  songModel.getObservableSongs()) {//If repeat is disable do it
             if (repeatModeDisable())  {
-            return;
+                System.out.println("Repeat mode is disabled.");
+                return;
             }
         }
         if (!currentSongList.isEmpty()) {
             currentIndex = newIndex % currentSongList.size();
-            Song switchedSong  = currentSongList.get(currentIndex);
-            PlaySong(switchedSong );
+            Song switchedSong = currentSongList.get(currentIndex);
+            PlaySong(switchedSong);
         }
     }
-
 
 
 
@@ -501,38 +504,40 @@ public class MediaPlayerViewController implements Initializable {
         if (shuffleMode == 1) {
             shuffleMode();
         }
-        if (repeatMode == 0 && currentSongList !=  songModel.getObservableSongs()) {//Repeat disable
-            repeatModeDisable();
+
+            currentMusic = null;
+            sliderProgressSong.setValue(0);
+            lblPlayingNow.setText("No song playing");
+            sliderProgressSong.setDisable(true);
+            updateSongProgressTimer();
+            btnPlayIcon.setImage(playIcon);
+
+
+            handleSongSwitch(currentIndex + 1); //Next song exactly same if user press the next song button
         }
 
-        currentMusic = null;
-        sliderProgressSong.setValue(0);
-        lblPlayingNow.setText("No song playing");
-        sliderProgressSong.setDisable(true);
-        updateSongProgressTimer();
-        btnPlayIcon.setImage(playIcon);
-
-        handleSongSwitch(currentIndex + 1); //Next song
-    }
 //********************************REPEAT*SHUFFLE*FUNCTION**************************************************
     public boolean repeatModeDisable(){
-        Playlist nextPlaylistToGoTo = null;
-        if (previousPress && currentIndex == 0) {
-            Optional<Playlist> optionalNextPlaylist = PlaylistModel.getObservablePlaylists().stream()
-                    .filter(p -> p.getId() < currentPlaylistPlaying.getId())
-                    .max(Comparator.comparing(Playlist::getId));
+        if (currentPlaylistPlaying != null) {
 
-            nextPlaylistToGoTo = optionalNextPlaylist.orElse(PlaylistModel.getObservablePlaylists().getLast());
-        }
+            Playlist nextPlaylistToGoTo = null;
+            if (previousPress && currentIndex == 0) {
+                Optional<Playlist> optionalNextPlaylist = PlaylistModel.getObservablePlaylists().stream()
+                        .filter(p -> p.getId() < currentPlaylistPlaying.getId())
+                        //  .filter(p -> p.getSongCount() != 0) // Check if the playlist has songs
+                        .max(Comparator.comparing(Playlist::getId));
 
-        else if (currentSongList.indexOf(currentSongPlaying)+1 == currentSongList.size() && !previousPress) {
-            Optional<Playlist> optionalNextPlaylist = PlaylistModel.getObservablePlaylists().stream()
-                    .filter(p -> p.getId() > currentPlaylistPlaying.getId())
-                    .min(Comparator.comparing(Playlist::getId));
+                nextPlaylistToGoTo = optionalNextPlaylist.orElse(PlaylistModel.getObservablePlaylists().getLast());
+            } else if (currentSongList.indexOf(currentSongPlaying) + 1 == currentSongList.size() && !previousPress) {
+                Optional<Playlist> optionalNextPlaylist = PlaylistModel.getObservablePlaylists().stream()
+                        .filter(p -> p.getId() > currentPlaylistPlaying.getId())
+                        // .filter(p -> p.getSongCount() != 0) // Check if the playlist has songs
+                        .min(Comparator.comparing(Playlist::getId));
 
-            nextPlaylistToGoTo = optionalNextPlaylist.orElse(PlaylistModel.getObservablePlaylists().getFirst());
-            PlaylistModel.getObservablePlaylists().stream().close();
-        }
+                nextPlaylistToGoTo = optionalNextPlaylist.orElse(PlaylistModel.getObservablePlaylists().getFirst());
+                PlaylistModel.getObservablePlaylists().stream().close();
+            }
+
             if (nextPlaylistToGoTo != null) {
                 try {
                     songPlaylistModel.playlistSongs(nextPlaylistToGoTo);
@@ -540,15 +545,26 @@ public class MediaPlayerViewController implements Initializable {
                     throw new RuntimeException(e);
                 }
                 currentPlaylistPlaying = nextPlaylistToGoTo;
+                currentPlaylist = nextPlaylistToGoTo;
                 currentSongList = songPlaylistModel.getObservablePlaylistsSong();
                 currentIndex = 0;
-                PlaySong(currentSongList.getFirst());
-                return true;
+
+                if (!currentSongList.isEmpty()) {
+                    PlaySong(currentSongList.getFirst());
+                    return true;
+                }
+                return repeatModeDisable();
             }
+            return false;
+        }
         return false;
     }
 
     public void shuffleMode(){
+
+        //If repeat is disabled it should also jump throw playlist 
+
+
         currentIndex = getRandomSong();
         currentIndex = (currentIndex) % currentSongList.size();
         Song randomSong = currentSongList.get(currentIndex);
@@ -652,6 +668,7 @@ public class MediaPlayerViewController implements Initializable {
         tblSongs.refresh();
         tblPlaylist.refresh();
         tblSongsInPlaylist.refresh();
+        handlePlayingSongColor();
     }
 
     public void refreshSongList() throws Exception {
@@ -829,9 +846,6 @@ public class MediaPlayerViewController implements Initializable {
         tblSongsInPlaylist.setRowFactory(tv -> {
             TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                //tempSongPlayingRow = row.getIndex();
-                //tempSongPlayingTable = row.getTableView();
-
                 if (event.getButton() == MouseButton.SECONDARY) {
                     contextMenuSongs.getItems().clear();
                     currentSong = row.getItem();

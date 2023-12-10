@@ -39,11 +39,11 @@
             </TableView>
             <TableView fx:id="tblSongs" prefHeight="430.0" prefWidth="416.0" HBox.hgrow="ALWAYS">
                <columns>
-                  <TableColumn fx:id="colName" editable="false" prefWidth="183.0" text="Title" />
-                  <TableColumn fx:id="colArtist" editable="false" prefWidth="119.0" text="Artist" />
-                  <TableColumn fx:id="colYear" editable="false" prefWidth="53.0" text="Year" />
-                  <TableColumn fx:id="colCategory" prefWidth="75.0" text="Category" />
-                  <TableColumn fx:id="colSongTime" prefWidth="55.0" text="Time" />
+                  <TableColumn fx:id="colName" editable="false" prefWidth="149.0" text="Title" />
+                  <TableColumn fx:id="colArtist" editable="false" prefWidth="110.0" text="Artist" />
+                  <TableColumn fx:id="colYear" editable="false" prefWidth="39.0" text="Year" />
+                  <TableColumn fx:id="colCategory" prefWidth="64.0" text="Category" />
+                  <TableColumn fx:id="colSongTime" prefWidth="59.0" text="Time" />
                </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
