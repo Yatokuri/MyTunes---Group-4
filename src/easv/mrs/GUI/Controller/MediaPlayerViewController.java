@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+
 public class MediaPlayerViewController implements Initializable {
 
     @FXML
@@ -560,11 +561,28 @@ public class MediaPlayerViewController implements Initializable {
         return false;
     }
 
-    public void shuffleMode(){
+    public void shuffleMode() {
+        if (repeatMode == 0) { // Get a list of playlists with songs inside itself
+            List<Playlist> nonEmptyPlaylists = PlaylistModel.getObservablePlaylists().stream()
+                    .filter(playlist -> playlist.getSongCount() > 1)
+                    .toList();
 
-        //If repeat is disabled it should also jump throw playlist 
+            if (!nonEmptyPlaylists.isEmpty()) { //Select a random of them
+                Random random = new Random();
+                currentPlaylist = nonEmptyPlaylists.get(random.nextInt(nonEmptyPlaylists.size()));
+                currentPlaylistPlaying = currentPlaylist;
+                try {
+                    songPlaylistModel.playlistSongs(currentPlaylist);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                System.out.println("All your playlist is empty today");
+                return;
+            }
+        }
 
-
+        //Select random song from the current song list and play it
         currentIndex = getRandomSong();
         currentIndex = (currentIndex) % currentSongList.size();
         Song randomSong = currentSongList.get(currentIndex);
@@ -577,9 +595,6 @@ public class MediaPlayerViewController implements Initializable {
         int range = max - min;
         return (int)(Math.random() * range) + min;
     }
-
-
-
     public void onSlideProgressPressed() {
         if (currentMusic != null) {
             isUserChangingSlider = true;

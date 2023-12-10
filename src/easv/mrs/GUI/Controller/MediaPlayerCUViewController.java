@@ -189,7 +189,7 @@ public class MediaPlayerCUViewController implements Initializable {
         parent.close();
     }
 
-    public void btnChoose() { //We pass the info to ValidateModel class
+    public void btnChooseFile() { //We pass the info to ValidateModel class
         txtInputFilepath.setText(validateModel.btnChoose());  //
         if(!txtInputFilepath.getText().isEmpty())
             updateTimeText();
