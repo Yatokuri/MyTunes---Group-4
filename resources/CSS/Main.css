@@ -1,9 +1,9 @@
 
 
-
+/*https://stackoverflow.com/questions/23490320/gap-between-border-and-image-when-border-radius-is-added*/
 
 #anchorPane {
-    -fx-background-color: linear-gradient(to bottom, #6f787e, #60727c); /* Adjust colors as needed */
+    -fx-background-color: linear-gradient(to bottom, #6f787e, #6f787e, #60727c); /* Adjust colors as needed */
 }
 .button {
     -fx-background-color: linear-gradient(to bottom, #0a7272, #10a296); /* Adjust colors as needed */
@@ -11,6 +11,7 @@
     -fx-text-fill: white;
     -fx-border-radius: 15px 15px 15px 15px;
     -fx-background-radius: 15px 15px 15px 15px;
+    -fx-border-insets: -1;
 }
 
 .button:hover{
@@ -46,7 +47,7 @@
     -fx-text-fill: white;
 }
 .table-view .column-header-background{
-    -fx-background-color: linear-gradient(to bottom, #164869, #123c57);
+    -fx-background-color: linear-gradient(to bottom, #225b81, #1b5173);
     -fx-background-radius: 7px 7px 0px 0px;
 }
 .table-view .column-header {
@@ -77,7 +78,8 @@
 }
 
 .table-row-cell:even{ /*Row number 0,2,....*/
-    -fx-background-color: linear-gradient(to bottom, #6f787e, #60727c); /*Same color as #anchorPane*/
+    -fx-background-color: linear-gradient(to bottom,  #6f787e, #6f787e, #60727c); /*Same color as #anchorPane*/
+    /*-fx-background-color: none*/
     -fx-border-color: transparent;
     -fx-background-insets: 0, 0 0 1 0;
     -fx-padding: 0.0em;

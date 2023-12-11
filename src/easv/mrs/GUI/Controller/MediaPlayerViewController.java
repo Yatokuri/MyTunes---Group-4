@@ -188,41 +188,31 @@ public class MediaPlayerViewController implements Initializable {
     MenuItem createPlaylist = new MenuItem("Create Playlist");
     MenuItem updatePlaylist = new MenuItem("Update Playlist");
     MenuItem deleteAllSongs = new MenuItem("Delete All Songs");
+    Menu playlistSubMenu = new Menu("Add to Playlist");
+    private Playlist selectedPlaylistFromContextMenu;
 
 
+    private void contextSystemSubMenuAddSongs()   {
+        playlistSubMenu.getItems().clear();
+        PlaylistModel.getObservablePlaylists().forEach(playlist -> {
+            MenuItem playlistItem = new MenuItem(playlist.getPlaylistName());
+            playlistItem.setUserData(playlist); // Store the playlist as user data
+            playlistSubMenu.getItems().add(playlistItem);
+        });
+    }
 
     private void contextSystem() {
-        ComboBox<Playlist> comboBox = new ComboBox<>();
-
         MenuItem createSong = new MenuItem("Create Song");
         MenuItem updateSong = new MenuItem("Update Song");
-
-        comboBox.getItems().addAll(PlaylistModel.getObservablePlaylists());
-
-
-        CustomMenuItem customMenuItem = new CustomMenuItem();
-
-        MenuItem comboMenuItem = new MenuItem("Add to playlist <--");
-        customMenuItem.setContent(comboBox);
-        String comboBoxStyle = "-fx-background-color: red";
-        customMenuItem.setStyle(comboBoxStyle);
-
-
-        Button btnShowContextMenu = new Button("Show ContextMenu");
-
 
 
         contextMenuPlaylist.getItems().addAll(createPlaylist, updatePlaylist, delete, deleteAllSongs);
         contextMenuSongs.getItems().addAll(createSong, updateSong, delete);
         contextMenuSongsInPlaylist.getItems().addAll();
 
-
-
         tblSongs.setContextMenu(contextMenuSongs);
         tblSongsInPlaylist.setContextMenu(contextMenuSongsInPlaylist);
         tblPlaylist.setContextMenu(contextMenuPlaylist);
-
-
 
         tblSongs.setRowFactory(tv -> {
             TableRow<Song> row = new TableRow<>();
@@ -236,7 +226,8 @@ public class MediaPlayerViewController implements Initializable {
                     if (row.getIndex() >= tblSongs.getItems().size()) {
                         contextMenuSongs.getItems().addAll(createSong);
                     } else {
-                        contextMenuSongs.getItems().addAll(createSong, updateSong, delete, customMenuItem );
+                        contextSystemSubMenuAddSongs(); //We update the playlist list
+                        contextMenuSongs.getItems().addAll(createSong, updateSong, delete, new SeparatorMenuItem(), playlistSubMenu );
                     }
                 }
             });
@@ -244,11 +235,6 @@ public class MediaPlayerViewController implements Initializable {
         });
 
 
-        customMenuItem.setOnAction((event) -> {
-            // newWindowCreate();
-            comboBox.show();
-            contextMenuSongs.hide();
-        });
 
         createSong.setOnAction((event) -> {
             try {
@@ -277,13 +263,22 @@ public class MediaPlayerViewController implements Initializable {
             }
         });
 
-        comboMenuItem.setOnAction((event) -> {
+
+
+        playlistSubMenu.setOnAction(event -> {
             try {
-                if (songPlaylistModel.addSongToPlaylist(currentSong, comboBox.getSelectionModel().getSelectedItem())) { //We first need to make sure it not already in the playlist
+
+                if (event.getSource() instanceof MenuItem menuItem) {
+                    MenuItem selectedItem = (MenuItem) event.getTarget();
+                    Playlist selectedPlaylist = (Playlist) selectedItem.getUserData();
+                    currentPlaylist = getPlaylistById(selectedPlaylist.getId());
+                }
+
+
+                if (songPlaylistModel.addSongToPlaylist(currentSong, currentPlaylist)) { //We first need to make sure it not already in the playlist
                     tblPlaylist.getSelectionModel().select(currentPlaylist);
                     songPlaylistModel.playlistSongs(tblPlaylist.getSelectionModel().getSelectedItem());
                     refreshEverything();
-                    comboBox.getSelectionModel().clearSelection();
                     contextMenuSongs.hide();
                 }
                 else {
@@ -687,6 +682,15 @@ public class MediaPlayerViewController implements Initializable {
         return null;
     }
 
+    private Playlist getPlaylistById(int plId) { //This is not right layer!
+        for (Playlist pl : PlaylistModel.getObservablePlaylists()) {
+            if (pl.getId() == plId) {
+                return pl;
+            }
+        }
+        return null;
+    }
+
     public void refreshEverything() throws Exception {
         tblSongs.getItems().clear();
         tblSongs.setItems(songModel.updateSongList());
@@ -964,12 +968,12 @@ public class MediaPlayerViewController implements Initializable {
             TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    contextMenuSongs.getItems().clear();
+                    contextMenuSongsInPlaylist.getItems().clear();
                     currentSong = row.getItem();
                     if (row.getIndex() >= tblSongsInPlaylist.getItems().size()) {
-                        contextMenuSongs.getItems().clear();
+                        contextMenuSongsInPlaylist.getItems().clear();
                     } else {
-                        contextMenuSongs.getItems().addAll(delete);
+                        contextMenuSongsInPlaylist.getItems().addAll(delete);
                     }
                 }
             });

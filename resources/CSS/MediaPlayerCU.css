@@ -8,6 +8,7 @@
     -fx-text-fill: white;
     -fx-border-radius: 15px 15px 15px 15px;
     -fx-background-radius: 15px 15px 15px 15px;
+    -fx-border-insets: -1;
 }
 .button:hover{
     -fx-background-color: linear-gradient(to bottom, #00e2e2, #0259ea); /* Adjust colors as needed */
