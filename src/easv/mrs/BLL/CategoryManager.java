@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class CategoryManager {
-    private Category_DB categoryDAO;
+    private final Category_DB categoryDAO;
     public CategoryManager() throws IOException {
         categoryDAO = new Category_DB();
     }

@@ -4,7 +4,6 @@
 package easv.mrs.DAL.db;
 
 import easv.mrs.BE.Category;
-import easv.mrs.BE.Playlist;
 
 import java.io.IOException;
 import java.sql.*;

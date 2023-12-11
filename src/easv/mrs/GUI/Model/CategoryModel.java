@@ -1,9 +1,7 @@
 package easv.mrs.GUI.Model;
 
 import easv.mrs.BE.Category;
-import easv.mrs.BE.Playlist;
 import easv.mrs.BLL.CategoryManager;
-import easv.mrs.BLL.PlaylistManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -26,7 +24,7 @@ public class CategoryModel {
 
 
 
-    public void deleteCatogory(Category selectedCategory) throws Exception {
+    public void deleteCategory(Category selectedCategory) throws Exception {
         // delete song in DAL layer (through the layers)
         categoryManager.deleteCategory(selectedCategory);
 

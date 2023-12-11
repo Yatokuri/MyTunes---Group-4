@@ -29,4 +29,11 @@ public class Playlist {
     public String getPlaylistName() { return playlistName; }
     public void setPlaylistName(String playlistName) { this.playlistName = playlistName; }
     public int getSongCount() {return songCount;}
-    public void setSongCount(int songCount) {this.songCount = songCount;}}
+    public void setSongCount(int songCount) {this.songCount = songCount;}
+
+    @Override
+    public String toString() {
+        return playlistName;
+    }
+}
+

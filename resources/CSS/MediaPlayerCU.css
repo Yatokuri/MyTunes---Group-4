@@ -1,0 +1,45 @@
+
+#anchorPane {
+    -fx-background-color: linear-gradient(to bottom, #6f787e, #60727c); /* Adjust colors as needed */
+}
+.buttonCU {
+    -fx-background-color: linear-gradient(to bottom, #1cb7b7, #095ce7); /* Adjust colors as needed */
+    -fx-border-color: #001618;
+    -fx-text-fill: white;
+    -fx-border-radius: 15px 15px 15px 15px;
+    -fx-background-radius: 15px 15px 15px 15px;
+}
+.button:hover{
+    -fx-background-color: linear-gradient(to bottom, #00e2e2, #0259ea); /* Adjust colors as needed */
+    -fx-background-radius: 15px 15px 15px 15px;
+}
+
+.combo-box{
+    -fx-background-color: #23779d;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-background-radius: 0;
+}
+.combo-box:hover {
+    -fx-background-color: linear-gradient(to bottom, #00e2e2, #0259ea);
+}
+.combo-box .list-view .list-cell:hover{
+    -fx-background-color: linear-gradient(to bottom, #00e2e2, #0259ea);
+}
+.combo-box .list-cell {
+    -fx-text-fill: white;
+}
+.combo-box .list-view .list-cell {
+    -fx-text-fill: grey;
+    -fx-background-color: #1a526c;
+}
+.label{
+    -fx-text-fill: white;
+}
+.menu-item:focused .label {
+    -fx-text-fill: white;
+}
+.text-field{
+    -fx-background-color: #23779d;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+}

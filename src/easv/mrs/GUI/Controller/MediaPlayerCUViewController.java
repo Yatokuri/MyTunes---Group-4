@@ -16,7 +16,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -28,8 +27,6 @@ import java.util.ResourceBundle;
 
 public class MediaPlayerCUViewController implements Initializable {
     @FXML
-    private AnchorPane anchorPane;
-    @FXML
     private TextField lblTime;
     @FXML
     private ComboBox<Category> comCategory;
@@ -37,7 +34,6 @@ public class MediaPlayerCUViewController implements Initializable {
     private TextField txtInputName, txtInputArtist, txtInputYear, txtInputFilepath;
     @FXML
     private Button btnSave;
-
     private MediaPlayerViewController mediaPlayerViewController;
     private long currentSongLength;
     private final SongModel songModel;
@@ -53,9 +49,7 @@ public class MediaPlayerCUViewController implements Initializable {
     private static Song currentSelectedSong = null;
     private static MediaPlayerCUViewController instance;
 
-
     public static void setTypeCU(int typeCU) {MediaPlayerCUViewController.typeCU = typeCU;}
-
 
     public MediaPlayerCUViewController() {
         try {
@@ -90,13 +84,15 @@ public class MediaPlayerCUViewController implements Initializable {
         contextSystem();
         comCategory.getItems().addAll(CategoryModel.getObservableCategories().sorted());
 
-
         comCategory.setOnMouseClicked(event -> { // Consume the event to prevent the ComboBox from opening
             if (event.getButton() == MouseButton.SECONDARY) {
                 event.consume();
                 comCategory.hide();
             }
         });
+
+
+
 
         // Add a listener to the filepath input to make sure its valid and update time automatic
         txtInputFilepath.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -126,7 +122,6 @@ public class MediaPlayerCUViewController implements Initializable {
             txtInputYear.setText(String.valueOf(currentSelectedSong.getYear()));
             txtInputArtist.setText(currentSelectedSong.getArtist());
             txtInputFilepath.setText(currentSelectedSong.getSongPath());
-            updateTimeText();
         }
     }
 
@@ -206,7 +201,6 @@ public class MediaPlayerCUViewController implements Initializable {
 
     private void contextSystem() {
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.setStyle("-fx-background-color: yellow; -fx-padding: 0.0em 0.333333em 0.0em 0.333333em; -fx-background-radius: 6 6 6 6, 5 5 5 5, 4 4 4 4;");
 
         MenuItem createCategory = new MenuItem("Create Category");
         MenuItem deleteCategory = new MenuItem("Delete Category");
@@ -225,7 +219,7 @@ public class MediaPlayerCUViewController implements Initializable {
 
         deleteCategory.setOnAction((event) -> {
             try {
-                categoryModel.deleteCatogory(comCategory.getSelectionModel().getSelectedItem());
+                categoryModel.deleteCategory(comCategory.getSelectionModel().getSelectedItem());
                 comCategory.getItems().addAll(CategoryModel.getObservableCategories().sorted());
                 contextMenu.hide();
             } catch (Exception e) {
@@ -249,8 +243,8 @@ public class MediaPlayerCUViewController implements Initializable {
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             String inputValue = result.get(); // Get the actual value from Optional
-            if (inputValue.length() > 20)   {
-                displayErrorModel.displayErrorC("Maks 20 character");
+            if (inputValue.length() > 40)   {
+                displayErrorModel.displayErrorC("Maks 40 character");
             }
             else {
                 Category newCategory = new Category(inputValue);
@@ -267,9 +261,9 @@ public class MediaPlayerCUViewController implements Initializable {
 
     private void setBorderStyle(TextField textField, boolean isValid) {
         if (isValid) {
-            textField.setStyle("-fx-border-color: green; -fx-border-width: 1px; -fx-effect: null;"); // Valid style
+            textField.setStyle("-fx-border-color: #02bb02; -fx-border-width: 3px; -fx-effect: null;"); // Valid style
         } else {
-            textField.setStyle("-fx-border-color: #010c1e; -fx-border-width: 10px; -fx-effect: innershadow( three-pass-box, rgb(245,0,0), 3, 5, 0, 0);"); // Invalid style
+            textField.setStyle("-fx-border-color: #010c1e; -fx-border-width: 1px; -fx-effect: innershadow( three-pass-box, rgb(255,0,0), 2, 5, 0, 0);"); // Invalid style
         }
     }
 
