@@ -33,7 +33,11 @@ import javafx.util.Duration;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 
 public class MediaPlayerViewController implements Initializable {
@@ -330,25 +334,38 @@ public class MediaPlayerViewController implements Initializable {
     }
 //********************************MEDIA*PLAYER*FUNCTION**************************************************
 
-
-
-    private void addSongsToSoundMap(Song s){
-        if (s.getSongPath() != null) {
-
-                try {
-                    MediaPlayer mp = new MediaPlayer(new Media(new File(s.getSongPath()).toURI().toString()));
-                    mp.setOnReady(() -> {
-                        mp.getTotalDuration();
-                        soundMap.put(s.getId(), mp);
-                    });
-
-                } catch (MediaException e) {
-                    soundMap.put(s.getId(), new MediaPlayer(new Media(new File("resources/Sounds/missingFileErrorSound.mp3").toURI().toString())));
-                }
-
+    private CompletableFuture<Void> addSongsToSoundMap(Song s) {
+        CompletableFuture<Void> future = new CompletableFuture<>(); //We use to make sure the Media player get 100% done before going next
+        if (soundMap.get(s.getId()) == null) { // Check if the song is not already in the soundMap
+            Path filePath = Paths.get(s.getSongPath());
+            try {
+                CompletableFuture.runAsync(() -> {
+                    if (Files.exists(filePath)) {
+                        MediaPlayer mp = new MediaPlayer(new Media(new File(String.valueOf(filePath)).toURI().toString()));
+                        mp.setOnReady(() -> {
+                            mp.getTotalDuration();
+                            soundMap.put(s.getId(), mp);
+                            future.complete(null); // Signal completion
+                        });
+                    } else { // File does not exist, use the error sound
+                        MediaPlayer mp = new MediaPlayer(new Media(new File("resources/Sounds/missingFileErrorSound.mp3").toURI().toString()));
+                        mp.setOnReady(() -> {
+                            mp.getTotalDuration();
+                            soundMap.put(s.getId(), mp);
+                            future.complete(null); // Signal completion
+                        });
+                    }
+                }).exceptionally(ex -> {
+                    return null;
+                });
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        } else { //This is when song is there already
+            future.complete(null); // Signal completion
         }
-
-    }
+    return future;
+}
 
 
     private void playSongFromTableView() {
@@ -399,21 +416,26 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     public void playSong() {
-        Song selectedSong = null;
+        Song selectedSong;
         if (currentMusic != null) {
+            selectedSong = null;
             togglePlayPause();
         } else if (tblSongs.getSelectionModel().getSelectedItem() != null)
             selectedSong = tblSongs.getSelectionModel().getSelectedItem();
         else if (tblSongsInPlaylist.getSelectionModel().getSelectedItem() != null) {
             selectedSong = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
             currentSongList = songPlaylistModel.getObservablePlaylistsSong();
+        } else {
+            selectedSong = null;
         }
         if (selectedSong != null) {
-            addSongsToSoundMap(selectedSong);
-            MediaPlayer newSong = soundMap.get(selectedSong.getId());
-            if (currentMusic != newSong && newSong != null) {
-                handleNewSong(newSong, selectedSong);
-            }
+            addSongsToSoundMap(selectedSong).thenRun(() -> {
+
+                MediaPlayer newSong = soundMap.get(selectedSong.getId());
+                if (currentMusic != newSong && newSong != null) {
+                    handleNewSong(newSong, selectedSong);
+                }
+            });
         }
 
     }
@@ -455,16 +477,16 @@ public class MediaPlayerViewController implements Initializable {
 
     private void handlePlayingSongColor()    {
         if (currentPlaylistPlaying == null && currentSongPlaying != null) {
+           // changeRowColor(tblSongsInPlaylist, -1);
             changeRowColor(tblSongs, currentIndex);
-       //     changeRowColor(tblSongsInPlaylist, -1);
         }
 
         else if (currentPlaylist == currentPlaylistPlaying){
+           // changeRowColor(tblSongsInPlaylist, currentIndex);
             changeRowColor(tblSongs, -1);
-        //    changeRowColor(tblSongsInPlaylist, currentIndex);
         }
         else {
-       //     changeRowColor(tblSongsInPlaylist, -1);
+          //changeRowColor(tblSongsInPlaylist, -1);
         }
     }
 
@@ -472,21 +494,12 @@ public class MediaPlayerViewController implements Initializable {
         if (currentMusic != null) {
             currentMusic.stop();
         }
-        System.out.println(newSong + " Sangen" + newSong.getStatus());
-
-
-
 
         currentSongPlaying = selectedSong;
         sliderProgressSong.setDisable(false);
         currentMusic = newSong;
-
         currentMusic.setVolume((sliderProgressVolume.getValue())); //We set the volume
-
-        System.out.println(newSong.getTotalDuration());
-
         sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
-
         lblPlayingNow.setText("Now playing: " + selectedSong.getTitle() + " - " + selectedSong.getArtist());
         currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
         handlePlayingSongColor();
@@ -512,15 +525,16 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     public void PlaySong(Song song) {
-        addSongsToSoundMap(song);
-        MediaPlayer newMusic = soundMap.get(song.getId());
-        if (newMusic == null) {
-            System.out.println("tilføjer sangen");
-            soundMap.put(song.getId(), new MediaPlayer(new Media(new File("resources/Sounds/missingFileErrorSound.mp3").toURI().toString())));
-            newMusic = soundMap.get(song.getId());
-            sliderProgressSong.setValue(0);
-        }
-        handleNewSong(newMusic, song);
+        addSongsToSoundMap(song).thenRun(() -> {
+            MediaPlayer newMusic = soundMap.get(song.getId());
+            if (newMusic == null) {//Will this work
+                System.out.println("Adding the song again");
+                soundMap.put(song.getId(), new MediaPlayer(new Media(new File("resources/Sounds/missingFileErrorSound.mp3").toURI().toString())));
+                newMusic = soundMap.get(song.getId());
+                sliderProgressSong.setValue(0);
+            }
+            handleNewSong(newMusic, song);
+        });
     }
 
     private void handleSongSwitch(int newIndex) {
@@ -1194,7 +1208,6 @@ public class MediaPlayerViewController implements Initializable {
     }
     private void setSliderSongProgressStyle()  {
         double percentage = sliderProgressSong.getValue() / (sliderProgressSong.getMax() - sliderProgressSong.getMin());
-        System.out.println(percentage+ " %");
         String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #04a650 0%%, #04a650 %.10f%%, #92dc9b %.10f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
         sliderProgressSong.lookup(".track").setStyle(color);
     }
