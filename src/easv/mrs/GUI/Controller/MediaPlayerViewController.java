@@ -144,15 +144,7 @@ public class MediaPlayerViewController implements Initializable {
         setVolume();
         updateProgressStyle();
 
-        for (Song s : songModel.getObservableSongs()) {
-            if (s.getSongPath() != null) {
-                try {
-                    soundMap.put(s.getId(), new MediaPlayer(new Media(new File(s.getSongPath()).toURI().toString())));
-                } catch (MediaException e) {
-                    soundMap.put(s.getId(), new MediaPlayer(new Media(new File("resources/Sounds/missingFileErrorSound.mp3").toURI().toString())));
-                }
-            }
-        }
+
 
         // Add tableview functionality
         playSongFromTableViewPlaylist();
@@ -338,6 +330,27 @@ public class MediaPlayerViewController implements Initializable {
     }
 //********************************MEDIA*PLAYER*FUNCTION**************************************************
 
+
+
+    private void addSongsToSoundMap(Song s){
+        if (s.getSongPath() != null) {
+
+                try {
+                    MediaPlayer mp = new MediaPlayer(new Media(new File(s.getSongPath()).toURI().toString()));
+                    mp.setOnReady(() -> {
+                        mp.getTotalDuration();
+                        soundMap.put(s.getId(), mp);
+                    });
+
+                } catch (MediaException e) {
+                    soundMap.put(s.getId(), new MediaPlayer(new Media(new File("resources/Sounds/missingFileErrorSound.mp3").toURI().toString())));
+                }
+
+        }
+
+    }
+
+
     private void playSongFromTableView() {
         tblSongs.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1 && event.getButton() == MouseButton.PRIMARY)
@@ -347,7 +360,7 @@ public class MediaPlayerViewController implements Initializable {
                 currentIndex = currentSongList.indexOf(tblSongs.getSelectionModel().getSelectedItem());
                 currentPlaylistPlaying = null;
                 Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-                if (selectedSong != null && currentMusic != soundMap.get(selectedSong.getId())) {
+                if (selectedSong != null) {
                     sliderProgressSong.setValue(0);
                     isMusicPaused = false;
                     PlaySong(selectedSong);
@@ -366,6 +379,7 @@ public class MediaPlayerViewController implements Initializable {
                 currentIndex = currentSongList.indexOf(tblSongsInPlaylist.getSelectionModel().getSelectedItem());
                 currentPlaylistPlaying = currentPlaylist;
                 Song selectedSong = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
+
                 if (selectedSong != null) {
                     sliderProgressSong.setValue(0);
                     isMusicPaused = false;
@@ -395,6 +409,7 @@ public class MediaPlayerViewController implements Initializable {
             currentSongList = songPlaylistModel.getObservablePlaylistsSong();
         }
         if (selectedSong != null) {
+            addSongsToSoundMap(selectedSong);
             MediaPlayer newSong = soundMap.get(selectedSong.getId());
             if (currentMusic != newSong && newSong != null) {
                 handleNewSong(newSong, selectedSong);
@@ -457,13 +472,21 @@ public class MediaPlayerViewController implements Initializable {
         if (currentMusic != null) {
             currentMusic.stop();
         }
+        System.out.println(newSong + " Sangen" + newSong.getStatus());
+
+
+
 
         currentSongPlaying = selectedSong;
         sliderProgressSong.setDisable(false);
         currentMusic = newSong;
 
         currentMusic.setVolume((sliderProgressVolume.getValue())); //We set the volume
+
+        System.out.println(newSong.getTotalDuration());
+
         sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
+
         lblPlayingNow.setText("Now playing: " + selectedSong.getTitle() + " - " + selectedSong.getArtist());
         currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
         handlePlayingSongColor();
@@ -477,9 +500,9 @@ public class MediaPlayerViewController implements Initializable {
             btnPlayIcon.setImage(pauseIcon);
         }
 
-
         currentMusic.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
             // Update the slider value as the song progresses
+
             if (!isUserChangingSlider) {
                 sliderProgressSong.setValue(newValue.toSeconds());
             }
@@ -489,6 +512,7 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     public void PlaySong(Song song) {
+        addSongsToSoundMap(song);
         MediaPlayer newMusic = soundMap.get(song.getId());
         if (newMusic == null) {
             System.out.println("tilføjer sangen");
@@ -1170,6 +1194,7 @@ public class MediaPlayerViewController implements Initializable {
     }
     private void setSliderSongProgressStyle()  {
         double percentage = sliderProgressSong.getValue() / (sliderProgressSong.getMax() - sliderProgressSong.getMin());
+        System.out.println(percentage+ " %");
         String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #04a650 0%%, #04a650 %.10f%%, #92dc9b %.10f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
         sliderProgressSong.lookup(".track").setStyle(color);
     }

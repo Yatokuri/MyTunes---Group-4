@@ -18,7 +18,7 @@ public class PlaylistSongDAO_DB {
     private final MyDatabaseConnector databaseConnector;
     private final SongDAO_DB songDAO_db;
 
-    public PlaylistSongDAO_DB() throws IOException {
+    public PlaylistSongDAO_DB() throws Exception {
         databaseConnector = new MyDatabaseConnector();
         songDAO_db = new SongDAO_DB();
     }
@@ -45,8 +45,7 @@ public class PlaylistSongDAO_DB {
             while (rs.next()) {
                 //Map DB row to playlist object
                 int id = rs.getInt("SongId");
-
-                for (Song s  : songDAO_db.getSongsArray())    {
+                for (Song s : songDAO_db.getSongsArray())    {
                     if (s.getId() == id)    {
                         playlist.setSongCount(playlist.getSongCount() + 1);
                         playlist.setSongTotalTime(playlist.getSongTotalTime() + s.getSongLength());

@@ -17,17 +17,19 @@ import java.util.List;
 public class SongDAO_DB implements ISongDataAccess {
 
     private final MyDatabaseConnector databaseConnector;
+    ArrayList<Song> allSongs;
 
-    public SongDAO_DB() throws IOException {
+    public SongDAO_DB() throws Exception {
         databaseConnector = new MyDatabaseConnector();
+        getAllSongs();
     }
 
-    public List<Song> getSongsArray() throws Exception { return getAllSongs(); }
+    public List<Song> getSongsArray() throws Exception { return allSongs; }
 
 
     public List<Song> getAllSongs() throws Exception {
 
-        ArrayList<Song> allSongs = new ArrayList<>();
+        allSongs = new ArrayList<>();
 
         try (Connection conn = databaseConnector.getConnection();
              Statement stmt = conn.createStatement())
@@ -37,7 +39,6 @@ public class SongDAO_DB implements ISongDataAccess {
 
             // Loop through rows from the database result set
             while (rs.next()) {
-
                 //Map DB row to Song object
                 int id = rs.getInt("SongId");
                 String title = rs.getString("SongName");
@@ -50,7 +51,6 @@ public class SongDAO_DB implements ISongDataAccess {
                 allSongs.add(song);
             }
             return allSongs;
-
         }
         catch (SQLException ex)
         {

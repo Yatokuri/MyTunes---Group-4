@@ -13,9 +13,11 @@ import java.util.List;
 public class SongManager {
 
     private final ISongDataAccess songDAO;
+    private final SongDAO_DB songDao_DB;
 
-    public SongManager() throws IOException {
+    public SongManager() throws Exception {
         songDAO = new SongDAO_DB();
+        songDao_DB = new SongDAO_DB();
     }
 
     public Song createNewSong(Song newSong) throws Exception {
@@ -23,7 +25,7 @@ public class SongManager {
     }
 
     public List<Song> getAllSongs() throws Exception {
-        return songDAO.getAllSongs();
+        return songDao_DB.getSongsArray();
     }
 
     public void updateSong(Song selectedSong) throws Exception {

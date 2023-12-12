@@ -14,7 +14,7 @@ public class SongPlaylistManager {
 
     private final PlaylistSongDAO_DB playlistSongDAO;
 
-    public SongPlaylistManager() throws IOException {
+    public SongPlaylistManager() throws Exception {
         playlistSongDAO = new PlaylistSongDAO_DB();
     }
 
