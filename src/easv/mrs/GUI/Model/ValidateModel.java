@@ -50,6 +50,9 @@ public class ValidateModel {
                     }
                 }
                 return isValidMediaPath(value);
+            case "txtInputTime":
+                return !value.equals("00:00:00");
+
             case "txtInputYear":
                 try {
                     int year = Integer.parseInt(value);
@@ -74,6 +77,7 @@ public class ValidateModel {
 
         if (selectedFile != null) {
             return selectedFile.getAbsolutePath();  // Get the selected file path and save it
+
         }
         return "";
     }

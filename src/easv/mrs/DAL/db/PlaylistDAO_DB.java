@@ -73,7 +73,7 @@ public class PlaylistDAO_DB implements IPlaylistDataAccess {
                 id = rs.getInt(1);
             }
 
-            // Create song object and send up the layers
+            // Create playlist object and send up the layers
             Playlist createdPlaylist;
             createdPlaylist = new Playlist(id, playlist.getPlaylistName(),playlist.getSongCount(),playlist.getSongTotalTime());
 

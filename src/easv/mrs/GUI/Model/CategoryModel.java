@@ -22,8 +22,6 @@ public class CategoryModel {
 
     public static ObservableList<Category> getObservableCategories() {return categoriesToBeViewed;}
 
-
-
     public void deleteCategory(Category selectedCategory) throws Exception {
         // delete song in DAL layer (through the layers)
         categoryManager.deleteCategory(selectedCategory);

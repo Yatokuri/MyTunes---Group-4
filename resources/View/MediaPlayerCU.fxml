@@ -33,11 +33,11 @@
                 <TextField fx:id="txtInputArtist" promptText="Artist" stylesheets="@../CSS/MediaPlayerCU.css" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                 <HBox prefHeight="22.0" prefWidth="368.0" spacing="30.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
                     <children>
-                        <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#closeWindow" prefWidth="60.0" styleClass="buttonCU" stylesheets="@../CSS/MediaPlayerCU.css" text="Cancel">
+                        <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#btnCloseWindow" prefWidth="60.0" styleClass="buttonCU" stylesheets="@../CSS/MediaPlayerCU.css" text="Cancel">
                      <HBox.margin>
                         <Insets left="40.0" />
                      </HBox.margin></Button>
-                        <Button fx:id="btnSave" mnemonicParsing="false" onAction="#save" prefWidth="60.0" styleClass="buttonCU" stylesheets="@../CSS/MediaPlayerCU.css" text="Save" />
+                        <Button fx:id="btnSave" mnemonicParsing="false" onAction="#btnSave" prefWidth="60.0" styleClass="buttonCU" stylesheets="@../CSS/MediaPlayerCU.css" text="Save" />
                     </children>
                 </HBox>
                 <TextField fx:id="txtInputYear" prefHeight="26.0" prefWidth="73.0" promptText="Year" stylesheets="@../CSS/MediaPlayerCU.css" GridPane.columnIndex="2" GridPane.rowIndex="3" />
@@ -48,7 +48,7 @@
                </GridPane.margin></Button>
                 <HBox alignment="CENTER_LEFT" prefHeight="14.0" prefWidth="243.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
                     <children>
-                        <TextField fx:id="lblTime" disable="true" editable="false" prefHeight="25.0" prefWidth="134.0" styleClass="timeText-field" stylesheets="@../CSS/MediaPlayerCU.css" text="00:00:00" />
+                        <TextField fx:id="txtInputTime" disable="true" editable="false" prefHeight="25.0" prefWidth="134.0" styleClass="timeText-field" stylesheets="@../CSS/MediaPlayerCU.css" promptText="00:00:00" />
                     </children>
                 </HBox>
                 <ComboBox fx:id="comCategory" prefHeight="25.0" prefWidth="146.0" promptText="Pop" stylesheets="@../CSS/MediaPlayerCU.css" GridPane.columnIndex="2" GridPane.rowIndex="2" />

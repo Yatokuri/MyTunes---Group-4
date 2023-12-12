@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="anchorPane" prefHeight="657.0" prefWidth="948.0" stylesheets="@../CSS/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
    <children>
@@ -57,8 +58,11 @@
                <padding>
                   <Insets bottom="5.0" />
                </padding>
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
             </Label>
-            <HBox alignment="CENTER" prefHeight="11.0" prefWidth="336.0" spacing="6.0">
+            <HBox alignment="CENTER" prefHeight="41.0" prefWidth="453.0" spacing="6.0">
                <children>
                   <Button fx:id="btnShuffle" mnemonicParsing="false" onAction="#btnShuffleSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
                      <graphic>
@@ -119,7 +123,7 @@
             </HBox>
          </children>
       </VBox>
-      <HBox layoutX="712.0" layoutY="556.0" prefHeight="22.0" prefWidth="200.0" stylesheets="@../CSS/Main.css" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
+      <HBox layoutX="765.0" layoutY="621.0" prefHeight="22.0" prefWidth="169.0" stylesheets="@../CSS/Main.css" AnchorPane.bottomAnchor="18.0" AnchorPane.rightAnchor="14.0">
          <children>
             <Slider fx:id="sliderProgressVolume" max="1.0" stylesheets="@../CSS/Main.css" />
             <Label fx:id="lblVolume" stylesheets="@../CSS/Main.css" text="50%" />

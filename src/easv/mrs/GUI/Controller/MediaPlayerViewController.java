@@ -189,8 +189,6 @@ public class MediaPlayerViewController implements Initializable {
     MenuItem updatePlaylist = new MenuItem("Update Playlist");
     MenuItem deleteAllSongs = new MenuItem("Delete All Songs");
     Menu playlistSubMenu = new Menu("Add to Playlist");
-    private Playlist selectedPlaylistFromContextMenu;
-
 
     private void contextSystemSubMenuAddSongs()   {
         playlistSubMenu.getItems().clear();
@@ -273,7 +271,7 @@ public class MediaPlayerViewController implements Initializable {
                     Playlist selectedPlaylist = (Playlist) selectedItem.getUserData();
                     currentPlaylist = getPlaylistById(selectedPlaylist.getId());
                 }
-
+                songPlaylistModel.playlistSongs(currentPlaylist);
 
                 if (songPlaylistModel.addSongToPlaylist(currentSong, currentPlaylist)) { //We first need to make sure it not already in the playlist
                     tblPlaylist.getSelectionModel().select(currentPlaylist);
@@ -351,6 +349,7 @@ public class MediaPlayerViewController implements Initializable {
                 Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
                 if (selectedSong != null && currentMusic != soundMap.get(selectedSong.getId())) {
                     sliderProgressSong.setValue(0);
+                    isMusicPaused = false;
                     PlaySong(selectedSong);
                 }
             }
@@ -364,11 +363,12 @@ public class MediaPlayerViewController implements Initializable {
             }
             if (event.getClickCount() == 2) { // Check for double-click
                 currentSongList = songPlaylistModel.getObservablePlaylistsSong();
-                currentPlaylistPlaying = currentPlaylist;
                 currentIndex = currentSongList.indexOf(tblSongsInPlaylist.getSelectionModel().getSelectedItem());
+                currentPlaylistPlaying = currentPlaylist;
                 Song selectedSong = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
                 if (selectedSong != null) {
                     sliderProgressSong.setValue(0);
+                    isMusicPaused = false;
                     PlaySong(selectedSong);
                 }
             }
@@ -461,6 +461,7 @@ public class MediaPlayerViewController implements Initializable {
         currentSongPlaying = selectedSong;
         sliderProgressSong.setDisable(false);
         currentMusic = newSong;
+
         currentMusic.setVolume((sliderProgressVolume.getValue())); //We set the volume
         sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
         lblPlayingNow.setText("Now playing: " + selectedSong.getTitle() + " - " + selectedSong.getArtist());
@@ -489,6 +490,12 @@ public class MediaPlayerViewController implements Initializable {
 
     public void PlaySong(Song song) {
         MediaPlayer newMusic = soundMap.get(song.getId());
+        if (newMusic == null) {
+            System.out.println("tilføjer sangen");
+            soundMap.put(song.getId(), new MediaPlayer(new Media(new File("resources/Sounds/missingFileErrorSound.mp3").toURI().toString())));
+            newMusic = soundMap.get(song.getId());
+            sliderProgressSong.setValue(0);
+        }
         handleNewSong(newMusic, song);
     }
 
@@ -517,6 +524,7 @@ public class MediaPlayerViewController implements Initializable {
         }
         if (shuffleMode == 1) {
             shuffleMode();
+            return;
         }
 
         currentMusic = null;
@@ -575,12 +583,12 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     public void shuffleMode() {
-        if (repeatMode == 0) { // Get a list of playlists with songs inside itself
+        if (repeatMode == 0 && currentSongList !=  songModel.getObservableSongs()) { // Get a list of playlists with songs inside itself
             List<Playlist> nonEmptyPlaylists = PlaylistModel.getObservablePlaylists().stream()
                     .filter(playlist -> playlist.getSongCount() > 1)
                     .toList();
 
-            if (!nonEmptyPlaylists.isEmpty()) { //Select a random of them
+            if (!nonEmptyPlaylists.isEmpty()) { //Select a random song from playlists
                 Random random = new Random();
                 currentPlaylist = nonEmptyPlaylists.get(random.nextInt(nonEmptyPlaylists.size()));
                 currentPlaylistPlaying = currentPlaylist;
@@ -590,9 +598,10 @@ public class MediaPlayerViewController implements Initializable {
                     throw new RuntimeException(e);
                 }
             } else {
-                System.out.println("All your playlist is empty today");
+                System.out.println("All your playlists are empty today");
                 return;
             }
+            return;
         }
 
         //Select random song from the current song list and play it
@@ -1156,12 +1165,12 @@ public class MediaPlayerViewController implements Initializable {
     //**************************THIS*IS*ON*THE*RIGHT*LAYER*CONFIRMED***************************
     private void setSliderVolumeStyle()  {
         double percentage = sliderProgressVolume.getValue() / (sliderProgressVolume.getMax() - sliderProgressVolume.getMin());
-        String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #038878 0%%, #038878 %.2f%%, #92dcc2 %.2f%%, #92dcc2 100%%);", percentage * 100, percentage * 100);
+        String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #038878 0%%, #038878 %.2f%%, #92dc9b %.2f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
         sliderProgressVolume.lookup(".track").setStyle(color);
     }
     private void setSliderSongProgressStyle()  {
         double percentage = sliderProgressSong.getValue() / (sliderProgressSong.getMax() - sliderProgressSong.getMin());
-        String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #038808 0%%, #038808 %.10f%%, #92dc9b %.10f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
+        String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #04a650 0%%, #04a650 %.10f%%, #92dc9b %.10f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
         sliderProgressSong.lookup(".track").setStyle(color);
     }
 }

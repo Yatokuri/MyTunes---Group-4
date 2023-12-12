@@ -6,7 +6,7 @@
     -fx-background-color: linear-gradient(to bottom, #6f787e, #6f787e, #60727c); /* Adjust colors as needed */
 }
 .button {
-    -fx-background-color: linear-gradient(to bottom, #0a7272, #10a296); /* Adjust colors as needed */
+    -fx-background-color: linear-gradient(to bottom, #0a5f72, #1080a2); /* Adjust colors as needed */
     -fx-border-color: #001618;
     -fx-text-fill: white;
     -fx-border-radius: 15px 15px 15px 15px;
@@ -50,15 +50,39 @@
     -fx-background-color: linear-gradient(to bottom, #225b81, #1b5173);
     -fx-background-radius: 7px 7px 0px 0px;
 }
+
+.table-view .virtual-flow .scroll-bar:vertical,
+.table-view .virtual-flow .scroll-bar:vertical .track,
+.table-view .virtual-flow .scroll-bar:vertical .track-background,
+.table-view .virtual-flow .scroll-bar:horizontal,
+.table-view .virtual-flow .scroll-bar:horizontal .track,
+.table-view .virtual-flow .scroll-bar:horizontal .track-background {
+    -fx-background-color: transparent;
+}
+.table-view .virtual-flow .scroll-bar .increment-button,
+.table-view .virtual-flow .scroll-bar .decrement-button {
+    -fx-opacity: 0;
+    -fx-padding: 2;
+}
+
+.table-view .virtual-flow .scroll-bar:vertical .thumb
+{
+    -fx-background-color: linear-gradient(to bottom, #225b81, #1b5173);
+}
+
 .table-view .column-header {
     -fx-background-color: transparent;
+}
+.table-view .column-header .label {
+    -fx-text-fill: #94efe2;
+    -fx-font-weight: bold;
 }
 .table-view {
     -fx-background-color: transparent;
 }
-
 .table-view .column-header-background .filler{
     -fx-background-color: transparent;
+    -fx-text-fill: white;
 }
 .table-view .corner{
     -fx-background-color: transparent;
@@ -71,6 +95,21 @@
 }
 
 .table-row-cell:hover {
+    -fx-background-color: #93f9b911 !important;
+    -fx-text-background-color: #02242c !important;
+    -fx-border-radius: 15px 15px 15px 15px;
+    -fx-background-radius: 15px 15px 15px 15px;
+}
+
+.table-row-cell:playing {
+    -fx-background-color: #93f9b911 !important;
+    -fx-text-background-color: #02242c !important;
+    -fx-border-radius: 15px 15px 15px 15px;
+    -fx-background-radius: 15px 15px 15px 15px;
+}
+
+
+.table-row-cell:selected {
     -fx-background-color: #93f9b911 !important;
     -fx-text-background-color: #02242c !important;
     -fx-border-radius: 15px 15px 15px 15px;
@@ -97,6 +136,7 @@
     -fx-background-color: #23779d;
     -fx-border-color: transparent;
     -fx-text-fill: white;
+    -fx-background-radius: 4px;
 }
 .timeText-field:disabled {
     -fx-opacity: 1.0; /* Set the opacity to 1.0 to make it fully visible */

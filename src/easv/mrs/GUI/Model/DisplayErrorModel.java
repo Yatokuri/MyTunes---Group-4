@@ -21,7 +21,6 @@ public class DisplayErrorModel {
 
     }
 
-
     public void displayError(Throwable t) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         setIcon(alert);
@@ -41,6 +40,4 @@ public class DisplayErrorModel {
         Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
         stage.getIcons().add(programIcon);
     }
-
-
 }
