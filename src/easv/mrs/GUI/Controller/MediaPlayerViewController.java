@@ -419,7 +419,7 @@ public class MediaPlayerViewController implements Initializable {
 
     // This method changes the color of the row where the playing song is located
     public static <T> void changeRowColor(TableView<T> tableView, int rowNumber) {
-        /** tableView.setRowFactory(tv -> new TableRow<T>() {
+        tableView.setRowFactory(tv -> new TableRow<T>() {
         @Override
         protected void updateItem(T item, boolean empty) {
         super.updateItem(item, empty);
@@ -429,11 +429,11 @@ public class MediaPlayerViewController implements Initializable {
 
         // Set the style for the row where the playing song is located
         if (!empty && getIndex() == rowNumber) {
-        setStyle("-fx-background-color: rgb(42,194,42); -fx-border-color: #1aa115; -fx-border-radius: 15px 15px 15px 15px;");
+        setStyle("-fx-background-color: rgb(42,194,42); -fx-border-color: #1aa115; -fx-background-radius: 15px; -fx-border-radius: 15px 15px 15px 15px;");
         }
         }
         });
-         tableView.refresh(); **/
+         tableView.refresh();
     }
 
 
@@ -441,15 +441,15 @@ public class MediaPlayerViewController implements Initializable {
     private void handlePlayingSongColor()    {
         if (currentPlaylistPlaying == null && currentSongPlaying != null) {
             changeRowColor(tblSongs, currentIndex);
-            changeRowColor(tblSongsInPlaylist, -1);
+       //     changeRowColor(tblSongsInPlaylist, -1);
         }
 
         else if (currentPlaylist == currentPlaylistPlaying){
             changeRowColor(tblSongs, -1);
-            changeRowColor(tblSongsInPlaylist, currentIndex);
+        //    changeRowColor(tblSongsInPlaylist, currentIndex);
         }
         else {
-            changeRowColor(tblSongsInPlaylist, -1);
+       //     changeRowColor(tblSongsInPlaylist, -1);
         }
     }
 
