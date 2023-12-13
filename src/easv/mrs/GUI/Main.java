@@ -21,9 +21,12 @@ public class Main extends Application {
         primaryStage.setResizable(true);
         root.requestFocus();
         primaryStage.show();
-        primaryStage.setMinHeight(450);
-        primaryStage.setMinWidth(925);
+     //   primaryStage.setMinHeight(450);
+   //     primaryStage.setMinWidth(925);
     }
+
+
+
 
     public static void main(String[] args) {
         launch(args);

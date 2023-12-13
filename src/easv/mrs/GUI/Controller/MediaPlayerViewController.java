@@ -2,10 +2,7 @@ package easv.mrs.GUI.Controller;
 
 import easv.mrs.BE.Playlist;
 import easv.mrs.BE.Song;
-import easv.mrs.GUI.Model.DisplayErrorModel;
-import easv.mrs.GUI.Model.PlaylistModel;
-import easv.mrs.GUI.Model.SongModel;
-import easv.mrs.GUI.Model.SongPlaylistModel;
+import easv.mrs.GUI.Model.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
@@ -23,6 +20,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Modality;
@@ -40,7 +38,8 @@ import java.util.concurrent.CompletableFuture;
 
 
 public class MediaPlayerViewController implements Initializable {
-
+    @FXML
+    private VBox tblSongsInPlaylistVBOX;
     @FXML
     private TableView<Playlist> tblPlaylist;
     @FXML
@@ -74,9 +73,9 @@ public class MediaPlayerViewController implements Initializable {
     private boolean previousPress = false;
     private Playlist currentPlaylist, currentPlaylistPlaying; //The current playing selected and playing from
     private Song currentSong, currentSongPlaying; //The current Song selected and playing
-    private final SongModel songModel;
-    private final PlaylistModel playlistModel;
-    private final SongPlaylistModel songPlaylistModel;
+    private SongModel songModel;
+    private PlaylistModel playlistModel;
+    private SongPlaylistModel songPlaylistModel;
     private final DisplayErrorModel displayErrorModel;
     private MediaPlayerCUViewController mediaPlayerCUViewController;
     private Song draggedSong;
@@ -97,17 +96,22 @@ public class MediaPlayerViewController implements Initializable {
         return currentSong;
     }
 
-    public MediaPlayerViewController() throws Exception {
+    public MediaPlayerViewController()  {
         instance = this;
-
-        songModel = new SongModel();
-        playlistModel = new PlaylistModel();
-        songPlaylistModel = new SongPlaylistModel();
         displayErrorModel = new DisplayErrorModel();
-        currentPlaylist = null;
+        try {
+            songModel = new SongModel();
+            playlistModel = new PlaylistModel();
+            songPlaylistModel = new SongPlaylistModel();
+            currentPlaylist = null;
+        }
+        catch (Exception e) {
+            displayErrorModel.displayError(e);
+            e.printStackTrace();
+        }
     }
 
-    public static MediaPlayerViewController getInstance() throws Exception {
+    public static MediaPlayerViewController getInstance()  {
         if (instance == null) {
             instance = new MediaPlayerViewController();
         }
@@ -125,7 +129,7 @@ public class MediaPlayerViewController implements Initializable {
         sliderProgressVolume.setPickOnBounds(false); // -||-
         tblSongsInPlaylist.setPlaceholder(new Label("No songs found"));
         tblSongs.setPlaceholder(new Label("No songs found"));
-        tblSongsInPlaylist.setManaged(false);
+        tblSongsInPlaylistVBOX.setManaged(false);
 
 
         // Initializes the Observable list into a Filtered list for use in the search function
@@ -873,13 +877,13 @@ public class MediaPlayerViewController implements Initializable {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     if (row.getIndex() >= tblPlaylist.getItems().size()) {
                         tblSongsInPlaylist.getItems().clear();
-                        tblSongsInPlaylist.setManaged(false);
-                        tblSongsInPlaylist.setVisible(false);
+                        tblSongsInPlaylistVBOX.setManaged(false);
+                        tblSongsInPlaylistVBOX.setVisible(false);
                     } else {
                         try {
                             currentPlaylist = row.getItem();
-                            tblSongsInPlaylist.setManaged(true);
-                            tblSongsInPlaylist.setVisible(true);
+                            tblSongsInPlaylistVBOX.setManaged(true);
+                            tblSongsInPlaylistVBOX.setVisible(true);
                             refreshEverything();
                         } catch (Exception e) {
                             throw new RuntimeException(e);
@@ -1140,11 +1144,13 @@ public class MediaPlayerViewController implements Initializable {
         }
         if (event.isControlDown()) {
             if (keyCode == KeyCode.LEFT) {
+                sliderProgressSong.requestFocus();
                 seekCurrentMusic10Minus();
             }
         }
         if (event.isControlDown()) {
             if (keyCode == KeyCode.RIGHT) {
+                sliderProgressSong.requestFocus();
                 seekCurrentMusic10Plus();
             }
         }
@@ -1169,15 +1175,10 @@ public class MediaPlayerViewController implements Initializable {
             }
         }
 
-        if (event.getCode() == KeyCode.MEDIA_NEXT_TRACK) {
-            btnForwardSong();
-        }
-
         if (pressedKeys.contains(KeyCode.SHIFT) &&
                 pressedKeys.containsAll(Arrays.asList(KeyCode.M, KeyCode.T))) {
             System.out.println("Secret combination pressed");
         }
-
 
         if (event.isControlDown()) {
             if (keyCode == KeyCode.P) {
@@ -1330,5 +1331,7 @@ public class MediaPlayerViewController implements Initializable {
         String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #04a650 0%%, #04a650 %.10f%%, #92dc9b %.10f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
         sliderProgressSong.lookup(".track").setStyle(color);
     }
+
+
 
 }
