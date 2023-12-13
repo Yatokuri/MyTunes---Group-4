@@ -7,7 +7,6 @@ import easv.mrs.BE.Song;
 import easv.mrs.DAL.ISongDataAccess;
 import easv.mrs.DAL.db.SongDAO_DB;
 
-import java.io.IOException;
 import java.util.List;
 
 public class SongManager {
@@ -25,7 +24,7 @@ public class SongManager {
     }
 
     public List<Song> getAllSongs() throws Exception {
-        return songDao_DB.getSongsArray();
+        return songDao_DB.getAllSongs();
     }
 
     public void updateSong(Song selectedSong) throws Exception {

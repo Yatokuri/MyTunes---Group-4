@@ -33,7 +33,7 @@
                 <TextField fx:id="txtInputArtist" promptText="Artist" stylesheets="@../CSS/MediaPlayerCU.css" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                 <HBox prefHeight="22.0" prefWidth="368.0" spacing="30.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
                     <children>
-                        <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#btnCloseWindow" prefWidth="60.0" styleClass="buttonCU" stylesheets="@../CSS/MediaPlayerCU.css" text="Cancel">
+                        <Button mnemonicParsing="false" onAction="#btnCloseWindow" prefWidth="60.0" styleClass="buttonCU" stylesheets="@../CSS/MediaPlayerCU.css" text="Cancel">
                      <HBox.margin>
                         <Insets left="40.0" />
                      </HBox.margin></Button>
@@ -42,7 +42,7 @@
                 </HBox>
                 <TextField fx:id="txtInputYear" prefHeight="26.0" prefWidth="73.0" promptText="Year" stylesheets="@../CSS/MediaPlayerCU.css" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                 <TextField fx:id="txtInputFilepath" promptText="Filepath" stylesheets="@../CSS/MediaPlayerCU.css" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-                <Button fx:id="btnChoose" mnemonicParsing="false" onAction="#btnChooseFile" styleClass="buttonCU" stylesheets="@../CSS/MediaPlayerCU.css" text="Choose" GridPane.columnIndex="3" GridPane.rowIndex="5">
+                <Button mnemonicParsing="false" onAction="#btnChooseFile" styleClass="buttonCU" stylesheets="@../CSS/MediaPlayerCU.css" text="Choose" GridPane.columnIndex="3" GridPane.rowIndex="5">
                <GridPane.margin>
                   <Insets left="5.0" />
                </GridPane.margin></Button>
@@ -52,7 +52,7 @@
                     </children>
                 </HBox>
                 <ComboBox fx:id="comCategory" prefHeight="25.0" prefWidth="146.0" promptText="Pop" stylesheets="@../CSS/MediaPlayerCU.css" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                <Button fx:id="btnMore" mnemonicParsing="false" onAction="#btnMoreCategory" styleClass="buttonCU" stylesheets="@../CSS/MediaPlayerCU.css" text="More..." GridPane.columnIndex="3" GridPane.rowIndex="2">
+                <Button mnemonicParsing="false" onAction="#btnMoreCategory" styleClass="buttonCU" stylesheets="@../CSS/MediaPlayerCU.css" text="More..." GridPane.columnIndex="3" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="5.0" />
                </GridPane.margin></Button>

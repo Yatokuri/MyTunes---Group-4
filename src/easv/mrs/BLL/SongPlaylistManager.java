@@ -7,7 +7,6 @@ import easv.mrs.BE.Playlist;
 import easv.mrs.BE.Song;
 import easv.mrs.DAL.db.PlaylistSongDAO_DB;
 
-import java.io.IOException;
 import java.util.List;
 
 public class SongPlaylistManager {

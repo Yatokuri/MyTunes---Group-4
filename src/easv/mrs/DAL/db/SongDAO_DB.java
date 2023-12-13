@@ -8,7 +8,6 @@ import easv.mrs.BE.Song;
 import easv.mrs.DAL.ISongDataAccess;
 
 // Java imports
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class SongDAO_DB implements ISongDataAccess {
         getAllSongs();
     }
 
-    public List<Song> getSongsArray() throws Exception { return allSongs; }
+    public List<Song> getSongsArray() { return allSongs; }
 
 
     public List<Song> getAllSongs() throws Exception {
@@ -87,7 +86,8 @@ public class SongDAO_DB implements ISongDataAccess {
 
             // Create Song object and send up the layers
 
-            return new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath(), song.getSongLength(), song.getSongCategory());
+            Song newSong = new Song(id, song.getYear(), song.getTitle(), song.getArtist(), song.getSongPath(), song.getSongLength(), song.getSongCategory());
+            return newSong;
         }
 
         catch (SQLException ex)
@@ -142,7 +142,6 @@ public class SongDAO_DB implements ISongDataAccess {
             // Run the specified SQL statement
             stmt2.executeUpdate();
             stmt.executeUpdate();
-
         }
         catch (SQLException ex)
         {

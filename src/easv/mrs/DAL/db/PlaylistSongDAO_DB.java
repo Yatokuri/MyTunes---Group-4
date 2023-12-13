@@ -8,7 +8,6 @@ import easv.mrs.BE.Playlist;
 import easv.mrs.BE.Song;
 
 // Java imports
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +97,7 @@ public class PlaylistSongDAO_DB {
     }
 
     public void updateSongInPlaylist(Song song, Song oldSong, Playlist playlist) throws Exception {
-        // SQL command
+        // SQL commands
         String sql = "UPDATE dbo.PlaylistSongs SET PlayListOrder = ? WHERE SongId = ? AND PlaylistId = ?";
         String sqlOldSong = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = ? AND PlaylistId = ?";
         String sqlNewSong = "SELECT PlaylistOrder FROM dbo.PlaylistSongs WHERE SongId = ? AND PlaylistId = ?";
@@ -112,6 +111,7 @@ public class PlaylistSongDAO_DB {
             newSongPlayOrder.setInt(1,song.getId());
             newSongPlayOrder.setInt(2,playlist.getId());
 
+            // Makes a result set of both the old and new play order position
             ResultSet rs = oldSongPlayOrder.executeQuery();
             ResultSet rs2 = newSongPlayOrder.executeQuery();
             int playOrderOld = 1;
@@ -129,6 +129,8 @@ public class PlaylistSongDAO_DB {
             stmt.setInt(2, song.getId());
             stmt.setInt(3, playlist.getId());
 
+            // Iterates through the database to update the play order of all the songs when you move the song upwards in the
+            // playlist, so it will play in the correct order and remember for next time you open it
             if (playOrderNewSong < playOrderOld) {
                 String sqlUpdatePlaylist = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder - 1 WHERE PlaylistId =? AND PlaylistOrder <= ? AND PlaylistOrder >=?";
                 try (PreparedStatement stmt4 = conn.prepareStatement(sqlUpdatePlaylist)) {
@@ -138,6 +140,7 @@ public class PlaylistSongDAO_DB {
                     stmt4.executeUpdate();
                 }
             }
+            //Iterates through the database to update the play order of all the songs when you move the song downwards in the playlist, so it will play in the correct order
             if (playOrderNewSong > playOrderOld){
                 String sqlUpdatePlaylist = "UPDATE dbo.PlaylistSongs SET PlaylistOrder = PlaylistOrder + 1 WHERE PlaylistId = ? AND PlaylistOrder >= ? AND PlaylistOrder <=?";
                 try (PreparedStatement stmt4 = conn.prepareStatement(sqlUpdatePlaylist)) {

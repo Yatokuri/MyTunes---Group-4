@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="657.0" prefWidth="948.0" stylesheets="@../CSS/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
+<AnchorPane fx:id="anchorPane" onKeyPressed="#keyboardKeyPressed" prefHeight="657.0" prefWidth="948.0" stylesheets="@../CSS/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
    <children>
       <TextField fx:id="txtSongSearch" layoutX="735.0" layoutY="14.0" prefHeight="25.0" prefWidth="200.0" promptText="Type search filter here" stylesheets="@../CSS/Main.css" AnchorPane.rightAnchor="36.0" />
       <HBox layoutX="7.0" layoutY="49.0" prefHeight="441.0" prefWidth="940.0" spacing="20.0" AnchorPane.bottomAnchor="167.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="49.0">
@@ -64,7 +64,7 @@
             </Label>
             <HBox alignment="CENTER" prefHeight="41.0" prefWidth="453.0" spacing="6.0">
                <children>
-                  <Button fx:id="btnShuffle" mnemonicParsing="false" onAction="#btnShuffleSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
+                  <Button fx:id="btnShuffle" mnemonicParsing="false" onAction="#btnShuffleSong" prefHeight="30.0" prefWidth="25.0" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
                      <graphic>
                         <ImageView fx:id="btnShuffleIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -73,9 +73,9 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="btnBackward" mnemonicParsing="false" onAction="#backwardSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
+                  <Button fx:id="btnBackward" mnemonicParsing="false" onAction="#btnBackwardSong" prefHeight="30.0" prefWidth="25.0" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
                      <graphic>
-                        <ImageView fx:id="btnBackwardIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../Icons/backward.png" />
                            </image>
@@ -85,7 +85,7 @@
                         <Insets />
                      </opaqueInsets>
                   </Button>
-                  <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#playSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
+                  <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#btnPlaySong" prefHeight="30.0" prefWidth="25.0" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
                      <graphic>
                         <ImageView fx:id="btnPlayIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -94,16 +94,16 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="btnForward" mnemonicParsing="false" onAction="#forwardSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
+                  <Button fx:id="btnForward" mnemonicParsing="false" onAction="#btnForwardSong" prefHeight="30.0" prefWidth="25.0" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
                      <graphic>
-                        <ImageView fx:id="btnForwardIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../Icons/forward.png" />
                            </image>
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="btnRepeat" mnemonicParsing="false" onAction="#btnRepeatSong" prefHeight="30.0" prefWidth="25.0" styleClass="buttonSound" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
+                  <Button fx:id="btnRepeat" mnemonicParsing="false" onAction="#btnRepeatSong" prefHeight="30.0" prefWidth="25.0" stylesheets="@../CSS/Main.css" HBox.hgrow="ALWAYS">
                      <graphic>
                         <ImageView fx:id="btnRepeatIcon" fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -147,9 +147,9 @@
             <HBox prefHeight="25.0" prefWidth="244.0" />
             <HBox alignment="TOP_CENTER" prefHeight="25.0" prefWidth="261.0" spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Button mnemonicParsing="false" onAction="#newWindowCreate" stylesheets="@../CSS/Main.css" text="Create Song" HBox.hgrow="ALWAYS" />
-                  <Button mnemonicParsing="false" onAction="#newWindowUpdate" stylesheets="@../CSS/Main.css" text="Update song" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#deleteBtn" stylesheets="@../CSS/Main.css" text="Delete" HBox.hgrow="ALWAYS">
+                  <Button mnemonicParsing="false" onAction="#btnNewWindowCreate" stylesheets="@../CSS/Main.css" text="Create Song" HBox.hgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" onAction="#btnNewWindowUpdate" stylesheets="@../CSS/Main.css" text="Update song" HBox.hgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" onAction="#btnDelete" stylesheets="@../CSS/Main.css" text="Delete" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets left="4.0" />
                      </HBox.margin>
