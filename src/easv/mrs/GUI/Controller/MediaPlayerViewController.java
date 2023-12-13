@@ -11,7 +11,6 @@ import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -248,7 +247,7 @@ public class MediaPlayerViewController implements Initializable {
 
         createPlaylist.setOnAction((event) -> {
             try {
-                btnCreatePlaylist.fireEvent(event);
+                btnCreatePlaylistNow();
                 contextMenuPlaylist.hide();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -287,7 +286,7 @@ public class MediaPlayerViewController implements Initializable {
 
         updatePlaylist.setOnAction((event) -> {
             try {
-                btnUpdatePlaylist.fireEvent(event);
+                btnUpdatePlaylistNow();
                 contextMenuPlaylist.hide();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -908,8 +907,7 @@ public class MediaPlayerViewController implements Initializable {
                                 refreshEverything();
                                 success = true;
 
-                            }
-                            else {
+                            } else {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
                                 alert.setTitle("Playlist System");
                                 alert.setHeaderText("The song is already in the playlist");
@@ -929,7 +927,6 @@ public class MediaPlayerViewController implements Initializable {
             });
             return row;
         });
-
 
 
         tblSongsInPlaylist.setOnDragDropped(event -> { //When user drop a song from song list into playlist song
@@ -955,8 +952,7 @@ public class MediaPlayerViewController implements Initializable {
 
                             tblPlaylist.refresh();
                             success = true;
-                        }
-                        else {
+                        } else {
                             Alert alert = new Alert(Alert.AlertType.ERROR);
                             alert.setTitle("Playlist System");
                             alert.setHeaderText("The song is already in the playlist");
@@ -993,67 +989,89 @@ public class MediaPlayerViewController implements Initializable {
 
         //Source Stackoverflow
 
-        tblSongsInPlaylist.setRowFactory(tv -> {
-            TableRow<Song> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getButton() == MouseButton.SECONDARY) {
-                    contextMenuSongsInPlaylist.getItems().clear();
-                    currentSong = row.getItem();
-                    if (row.getIndex() >= tblSongsInPlaylist.getItems().size()) {
-                        contextMenuSongsInPlaylist.getItems().clear();
-                    } else {
-                        contextMenuSongsInPlaylist.getItems().addAll(delete);
+        tblSongsInPlaylist.setRowFactory(tv -> new TableRow<Song>() {
+            @Override
+            public void updateItem(Song item, boolean empty) {
+                super.updateItem(item, empty) ;
+                if (item == null) {
+                    setStyle("");
+                } else if (item.equals(currentSongPlaying) && currentPlaylistPlaying == currentPlaylist) {
+                    setStyle("-fx-background-color: rgb(42,194,42); -fx-border-color: #1aa115; -fx-background-radius: 15px; -fx-border-radius: 15px 15px 15px 15px;");
+
+                } else {
+                    setStyle("");
+                }
+
+                if (currentPlaylistPlaying == currentPlaylist)  {
+                    try {
+                        tblSongsInPlaylist.refresh();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
                 }
-            });
-            row.setOnDragDetected(event -> {
-                if (event.getButton() == MouseButton.PRIMARY && !row.isEmpty()) {
-                    draggedSong = tblSongsInPlaylist.getSelectionModel().getSelectedItem();
-                    currentTableview = "tblSongsInPlaylist";
-                    if (!row.isEmpty()) {
-                        int index = row.getIndex();
-                        Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
+
+
+                // Handle mouse events here
+                setOnMouseClicked(event -> {
+                    tblSongsInPlaylist.refresh();
+                    if (event.getButton() == MouseButton.SECONDARY) {
+                        contextMenuSongsInPlaylist.getItems().clear();
+                        currentSong = getItem();
+                        System.out.println(getIndex() + "kjlikket");
+                        if (getIndex() >= getTableView().getItems().size()) {
+                            contextMenuSongsInPlaylist.getItems().clear();
+                        } else {
+                            contextMenuSongsInPlaylist.getItems().addAll(delete);
+                        }
+                    }
+                });
+
+                setOnDragDetected(event -> {
+                    if (event.getButton() == MouseButton.PRIMARY && !isEmpty()) {
+                        draggedSong = getTableView().getSelectionModel().getSelectedItem();
+                        currentTableview = "tblSongsInPlaylist";
+                        int index = getIndex();
+                        Dragboard db = startDragAndDrop(TransferMode.MOVE);
                         ClipboardContent cc = new ClipboardContent();
                         cc.putString(Integer.toString(index));
                         db.setContent(cc);
                         event.consume();
                     }
-                }
-            });
+                });
 
-            row.setOnDragOver(event -> {
-                Dragboard db = event.getDragboard();
-                if (db.hasString()) {
-                    int draggedIndex = Integer.parseInt(db.getString());
-                    if (row.isEmpty() || row.getIndex() != draggedIndex) {
-                        event.acceptTransferModes(TransferMode.MOVE);
-                        event.consume();
-                    }
-                }
-            });
-
-            row.setOnDragDropped(event -> {
-                if (!currentTableview.equals("tblSongs")) {
+                setOnDragOver(event -> {
                     Dragboard db = event.getDragboard();
                     if (db.hasString()) {
                         int draggedIndex = Integer.parseInt(db.getString());
-                        int dropIndex = row.isEmpty() ? tblSongsInPlaylist.getItems().size() : row.getIndex();
-
-                        if (dropIndex == tblSongsInPlaylist.getItems().size()) { //Make sure you can not drop a song to an empty spot
-                            event.setDropCompleted(false);
-                            event.consume();
-                            return;
-                        }
-                        if (dropIndex != draggedIndex) { // Perform the reordering in your data model
-                            moveSongInPlaylist(draggedIndex, dropIndex);
-                            event.setDropCompleted(true);
-                            tblSongsInPlaylist.getSelectionModel().select(dropIndex);
+                        if (isEmpty() || getIndex() != draggedIndex) {
+                            event.acceptTransferModes(TransferMode.MOVE);
                             event.consume();
                         }
                     }
-                }
-            });
-            return row;
+                });
+
+                setOnDragDropped(event -> {
+                    if (!currentTableview.equals("tblSongs")) {
+                        Dragboard db = event.getDragboard();
+                        if (db.hasString()) {
+                            int draggedIndex = Integer.parseInt(db.getString());
+                            int dropIndex = isEmpty() ? getTableView().getItems().size() : getIndex();
+
+                            if (dropIndex == getTableView().getItems().size()) { //Make sure you can not drop a song to an empty spot
+                                event.setDropCompleted(false);
+                                event.consume();
+                                return;
+                            }
+                            if (dropIndex != draggedIndex) { // Perform the reordering in your data model
+                                moveSongInPlaylist(draggedIndex, dropIndex);
+                                event.setDropCompleted(true);
+                                getTableView().getSelectionModel().select(dropIndex);
+                                event.consume();
+                            }
+                        }
+                    }
+                });
+            }
         });
     }
 
@@ -1078,13 +1096,22 @@ public class MediaPlayerViewController implements Initializable {
     }
 
 //*******************************************KEYBOARD**************************************************
+    Set<KeyCode> pressedKeys = new HashSet<>();
+
     @FXML
-    private void keyboardKeyPressed(KeyEvent event) throws IOException {
+    private void keyboardKeyReleased(KeyEvent event) {
+        pressedKeys.remove(event.getCode());
+    }
+
+    @FXML
+    private void keyboardKeyPressed(KeyEvent event) throws Exception {
         KeyCode keyCode = event.getCode(); //Get the button press value
+        pressedKeys.add(event.getCode());
         if (keyCode == KeyCode.DELETE) {
             handleDelete();
         }
-        if (keyCode == KeyCode.SPACE) {
+        if (event.getCode() == KeyCode.SPACE) { //The problem is space do something default, so we need to override?
+            System.out.println("Der trykkes space");
             tblSongs.getSelectionModel().clearSelection();
             tblPlaylist.getSelectionModel().clearSelection();
             tblSongsInPlaylist.getSelectionModel().clearSelection();
@@ -1092,8 +1119,10 @@ public class MediaPlayerViewController implements Initializable {
             togglePlayPause();
         }
         if (keyCode == KeyCode.ESCAPE) {
-            Stage parent = (Stage) tblSongs.getScene().getWindow();
-            parent.close();
+            tblSongs.getSelectionModel().clearSelection();
+            tblPlaylist.getSelectionModel().clearSelection();
+            tblSongsInPlaylist.getSelectionModel().clearSelection();
+            btnPlay.requestFocus();
         }
 
         if (event.isControlDown()) {
@@ -1116,18 +1145,21 @@ public class MediaPlayerViewController implements Initializable {
                 btnForwardSong();
             }
         }
-        if (event.isControlDown() && event.getCode() == KeyCode.D && event.getCode() == KeyCode.A && event.getCode() == KeyCode.N && event.getCode() == KeyCode.I && event.getCode() == KeyCode.E && event.getCode() == KeyCode.L) {
-            System.out.println("secret");
+
+        if (pressedKeys.contains(KeyCode.SHIFT) &&
+                pressedKeys.containsAll(Arrays.asList(KeyCode.M, KeyCode.T))) {
+            System.out.println("Secret combination pressed");
         }
+
 
         if (event.isControlDown()) {
             if (keyCode == KeyCode.P) {
-                // btnCreatePlaylist.fireEvent(event);
+                btnCreatePlaylistNow();
             }
         }
         if (event.isControlDown()) {
             if (keyCode == KeyCode.O) {
-                //  btnUpdatePlaylist.fireEvent(event);
+                btnUpdatePlaylistNow();
             }
         }
         if (event.isControlDown()) {
@@ -1142,10 +1174,12 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 //******************************************BUTTONS*SLIDERS************************************************
-    public void createUpdatePlaylist(ActionEvent event) throws Exception {
-        Button clickedButton = (Button) event.getSource(); // Get the button that triggered the event
-        String buttonText = clickedButton.getText(); // Get the text of the button
+    public void createUpdatePlaylist(String buttonText) throws Exception {
         TextInputDialog dialog = new TextInputDialog("");
+        if (currentPlaylist == null) {
+            displayErrorModel.displayErrorC("You forgot choose a playlist");
+            return;
+        }
 
         if (buttonText.equals(btnCreatePlaylist.getText())) {
             dialog.setTitle("New Playlist");
@@ -1176,6 +1210,13 @@ public class MediaPlayerViewController implements Initializable {
         refreshEverything();
     }
 
+    public void btnCreatePlaylistNow() throws Exception {
+        createUpdatePlaylist(btnCreatePlaylist.getText());
+    }
+
+    public void btnUpdatePlaylistNow() throws Exception {
+        createUpdatePlaylist(btnUpdatePlaylist.getText());
+    }
     public void btnNewWindowCreate() throws IOException {
         MediaPlayerCUViewController.setTypeCU(1);
         newUCWindow("Song Creator");
@@ -1261,4 +1302,5 @@ public class MediaPlayerViewController implements Initializable {
         String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #04a650 0%%, #04a650 %.10f%%, #92dc9b %.10f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
         sliderProgressSong.lookup(".track").setStyle(color);
     }
+
 }

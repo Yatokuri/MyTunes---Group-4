@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" onKeyPressed="#keyboardKeyPressed" prefHeight="657.0" prefWidth="948.0" stylesheets="@../CSS/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
+<AnchorPane fx:id="anchorPane" onKeyPressed="#keyboardKeyPressed" onKeyReleased="#keyboardKeyReleased" prefHeight="657.0" prefWidth="948.0" stylesheets="@../CSS/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
    <children>
       <TextField fx:id="txtSongSearch" layoutX="735.0" layoutY="14.0" prefHeight="25.0" prefWidth="200.0" promptText="Type search filter here" stylesheets="@../CSS/Main.css" AnchorPane.rightAnchor="36.0" />
       <HBox layoutX="7.0" layoutY="49.0" prefHeight="441.0" prefWidth="940.0" spacing="20.0" AnchorPane.bottomAnchor="167.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="49.0">
@@ -133,12 +133,12 @@
          <children>
             <HBox alignment="TOP_CENTER" prefHeight="25.0" prefWidth="0.0" spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Button fx:id="btnCreatePlaylist" mnemonicParsing="false" onAction="#createUpdatePlaylist" stylesheets="@../CSS/Main.css" text="Create Playlist" HBox.hgrow="ALWAYS">
+                  <Button fx:id="btnCreatePlaylist" mnemonicParsing="false" onAction="#btnCreatePlaylistNow" stylesheets="@../CSS/Main.css" text="Create Playlist" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="btnUpdatePlaylist" mnemonicParsing="false" onAction="#createUpdatePlaylist" stylesheets="@../CSS/Main.css" text="Update Playlist" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="btnUpdatePlaylist" mnemonicParsing="false" onAction="#btnUpdatePlaylistNow" stylesheets="@../CSS/Main.css" text="Update Playlist" HBox.hgrow="ALWAYS" />
                </children>
                <HBox.margin>
                   <Insets right="-6.0" />
