@@ -11,6 +11,7 @@ import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -90,6 +91,7 @@ public class MediaPlayerViewController implements Initializable {
     private static final Image playIcon = new Image("Icons/play.png");
     private static final Image pauseIcon = new Image("Icons/pause.png");
     private static final Image mainIcon = new Image("Icons/mainIcon.png");
+    private static final String playingGraphic = "-fx-background-color: rgb(42,194,42); -fx-border-color: #1aa115; -fx-background-radius: 15px; -fx-border-radius: 15px 15px 15px 15px;";
 
     public Song getCurrentSong() {
         return currentSong;
@@ -147,7 +149,6 @@ public class MediaPlayerViewController implements Initializable {
         sliderProgressVolume.setValue(volume);
         setVolume();
         updateProgressStyle();
-
 
 
         // Add tableview functionality
@@ -477,15 +478,17 @@ public class MediaPlayerViewController implements Initializable {
 
 
     private void togglePlayPause() {
-        if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was playing we pause it
-            currentMusic.pause();
-            isMusicPaused = true;
-            btnPlayIcon.setImage(playIcon);
-        } else { // If it was instead paused, we start playing the song again
-            currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()));
-            currentMusic.play();
-            isMusicPaused = false;
-            btnPlayIcon.setImage(pauseIcon);
+        if (currentMusic != null) {
+            if (currentMusic.getStatus() == MediaPlayer.Status.PLAYING) { //If it was playing we pause it
+                currentMusic.pause();
+                isMusicPaused = true;
+                btnPlayIcon.setImage(playIcon);
+            } else { // If it was instead paused, we start playing the song again
+                currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()));
+                currentMusic.play();
+                isMusicPaused = false;
+                btnPlayIcon.setImage(pauseIcon);
+            }
         }
     }
 
@@ -502,7 +505,7 @@ public class MediaPlayerViewController implements Initializable {
 
         // Set the style for the row where the playing song is located
         if (!empty && getIndex() == rowNumber) {
-        setStyle("-fx-background-color: rgb(42,194,42); -fx-border-color: #1aa115; -fx-background-radius: 15px; -fx-border-radius: 15px 15px 15px 15px;");
+        setStyle(playingGraphic);
         }
         }
         });
@@ -814,6 +817,17 @@ public class MediaPlayerViewController implements Initializable {
         return null;
     }
 
+    public void seekCurrentMusic10Plus() {
+        if (currentMusic != null) {
+            currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()+10));
+        }
+    }
+
+    public void seekCurrentMusic10Minus() {
+        if (currentMusic != null) {
+            currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()-10));
+        }
+    }
 
 //******************************************DRAG*DROP************************************************
     @FXML
@@ -996,7 +1010,7 @@ public class MediaPlayerViewController implements Initializable {
                 if (item == null) {
                     setStyle("");
                 } else if (item.equals(currentSongPlaying) && currentPlaylistPlaying == currentPlaylist) {
-                    setStyle("-fx-background-color: rgb(42,194,42); -fx-border-color: #1aa115; -fx-background-radius: 15px; -fx-border-radius: 15px 15px 15px 15px;");
+                    setStyle(playingGraphic);
 
                 } else {
                     setStyle("");
@@ -1010,14 +1024,12 @@ public class MediaPlayerViewController implements Initializable {
                     }
                 }
 
-
                 // Handle mouse events here
                 setOnMouseClicked(event -> {
                     tblSongsInPlaylist.refresh();
                     if (event.getButton() == MouseButton.SECONDARY) {
                         contextMenuSongsInPlaylist.getItems().clear();
                         currentSong = getItem();
-                        System.out.println(getIndex() + "kjlikket");
                         if (getIndex() >= getTableView().getItems().size()) {
                             contextMenuSongsInPlaylist.getItems().clear();
                         } else {
@@ -1097,34 +1109,45 @@ public class MediaPlayerViewController implements Initializable {
 
 //*******************************************KEYBOARD**************************************************
     Set<KeyCode> pressedKeys = new HashSet<>();
-
     @FXML
     private void keyboardKeyReleased(KeyEvent event) {
         pressedKeys.remove(event.getCode());
     }
 
+
     @FXML
     private void keyboardKeyPressed(KeyEvent event) throws Exception {
         KeyCode keyCode = event.getCode(); //Get the button press value
         pressedKeys.add(event.getCode());
+
         if (keyCode == KeyCode.DELETE) {
             handleDelete();
         }
-        if (event.getCode() == KeyCode.SPACE) { //The problem is space do something default, so we need to override?
-            System.out.println("Der trykkes space");
+        if (event.getCode() == KeyCode.SPACE) {
+            event.consume();
             tblSongs.getSelectionModel().clearSelection();
             tblPlaylist.getSelectionModel().clearSelection();
             tblSongsInPlaylist.getSelectionModel().clearSelection();
             btnPlay.requestFocus();
             togglePlayPause();
         }
+
         if (keyCode == KeyCode.ESCAPE) {
             tblSongs.getSelectionModel().clearSelection();
             tblPlaylist.getSelectionModel().clearSelection();
             tblSongsInPlaylist.getSelectionModel().clearSelection();
-            btnPlay.requestFocus();
+            anchorPane.requestFocus();
         }
-
+        if (event.isControlDown()) {
+            if (keyCode == KeyCode.LEFT) {
+                seekCurrentMusic10Minus();
+            }
+        }
+        if (event.isControlDown()) {
+            if (keyCode == KeyCode.RIGHT) {
+                seekCurrentMusic10Plus();
+            }
+        }
         if (event.isControlDown()) {
             if (keyCode == KeyCode.H) {
                 btnShuffleSong();
@@ -1144,6 +1167,10 @@ public class MediaPlayerViewController implements Initializable {
             if (keyCode == KeyCode.F) {
                 btnForwardSong();
             }
+        }
+
+        if (event.getCode() == KeyCode.MEDIA_NEXT_TRACK) {
+            btnForwardSong();
         }
 
         if (pressedKeys.contains(KeyCode.SHIFT) &&
@@ -1272,6 +1299,7 @@ public class MediaPlayerViewController implements Initializable {
             repeatMode = 2;    //Change repeat mode to repeat playlist so system know
         }
     }
+
 
     public void onSlideProgressPressed() {
         if (currentMusic != null) {

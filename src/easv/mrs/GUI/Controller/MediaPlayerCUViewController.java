@@ -16,6 +16,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -23,8 +25,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MediaPlayerCUViewController implements Initializable {
     @FXML
@@ -158,6 +159,33 @@ public class MediaPlayerCUViewController implements Initializable {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    //*******************************************KEYBOARD**************************************************
+    @FXML
+    private void keyboardKeyPressed(KeyEvent event) throws Exception {
+        KeyCode keyCode = event.getCode(); //Get the button press value
+
+        if (event.isControlDown()) {
+            if (keyCode == KeyCode.F) {
+                btnChooseFile();
+            }
+        }
+        if (event.isControlDown()) {
+            if (keyCode == KeyCode.C) {
+                btnMoreCategory();
+            }
+        }
+        if (event.isControlDown()) {
+            if (keyCode == KeyCode.S) {
+                btnSave();
+            }
+        }
+        if (event.isControlDown()) {
+            if (keyCode == KeyCode.ESCAPE) {
+                btnCloseWindow();
+            }
+        }
     }
 //*******************************BUTTONS***********************************************
     public void btnChooseFile() { //Use to choose file - We pass the info to ValidateModel class

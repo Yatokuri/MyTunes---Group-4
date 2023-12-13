@@ -16,10 +16,13 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader();
         Parent root = loader.load(getClass().getResource("/View/MediaPlayer.fxml"));
         primaryStage.getIcons().add(new Image("/Icons/mainIcon.png"));
-        primaryStage.setTitle("MyTunes Beta");
+        primaryStage.setTitle("MyTunes Beta 0,8");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(true);
+        root.requestFocus();
         primaryStage.show();
+        primaryStage.setMinHeight(450);
+        primaryStage.setMinWidth(925);
     }
 
     public static void main(String[] args) {
