@@ -43,4 +43,7 @@ public class PlaylistModel {
         // remove from observable list (and UI)
         playlistsToBeViewed.remove(selectedPlaylist);
     }
+    public Playlist getPlaylistById(int plId){
+        return playlistManager.getPlaylistById(plId);
+    }
 }

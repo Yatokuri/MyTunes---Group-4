@@ -98,7 +98,7 @@
       </HBox>
       <VBox alignment="CENTER" layoutX="220.0" layoutY="465.0" prefHeight="102.0" prefWidth="508.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="220.0">
          <children>
-            <Label fx:id="lblPlayingNow" prefHeight="30.0" prefWidth="150.0" text="Choose a song to play!" VBox.vgrow="ALWAYS">
+            <Label fx:id="lblPlayingNow" text="Choose a song to play!" VBox.vgrow="ALWAYS">
                <padding>
                   <Insets bottom="5.0" />
                </padding>

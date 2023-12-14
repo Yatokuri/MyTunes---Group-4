@@ -6,6 +6,7 @@ package easv.mrs.BLL;
 import easv.mrs.BE.Playlist;
 import easv.mrs.DAL.IPlaylistDataAccess;
 import easv.mrs.DAL.db.PlaylistDAO_DB;
+import easv.mrs.GUI.Model.PlaylistModel;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,5 +33,14 @@ public class PlaylistManager {
 
     public void deletePlaylist(Playlist selectedPlaylist) throws Exception {
         playlistDAO.deletePlaylist(selectedPlaylist);
+    }
+
+    public Playlist getPlaylistById(int plId) {
+        for (Playlist pl : PlaylistModel.getObservablePlaylists()) {
+            if (pl.getId() == plId) {
+                return pl;
+            }
+        }
+        return null;
     }
 }

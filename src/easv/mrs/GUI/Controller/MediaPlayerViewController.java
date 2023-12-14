@@ -139,7 +139,7 @@ public class MediaPlayerViewController implements Initializable {
         // Adds a FilterList to the tblSongs that will automatically filter based on search input through the use
         // of a FilteredList made from our observable list of songs
         txtSongSearch.textProperty().addListener((observable, oldValue, newValue) ->
-                tblSongs.setItems(filterList(songModel.getObservableSongs(), newValue.toLowerCase()))
+                tblSongs.setItems(songModel.filterList(songModel.getObservableSongs(), newValue.toLowerCase()))
         );
 
         // Initialize the tables with columns.
@@ -265,7 +265,7 @@ public class MediaPlayerViewController implements Initializable {
                 if (event.getSource() instanceof MenuItem) {
                     MenuItem selectedItem = (MenuItem) event.getTarget();
                     Playlist selectedPlaylist = (Playlist) selectedItem.getUserData();
-                    currentPlaylist = getPlaylistById(selectedPlaylist.getId());
+                    currentPlaylist = playlistModel.getPlaylistById(selectedPlaylist.getId());
                 }
                 songPlaylistModel.playlistSongs(currentPlaylist);
 
@@ -360,22 +360,6 @@ public class MediaPlayerViewController implements Initializable {
             lblCurrentSongProgress.setText("00:00:00");
             lblSongDuration.setText("00:00:00");
         }
-    }
-
-    //*******************************************SEARCH*FUNCTION**************************************************
-    //Searches through the titles and artists of all the songs to be used in the filterList method underneath
-    private boolean searchFindsSongs(Song song, String searchText) {
-        return (song.getTitle().toLowerCase().contains(searchText.toLowerCase())) || (song.getArtist().toLowerCase().contains(searchText.toLowerCase()));
-    }
-
-    private ObservableList<Song> filterList(List<Song> song, String searchText) {
-        List<Song> filteredList = new ArrayList<>();
-        for (Song s : song) {
-            if (searchFindsSongs(s, searchText)) {
-                filteredList.add(s);
-            }
-        }
-        return FXCollections.observableList(filteredList);
     }
 //********************************MEDIA*PLAYER*FUNCTION**************************************************
 
@@ -598,7 +582,7 @@ public class MediaPlayerViewController implements Initializable {
 
     public void onEndOfSong(){
         if (repeatMode == 2)    {//Repeat 1
-            handleNewSong(currentMusic, getSongById(currentSongPlaying.getId()));
+            handleNewSong(currentMusic, songModel.getSongById(currentSongPlaying.getId()));
             return;
         }
         if (shuffleMode == 1) {
@@ -803,24 +787,6 @@ public class MediaPlayerViewController implements Initializable {
         return (int)(Math.random() * range) + min;
     }
 
-    private Song getSongById(int songId) { //This is not right layer!
-        for (Song s : songModel.getObservableSongs()) {
-            if (s.getId() == songId) {
-                return s;
-            }
-        }
-        return null;
-    }
-
-    private Playlist getPlaylistById(int plId) { //This is not right layer!
-        for (Playlist pl : PlaylistModel.getObservablePlaylists()) {
-            if (pl.getId() == plId) {
-                return pl;
-            }
-        }
-        return null;
-    }
-
     public void seekCurrentMusic10Plus() {
         if (currentMusic != null) {
             currentMusic.seek(Duration.seconds(sliderProgressSong.getValue()+10));
@@ -906,7 +872,7 @@ public class MediaPlayerViewController implements Initializable {
 
                 if (db.hasString()) {
                     int songId = Integer.parseInt(db.getString());
-                    Song selectedSong = getSongById(songId);
+                    Song selectedSong = songModel.getSongById(songId);
 
                     // Access the data associated with the target row
                     currentPlaylist = row.getItem();
@@ -954,7 +920,7 @@ public class MediaPlayerViewController implements Initializable {
 
             if (db.hasString() && Objects.equals(currentTableview, "tblSongs")) {
                 int songId = Integer.parseInt(db.getString());
-                Song selectedSong = getSongById(songId);
+                Song selectedSong = songModel.getSongById(songId);
 
                 if (selectedSong != null) {
                     try {
@@ -1118,12 +1084,10 @@ public class MediaPlayerViewController implements Initializable {
         pressedKeys.remove(event.getCode());
     }
 
-
     @FXML
     private void keyboardKeyPressed(KeyEvent event) throws Exception {
         KeyCode keyCode = event.getCode(); //Get the button press value
         pressedKeys.add(event.getCode());
-
         if (keyCode == KeyCode.DELETE) {
             handleDelete();
         }
@@ -1331,7 +1295,4 @@ public class MediaPlayerViewController implements Initializable {
         String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #04a650 0%%, #04a650 %.10f%%, #92dc9b %.10f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
         sliderProgressSong.lookup(".track").setStyle(color);
     }
-
-
-
 }

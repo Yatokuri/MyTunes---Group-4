@@ -8,10 +8,11 @@ import easv.mrs.BLL.SongManager;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import java.util.List;
 
 public class SongModel {
 
-    private final ObservableList<Song> songsToBeViewed;
+    private static ObservableList<Song> songsToBeViewed = null;
     private final SongManager songManager;
 
     public SongModel() throws Exception {
@@ -26,7 +27,7 @@ public class SongModel {
         songsToBeViewed.addAll(songManager.getAllSongs());
         return s;
     }
-    public ObservableList<Song> getObservableSongs() { return songsToBeViewed; }
+    public static ObservableList<Song> getObservableSongs() { return songsToBeViewed; }
     public void updateSong(Song updatedSong) throws Exception {
         // update song in DAL layer (through the layers)
         songManager.updateSong(updatedSong);
@@ -42,5 +43,12 @@ public class SongModel {
         songManager.deleteSong(selectedSong);
         // remove from observable list (and UI)
         songsToBeViewed.remove(selectedSong);
+    }
+    public ObservableList<Song> filterList(List<Song> song, String searchText){
+        return songManager.filterList(song, searchText);
+
+    }
+    public Song getSongById(int songId){
+        return songManager.getSongById(songId);
     }
 }
