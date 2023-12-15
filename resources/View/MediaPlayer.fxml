@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
@@ -12,12 +13,22 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.media.MediaView?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="anchorPane" onKeyPressed="#keyboardKeyPressed" onKeyReleased="#keyboardKeyReleased" prefHeight="657.0" prefWidth="948.0" stylesheets="@../CSS/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.MyTunes.GUI.Controller.MediaPlayerViewController">
    <children>
+      <HBox fx:id="mediaViewBox" layoutX="1.0" layoutY="-1.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <MediaView fx:id="mediaView" fitHeight="500.0" fitWidth="900.0" preserveRatio="false" HBox.hgrow="ALWAYS">
+               <viewport>
+                  <Rectangle2D />
+               </viewport>
+            </MediaView>
+         </children>
+      </HBox>
       <TextField fx:id="txtSongSearch" layoutX="735.0" layoutY="14.0" prefHeight="25.0" prefWidth="200.0" promptText="Type search filter here" stylesheets="@../CSS/Main.css" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="14.0" />
-      <HBox layoutX="7.0" layoutY="49.0" prefHeight="491.0" prefWidth="938.0" spacing="20.0" AnchorPane.bottomAnchor="117.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="49.0">
+      <HBox fx:id="vboxTblBtn" layoutX="7.0" layoutY="49.0" prefHeight="491.0" prefWidth="938.0" spacing="20.0" AnchorPane.bottomAnchor="117.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="49.0">
          <children>
             <VBox prefHeight="472.0" prefWidth="247.0" HBox.hgrow="ALWAYS">
                <children>

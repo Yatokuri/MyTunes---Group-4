@@ -8,6 +8,7 @@ import easv.MyTunes.BE.Song;
 import easv.MyTunes.GUI.Model.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
@@ -21,9 +22,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -40,9 +43,13 @@ import java.util.concurrent.CompletableFuture;
 
 public class MediaPlayerViewController implements Initializable {
     @FXML
+    private HBox vboxTblBtn, mediaViewBox;
+    @FXML
     private VBox tblSongsInPlaylistVBOX;
     @FXML
     private TableView<Playlist> tblPlaylist;
+    @FXML
+    private MediaView mediaView;
     @FXML
     private TableView<Song> tblSongsInPlaylist, tblSongs;
     @FXML
@@ -54,7 +61,7 @@ public class MediaPlayerViewController implements Initializable {
     @FXML
     private ImageView btnPlayIcon, btnRepeatIcon, btnShuffleIcon;
     @FXML
-    private Button btnCreatePlaylist, btnUpdatePlaylist, btnPlay;
+    private Button btnCreatePlaylist, btnUpdatePlaylist, btnPlay, btnRepeat, btnShuffle;
     @FXML
     private TextField txtSongSearch;
     @FXML
@@ -142,6 +149,8 @@ public class MediaPlayerViewController implements Initializable {
         txtSongSearch.textProperty().addListener((observable, oldValue, newValue) ->
                 tblSongs.setItems(songModel.filterList(SongModel.getObservableSongs(), newValue.toLowerCase()))
         );
+
+
 
         // Initialize the tables with columns.
         initializeTableColumns();
@@ -535,12 +544,12 @@ public class MediaPlayerViewController implements Initializable {
         currentSongPlaying = selectedSong;
         sliderProgressSong.setDisable(false);
         currentMusic = newSong;
-        currentMusic.setVolume((sliderProgressVolume.getValue())); //We set the volume
+
         sliderProgressSong.setMax(newSong.getTotalDuration().toSeconds()); //Set our progress to the time so, we know maximum value
         lblPlayingNow.setText("Now playing: " + selectedSong.getTitle() + " - " + selectedSong.getArtist());
         currentMusic.seek(Duration.ZERO); //When you start a song again it should start from start
+        currentMusic.setVolume((sliderProgressVolume.getValue())); //We set the volume
         handlePlayingSongColor();
-
         tblSongsInPlaylist.refresh(); //So the song in song playlist get its color
         tblPlaylist.refresh(); //So the playlist in playlist get its color
 
@@ -595,7 +604,7 @@ public class MediaPlayerViewController implements Initializable {
 
     public void onEndOfSong() {
         if (repeatMode == 2) {//Repeat 1
-            handleNewSong(currentMusic, songModel.getSongById(currentSongPlaying.getId()));
+            handleNewSong(currentMusic, currentSongPlaying);
             return;
         }
         if (shuffleMode == 1) {
@@ -1107,11 +1116,13 @@ public class MediaPlayerViewController implements Initializable {
 
     @FXML
     private void keyboardKeyPressed(KeyEvent event) throws Exception {
+
+
+
+
+
         KeyCode keyCode = event.getCode(); //Get the button press value
         pressedKeys.add(event.getCode());
-        if (keyCode == KeyCode.DELETE) {
-            handleDelete();
-        }
         if (event.getCode() == KeyCode.SPACE) {
             event.consume();
             tblSongs.getSelectionModel().clearSelection();
@@ -1139,59 +1150,103 @@ public class MediaPlayerViewController implements Initializable {
                 seekCurrentMusic10Plus();
             }
         }
-        if (event.isControlDown()) {
-            if (keyCode == KeyCode.H) {
-                btnShuffleSong();
+
+        if (!isSecreteModeActive) { //Disable key under media
+            if (keyCode == KeyCode.DELETE) {
+                handleDelete();
+            }
+
+            if (event.isControlDown()) {
+                if (keyCode == KeyCode.H) {
+                    btnShuffleSong();
+                }
+            }
+            if (event.isControlDown()) {
+                if (keyCode == KeyCode.T) {
+                    btnRepeatSong();
+                }
+            }
+            if (event.isControlDown()) {
+                if (keyCode == KeyCode.B) {
+                    btnBackwardSong();
+                }
+            }
+            if (event.isControlDown()) {
+                if (keyCode == KeyCode.F) {
+                    btnForwardSong();
+                }
+            }
+
+            if (event.isControlDown()) {
+                if (keyCode == KeyCode.P) {
+                    btnCreatePlaylistNow();
+                }
+            }
+            if (event.isControlDown()) {
+                if (keyCode == KeyCode.O) {
+                    btnUpdatePlaylistNow();
+                }
+            }
+            if (event.isControlDown()) {
+                if (keyCode == KeyCode.C) {
+                    btnNewWindowCreate();
+                }
+            }
+            if (event.isControlDown()) {
+                if (keyCode == KeyCode.U) {
+                    btnNewWindowUpdate();
+                }
+            }
+            if (pressedKeys.contains(KeyCode.SHIFT) && pressedKeys.containsAll(Arrays.asList(KeyCode.M, KeyCode.T))) {
+                lastSongName = currentSongPlaying;
+                lastSong = currentMusic;
+                lastSongSeek = sliderProgressSong.getValue();
+                System.out.println("Secret combination pressed");
+                repeatMode = 2;
+                isSecreteModeActive = true;
+                btnRepeatIcon.setImage(repeatDisableIcon);
+                btnShuffleIcon.setImage(repeatDisableIcon);
+                btnRepeat.setDisable(true);
+                btnShuffle.setDisable(true);
+                txtSongSearch.setVisible(false);
+                vboxTblBtn.setVisible(false);
+                anchorPane.setStyle("-fx-background-color: #6f787e;");
+                mediaView.setMediaPlayer(mp);
+                isMusicPaused = false;
+                handleNewSong(mp, currentMovie);
+                mediaView.fitWidthProperty().bind(mediaViewBox.widthProperty());
+                mediaView.fitHeightProperty().bind(mediaViewBox.heightProperty());
             }
         }
-        if (event.isControlDown()) {
-            if (keyCode == KeyCode.T) {
-                btnRepeatSong();
-            }
-        }
-        if (event.isControlDown()) {
-            if (keyCode == KeyCode.B) {
-                btnBackwardSong();
-            }
-        }
-        if (event.isControlDown()) {
-            if (keyCode == KeyCode.F) {
-                btnForwardSong();
-            }
+        else if (pressedKeys.contains(KeyCode.SHIFT) && pressedKeys.containsAll(Arrays.asList(KeyCode.M, KeyCode.T))) {
+            isSecreteModeActive = false;
+            System.out.println("Secret system closed");
+            repeatMode = 0;
+            btnRepeatIcon.setImage(repeatDisableIcon);
+            btnShuffleIcon.setImage(repeatDisableIcon);
+            btnRepeat.setDisable(false);
+            btnShuffle.setDisable(false);
+            txtSongSearch.setVisible(true);
+            vboxTblBtn.setVisible(true);
+            anchorPane.setStyle("");
+            mediaView.setMediaPlayer(null);
+            mediaView.fitWidthProperty().bind(mediaViewBox.widthProperty());
+            mediaView.fitHeightProperty().bind(mediaViewBox.heightProperty());
+            handleNewSong(lastSong, lastSongName);
+            Platform.runLater(() -> {
+                sliderProgressSong.setValue(lastSongSeek);
+            });
         }
 
-        if (pressedKeys.contains(KeyCode.SHIFT) &&
-                pressedKeys.containsAll(Arrays.asList(KeyCode.M, KeyCode.T))) {
 
-
-            tblPlaylist.setVisible(false);
-            tblSongs.setVisible(false);
-            tblSongsInPlaylistVBOX.setVisible(false);
-            System.out.println("Secret combination pressed");
-        }
-
-        if (event.isControlDown()) {
-            if (keyCode == KeyCode.P) {
-                btnCreatePlaylistNow();
-            }
-        }
-        if (event.isControlDown()) {
-            if (keyCode == KeyCode.O) {
-                btnUpdatePlaylistNow();
-            }
-        }
-        if (event.isControlDown()) {
-            if (keyCode == KeyCode.C) {
-                btnNewWindowCreate();
-            }
-        }
-        if (event.isControlDown()) {
-            if (keyCode == KeyCode.U) {
-                btnNewWindowUpdate();
-            }
-        }
     }
 
+    MediaPlayer mp = new MediaPlayer(new Media(new File("data/SECRET.mp4").toURI().toString()));
+    Song currentMovie = new Song(-50, 2013, "Fort", "Night", "data/SECRET.mp4", 0.0, "Fun");
+    boolean isSecreteModeActive = false;
+    MediaPlayer lastSong;
+    Song lastSongName;
+    double lastSongSeek;
     //******************************************BUTTONS*SLIDERS************************************************
     public void createUpdatePlaylist(String buttonText) throws Exception {
         TextInputDialog dialog = new TextInputDialog("");
