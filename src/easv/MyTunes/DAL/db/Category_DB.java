@@ -1,9 +1,9 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.DAL.db;
+package easv.MyTunes.DAL.db;
 
-import easv.mrs.BE.Category;
+import easv.MyTunes.BE.Category;
 
 import java.io.IOException;
 import java.sql.*;

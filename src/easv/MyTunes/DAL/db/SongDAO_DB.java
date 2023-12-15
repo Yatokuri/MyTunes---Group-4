@@ -1,11 +1,11 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.DAL.db;
+package easv.MyTunes.DAL.db;
 
 // Project imports
-import easv.mrs.BE.Song;
-import easv.mrs.DAL.ISongDataAccess;
+import easv.MyTunes.BE.Song;
+import easv.MyTunes.DAL.ISongDataAccess;
 
 // Java imports
 import java.math.BigDecimal;

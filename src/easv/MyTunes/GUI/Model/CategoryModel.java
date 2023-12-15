@@ -1,7 +1,7 @@
-package easv.mrs.GUI.Model;
+package easv.MyTunes.GUI.Model;
 
-import easv.mrs.BE.Category;
-import easv.mrs.BLL.CategoryManager;
+import easv.MyTunes.BE.Category;
+import easv.MyTunes.BLL.CategoryManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

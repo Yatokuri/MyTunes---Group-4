@@ -1,7 +1,7 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.BE;
+package easv.MyTunes.BE;
 
 public class Playlist {
 

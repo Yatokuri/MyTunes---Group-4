@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" onKeyPressed="#keyboardKeyPressed" onKeyReleased="#keyboardKeyReleased" prefHeight="657.0" prefWidth="948.0" stylesheets="@../CSS/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.mrs.GUI.Controller.MediaPlayerViewController">
+<AnchorPane fx:id="anchorPane" onKeyPressed="#keyboardKeyPressed" onKeyReleased="#keyboardKeyReleased" prefHeight="657.0" prefWidth="948.0" stylesheets="@../CSS/Main.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.MyTunes.GUI.Controller.MediaPlayerViewController">
    <children>
       <TextField fx:id="txtSongSearch" layoutX="735.0" layoutY="14.0" prefHeight="25.0" prefWidth="200.0" promptText="Type search filter here" stylesheets="@../CSS/Main.css" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="14.0" />
       <HBox layoutX="7.0" layoutY="49.0" prefHeight="491.0" prefWidth="938.0" spacing="20.0" AnchorPane.bottomAnchor="117.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="49.0">

@@ -1,12 +1,12 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.BLL;
+package easv.MyTunes.BLL;
 
-import easv.mrs.BE.Song;
-import easv.mrs.DAL.ISongDataAccess;
-import easv.mrs.DAL.db.SongDAO_DB;
-import easv.mrs.GUI.Model.SongModel;
+import easv.MyTunes.BE.Song;
+import easv.MyTunes.DAL.ISongDataAccess;
+import easv.MyTunes.DAL.db.SongDAO_DB;
+import easv.MyTunes.GUI.Model.SongModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

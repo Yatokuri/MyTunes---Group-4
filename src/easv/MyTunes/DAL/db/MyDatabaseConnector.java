@@ -1,4 +1,4 @@
-package easv.mrs.DAL.db;
+package easv.MyTunes.DAL.db;
 
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;

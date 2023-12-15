@@ -1,8 +1,8 @@
-package easv.mrs.GUI.Model;
+package easv.MyTunes.GUI.Model;
 
-import easv.mrs.BE.Playlist;
-import easv.mrs.BE.Song;
-import easv.mrs.BLL.SongPlaylistManager;
+import easv.MyTunes.BE.Playlist;
+import easv.MyTunes.BE.Song;
+import easv.MyTunes.BLL.SongPlaylistManager;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

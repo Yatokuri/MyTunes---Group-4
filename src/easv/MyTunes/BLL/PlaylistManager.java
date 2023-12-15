@@ -1,12 +1,12 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.BLL;
+package easv.MyTunes.BLL;
 
-import easv.mrs.BE.Playlist;
-import easv.mrs.DAL.IPlaylistDataAccess;
-import easv.mrs.DAL.db.PlaylistDAO_DB;
-import easv.mrs.GUI.Model.PlaylistModel;
+import easv.MyTunes.BE.Playlist;
+import easv.MyTunes.DAL.IPlaylistDataAccess;
+import easv.MyTunes.DAL.db.PlaylistDAO_DB;
+import easv.MyTunes.GUI.Model.PlaylistModel;
 
 import java.io.IOException;
 import java.util.List;

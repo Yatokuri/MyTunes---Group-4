@@ -1,14 +1,14 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.GUI.Controller;
+package easv.MyTunes.GUI.Controller;
 
-import easv.mrs.BE.Category;
-import easv.mrs.BE.Song;
-import easv.mrs.GUI.Model.CategoryModel;
-import easv.mrs.GUI.Model.DisplayErrorModel;
-import easv.mrs.GUI.Model.SongModel;
-import easv.mrs.GUI.Model.ValidateModel;
+import easv.MyTunes.BE.Category;
+import easv.MyTunes.BE.Song;
+import easv.MyTunes.GUI.Model.CategoryModel;
+import easv.MyTunes.GUI.Model.DisplayErrorModel;
+import easv.MyTunes.GUI.Model.SongModel;
+import easv.MyTunes.GUI.Model.ValidateModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;

@@ -1,10 +1,10 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.GUI.Model;
+package easv.MyTunes.GUI.Model;
 
-import easv.mrs.BE.Song;
-import easv.mrs.BLL.SongManager;
+import easv.MyTunes.BE.Song;
+import easv.MyTunes.BLL.SongManager;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

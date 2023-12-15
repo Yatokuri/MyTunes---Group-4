@@ -1,7 +1,7 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.GUI.Model;
+package easv.MyTunes.GUI.Model;
 
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 import javafx.scene.control.Alert;

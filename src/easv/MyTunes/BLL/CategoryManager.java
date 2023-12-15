@@ -1,10 +1,10 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.BLL;
+package easv.MyTunes.BLL;
 
-import easv.mrs.BE.Category;
-import easv.mrs.DAL.db.Category_DB;
+import easv.MyTunes.BE.Category;
+import easv.MyTunes.DAL.db.Category_DB;
 
 import java.io.IOException;
 import java.util.List;

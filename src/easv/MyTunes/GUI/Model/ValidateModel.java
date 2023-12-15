@@ -1,9 +1,9 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.GUI.Model;
+package easv.MyTunes.GUI.Model;
 
-import easv.mrs.BE.Song;
+import easv.MyTunes.BE.Song;
 import javafx.scene.control.TextField;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
@@ -16,18 +16,12 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ValidateModel {
-    private SongModel songModel;
     private String setupUpdateOriginalName = "";
     private boolean setupUpdateOriginal = true;
     private static final String[]validFiles  = {"wav" , "mp3"};
 
     public ValidateModel()  {
-        try {
-            songModel = new SongModel();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
     //Method to check valid data to CU is correct
     public boolean validateInput(TextField textField, String value) { //Valid input
@@ -44,7 +38,7 @@ public class ValidateModel {
                 if (setupUpdateOriginalName.equals(value))  { //When updating a song the filepath can be the same as before of cause
                     return isValidMediaPath(value);
                 }
-                for  (Song s : songModel.getObservableSongs()) { //We don't want people to have the same song path twice
+                for  (Song s : SongModel.getObservableSongs()) { //We don't want people to have the same song path twice
                     if (s.getSongPath().equals(value)) {
                         return false;
                     }

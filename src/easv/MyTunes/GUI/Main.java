@@ -1,7 +1,7 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.GUI;
+package easv.MyTunes.GUI;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +22,7 @@ public class Main extends Application {
         root.requestFocus();
         primaryStage.show();
     }
+
 
 
 

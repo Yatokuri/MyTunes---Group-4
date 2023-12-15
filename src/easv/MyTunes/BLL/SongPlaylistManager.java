@@ -1,11 +1,11 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.BLL;
+package easv.MyTunes.BLL;
 
-import easv.mrs.BE.Playlist;
-import easv.mrs.BE.Song;
-import easv.mrs.DAL.db.PlaylistSongDAO_DB;
+import easv.MyTunes.BE.Playlist;
+import easv.MyTunes.BE.Song;
+import easv.MyTunes.DAL.db.PlaylistSongDAO_DB;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
 /**
  * @author Daniel, Rune, og Thomas
  **/
-package easv.mrs.DAL;
+package easv.MyTunes.DAL;
 
-import easv.mrs.BE.Playlist;
+import easv.MyTunes.BE.Playlist;
 
 import java.util.List;
 
