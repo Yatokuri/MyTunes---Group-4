@@ -27,6 +27,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -61,7 +62,7 @@ public class MediaPlayerViewController implements Initializable {
     @FXML
     private ImageView btnPlayIcon, btnRepeatIcon, btnShuffleIcon;
     @FXML
-    private Button btnCreatePlaylist, btnUpdatePlaylist, btnPlay, btnRepeat, btnShuffle;
+    private Button btnCreatePlaylist, btnUpdatePlaylist, btnPlay, btnRepeat, btnShuffle, btnVideo;
     @FXML
     private TextField txtSongSearch;
     @FXML
@@ -1206,6 +1207,7 @@ public class MediaPlayerViewController implements Initializable {
                 isSecreteModeActive = true;
                 btnRepeatIcon.setImage(repeatDisableIcon);
                 btnShuffleIcon.setImage(repeatDisableIcon);
+                btnVideo.setVisible(true);
                 btnRepeat.setDisable(true);
                 btnShuffle.setDisable(true);
                 txtSongSearch.setVisible(false);
@@ -1224,6 +1226,7 @@ public class MediaPlayerViewController implements Initializable {
             repeatMode = 0;
             btnRepeatIcon.setImage(repeatDisableIcon);
             btnShuffleIcon.setImage(repeatDisableIcon);
+            btnVideo.setVisible(false);
             btnRepeat.setDisable(false);
             btnShuffle.setDisable(false);
             txtSongSearch.setVisible(true);
@@ -1232,12 +1235,39 @@ public class MediaPlayerViewController implements Initializable {
             mediaView.setMediaPlayer(null);
             mediaView.fitWidthProperty().bind(mediaViewBox.widthProperty());
             mediaView.fitHeightProperty().bind(mediaViewBox.heightProperty());
-            handleNewSong(lastSong, lastSongName);
-            Platform.runLater(() -> {
-                sliderProgressSong.setValue(lastSongSeek);
-            });
+            if (lastSong != null)   {
+                handleNewSong(lastSong, lastSongName);
+                Platform.runLater(() -> {
+                    sliderProgressSong.setValue(lastSongSeek);
+                });
+            }
+            else {
+                currentMusic.seek(Duration.millis(1000000000)); //So its 100% is done
+            }
         }
+    }
 
+    public void btnNewVideo() {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Video Files", "*.mp4", "*.avi");
+        fileChooser.getExtensionFilters().add(extFilter);
+        // Show the file chooser dialog
+        File selectedFile = fileChooser.showOpenDialog(null);
+
+        if (selectedFile != null) {
+            MediaPlayer previousMediaPlayer = soundMap.remove(currentMovie.getId());
+            currentMovie = new Song(-50, 0, selectedFile.getName(), "Unknown", selectedFile.getAbsolutePath(), 0.0, "Fun");
+            addSongsToSoundMap(currentMovie).thenRun(() -> {
+                MediaPlayer newMovie = soundMap.get(currentMovie.getId());
+                sliderProgressSong.setValue(0);
+                mediaView.setMediaPlayer(newMovie);
+                handleNewSong(newMovie, currentMovie);
+                if (previousMediaPlayer != null) {
+                    previousMediaPlayer.dispose(); //Clear up resources
+                }
+            });
+
+        }
 
     }
 

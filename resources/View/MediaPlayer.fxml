@@ -92,7 +92,7 @@
                   <HBox alignment="TOP_CENTER" prefHeight="30.0" prefWidth="415.0" spacing="10.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#btnNewWindowCreate" prefWidth="90.0" stylesheets="@../CSS/Main.css" text="Create Song" HBox.hgrow="ALWAYS" />
-                        <Button mnemonicParsing="false" onAction="#btnNewWindowUpdate" prefWidth="90.0" stylesheets="@../CSS/Main.css" text="Update song" HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" onAction="#btnNewWindowUpdate" prefWidth="90.0" stylesheets="@../CSS/Main.css" text="Update Song" HBox.hgrow="ALWAYS" />
                         <Button mnemonicParsing="false" onAction="#btnDelete" prefWidth="60.0" stylesheets="@../CSS/Main.css" text="Delete" HBox.hgrow="ALWAYS">
                            <HBox.margin>
                               <Insets left="4.0" />
@@ -184,5 +184,6 @@
             <Label fx:id="lblVolume" stylesheets="@../CSS/Main.css" text="50%" />
          </children>
       </HBox>
+      <Button fx:id="btnVideo" layoutX="71.0" layoutY="593.0" mnemonicParsing="false" onAction="#btnNewVideo" prefWidth="90.0" stylesheets="@../CSS/Main.css" text="Upload Video" visible="false" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="70.0" />
    </children>
 </AnchorPane>
