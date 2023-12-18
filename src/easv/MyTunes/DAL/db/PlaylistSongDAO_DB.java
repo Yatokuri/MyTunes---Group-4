@@ -22,7 +22,7 @@ public class PlaylistSongDAO_DB {
         songDAO_db = new SongDAO_DB();
     }
 
-    public List<Song> getAllSongsPlaylist(Playlist playlist) throws Exception {
+    public List<Song> getAllSongsPlaylist(Playlist playlist) throws Exception { // Gets all the songs in each playlist to get the song count and song length
 
         playlist.setSongTotalTime(0);
         playlist.setSongCount(0);
@@ -61,7 +61,7 @@ public class PlaylistSongDAO_DB {
         }
     }
 
-    public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
+    public void addSongToPlaylist(Song song, Playlist playlist) throws Exception { // Attempts to add a song to a playlist
 
         // SQL command
         String sql = "INSERT INTO dbo.PlaylistSongs (SongId, PlaylistId, PlayListOrder) VALUES (?,?,?)";
@@ -96,7 +96,7 @@ public class PlaylistSongDAO_DB {
         }
     }
 
-    public void updateSongInPlaylist(Song song, Song oldSong, Playlist playlist) throws Exception {
+    public void updateSongInPlaylist(Song song, Song oldSong, Playlist playlist) throws Exception { // Updates the song playlist order when it gets moved up or down in the list
         // SQL commands
         String sql = "UPDATE dbo.PlaylistSongs SET PlayListOrder = ? WHERE SongId = ? AND PlaylistId = ?";
         String sqlOldSong = "SELECT PlayListOrder FROM dbo.PlaylistSongs WHERE SongId = ? AND PlaylistId = ?";
@@ -161,7 +161,7 @@ public class PlaylistSongDAO_DB {
         }
     }
 
-    public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception {
+    public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception { // deletes a song from a playlist
         //When we delete a song we also need to change there order
 
         // SQL command
@@ -203,7 +203,7 @@ public class PlaylistSongDAO_DB {
         }
     }
 
-    public void deleteAllSongsFromPlaylist(Playlist playlist) throws Exception {
+    public void deleteAllSongsFromPlaylist(Playlist playlist) throws Exception { // Empties out the playlist by deleting all songs within without deleting the playlist itself
         // SQL command
         String sql = "DELETE FROM dbo.PlaylistSongs WHERE PlaylistId = ?";
 

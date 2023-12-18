@@ -19,10 +19,10 @@ public class CategoryManager {
         return categoryDAO.createCategory(newCategory);
     }
 
-    public List<Category> getAllCategories() throws Exception {
+    public List<Category> getAllCategories() throws Exception { // Sends a query request
         return categoryDAO.getAllCategories();
     }
-    public void deleteCategory(Category selectedCategory) throws Exception {
+    public void deleteCategory(Category selectedCategory) throws Exception { // Sends a request to the database to delete the selected category
         categoryDAO.deleteCategory(selectedCategory);
     }
 

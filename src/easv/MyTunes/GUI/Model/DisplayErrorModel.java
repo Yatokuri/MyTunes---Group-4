@@ -12,15 +12,16 @@ import javafx.stage.Stage;
 public class DisplayErrorModel {
     private static final Image programIcon = new Image ("/Icons/mainIcon.png");
 
+    // This is used to make custom message from other Class
     public void displayErrorC(String t) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         setIcon(alert);
         alert.setTitle("Something went wrong");
         alert.setHeaderText(t);
         alert.showAndWait();
-
     }
 
+    //This is used to make the auto generated error message
     public void displayError(Throwable t) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         setIcon(alert);

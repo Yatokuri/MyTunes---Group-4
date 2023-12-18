@@ -35,7 +35,7 @@ public class PlaylistManager {
         playlistDAO.deletePlaylist(selectedPlaylist);
     }
 
-    public Playlist getPlaylistById(int plId) {
+    public Playlist getPlaylistById(int plId) { // Returns a playlist with the given id
         for (Playlist pl : PlaylistModel.getObservablePlaylists()) {
             if (pl.getId() == plId) {
                 return pl;

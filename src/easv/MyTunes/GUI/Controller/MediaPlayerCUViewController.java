@@ -77,6 +77,7 @@ public class MediaPlayerCUViewController implements Initializable {
             throw new RuntimeException(e);
         }
         currentSelectedSong = mediaPlayerViewController.getCurrentSong();
+        // Add validation listeners for all inputs & starts context system
         addValidationListener(txtInputName, isNameValid);
         addValidationListener(txtInputArtist, isArtistValid);
         addValidationListener(txtInputFilepath, isFilepathValid);
@@ -84,6 +85,7 @@ public class MediaPlayerCUViewController implements Initializable {
         addValidationListener(txtInputTime, isTimeValid);
         contextSystem();
 
+        // Gets all the categories from the Database
         comCategory.getItems().addAll(CategoryModel.getObservableCategories().sorted());
         comCategory.getSelectionModel().select(0);
         comCategory.setOnMouseClicked(event -> { // Consume the event to prevent the ComboBox from opening
@@ -104,16 +106,22 @@ public class MediaPlayerCUViewController implements Initializable {
     }
 
     public void startupSetup() {
-        if (typeCU == 1) { //1 mean create song
+        if (typeCU == 1) { // If TypeCU is 1 we create song
             btnSave.setText("Create");
         }
-        if (typeCU == 2 & currentSelectedSong != null) { //2 mean update song
+        if (typeCU == 2 & currentSelectedSong != null) { // If TypeCU is 2 we update song
             btnSave.setText("Update");
             txtInputName.setText(currentSelectedSong.getTitle());
             txtInputYear.setText(String.valueOf(currentSelectedSong.getYear()));
             txtInputArtist.setText(currentSelectedSong.getArtist());
             txtInputFilepath.setText(currentSelectedSong.getSongPath());
-            //comCategory.getSelectionModel().select(currentSelectedSong.getSongCategory());
+
+            for (Category category : comCategory.getItems()) { // Searches the database to try and find the songs category to input into the update window
+                if (category.getSongCategory().equals(currentSelectedSong.getSongCategory())) {
+                    comCategory.getSelectionModel().select(category);
+                    break; // Stop iterating once the matching category is found and select it
+                }
+            }
         }
     }
 
@@ -134,14 +142,14 @@ public class MediaPlayerCUViewController implements Initializable {
         });
     }
 //*******************************************CONTEXT*MENU**************************************************
-    private void contextSystem() { //Here we created the context menu to category
+    private void contextSystem() { //Here we create the context menu for the category combo box
         ContextMenu contextMenu = new ContextMenu();
         MenuItem createCategory = new MenuItem("Create Category");
         MenuItem deleteCategory = new MenuItem("Delete Category");
         contextMenu.getItems().addAll(deleteCategory,createCategory);
         comCategory.setContextMenu(contextMenu);
 
-        createCategory.setOnAction((event) -> {
+        createCategory.setOnAction((event) -> { // Opens the create category dialog box
             try {
                 btnMoreCategory();
                 contextMenu.hide();
@@ -150,7 +158,7 @@ public class MediaPlayerCUViewController implements Initializable {
             }
         });
 
-        deleteCategory.setOnAction((event) -> {
+        deleteCategory.setOnAction((event) -> { // deletes the selected category and sends a delete request to the database
             try {
                 categoryModel.deleteCategory(comCategory.getSelectionModel().getSelectedItem());
                 comCategory.getItems().remove(comCategory.getSelectionModel().getSelectedItem());
@@ -161,34 +169,35 @@ public class MediaPlayerCUViewController implements Initializable {
         });
     }
 
-    //*******************************************KEYBOARD**************************************************
+//*******************************************KEYBOARD**************************************************
     @FXML
-    private void keyboardKeyPressed(KeyEvent event) throws Exception {
+    private void keyboardKeyPressed(KeyEvent event) throws Exception { // Adds keyboard functionality
         KeyCode keyCode = event.getCode(); //Get the button press value
 
+        if (keyCode == KeyCode.ESCAPE) { // Closes the window if escape is pressed
+            btnCloseWindow();
+        }
         if (event.isControlDown()) {
-            if (keyCode == KeyCode.F) {
+            if (keyCode == KeyCode.F) { // Opens the file chooser
                 btnChooseFile();
             }
         }
+
         if (event.isControlDown()) {
-            if (keyCode == KeyCode.C) {
+            if (keyCode == KeyCode.C) { // Tries to open the creates a new category dialog box
                 btnMoreCategory();
             }
         }
+
         if (event.isControlDown()) {
-            if (keyCode == KeyCode.S) {
+            if (keyCode == KeyCode.S || keyCode == KeyCode.U) { // attempts to save the song or update the song depending on the window opened
                 btnSave();
             }
         }
-        if (event.isControlDown()) {
-            if (keyCode == KeyCode.ESCAPE) {
-                btnCloseWindow();
-            }
-        }
+
     }
 //*******************************BUTTONS***********************************************
-    public void btnChooseFile() { //Use to choose file - We pass the info to ValidateModel class
+    public void btnChooseFile() { // Use to choose file - We pass the info to ValidateModel class
         txtInputFilepath.setText(validateModel.btnChoose());  //
         if(!txtInputFilepath.getText().isEmpty())
             updateTimeText();
@@ -210,8 +219,14 @@ public class MediaPlayerCUViewController implements Initializable {
             String inputValue = result.get(); // Get the actual value from Optional
             if (inputValue.length() > 40)   {
                 displayErrorModel.displayErrorC("Max 40 character");
-            }
+            } // Here we make sure the category is under 40 char and don't already exist
             else {
+                for (Category category : comCategory.getItems()) {
+                    if (category.getSongCategory().equals(inputValue)) {
+                        displayErrorModel.displayErrorC("You already have that category");
+                        return; // Stop iterating once the matching category is found and display error
+                    }
+                }
                 Category newCategory = new Category(inputValue);
                 categoryModel.createNewCategory(newCategory);
                 comCategory.getItems().add(newCategory);
@@ -236,7 +251,7 @@ public class MediaPlayerCUViewController implements Initializable {
         }
     }
 
-    private void createNewSong() { //Here the songs get created
+    private void createNewSong() { //Here the song gets created
         String title = txtInputName.getText();
         String artist = txtInputArtist.getText();
         String songPath = txtInputFilepath.getText();
@@ -244,18 +259,20 @@ public class MediaPlayerCUViewController implements Initializable {
         int year = Integer.parseInt(txtInputYear.getText());
         String category = String.valueOf(comCategory.getSelectionModel().getSelectedItem());
 
+        // Inputs the values from above into a new song and tries to send it up the layers into the DB, table view and sound map
         Song song = new Song(-1, year, title, artist, songPath, songTime, category);
 
         try {
             Song newCreatedSong = songModel.createNewSong(song);
             mediaPlayerViewController.addSongToSoundMap(newCreatedSong);
+            mediaPlayerViewController.refreshSongList();
             btnCloseWindow();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void updateSong() { //Here the songs get updated
+    private void updateSong() { //Here the song gets updated
         if (currentSelectedSong != null) {
             currentSelectedSong.setTitle(txtInputName.getText());
             currentSelectedSong.setArtist(txtInputArtist.getText());
@@ -263,9 +280,12 @@ public class MediaPlayerCUViewController implements Initializable {
             currentSelectedSong.setSongPath(txtInputFilepath.getText());
             currentSelectedSong.setSongLength(currentSongLength);
             currentSelectedSong.setSongCategory(String.valueOf(comCategory.getSelectionModel().getSelectedItem()));
+
+            // Updates the song data and sends it up the layers to the DAL layer and updates the song path in the sound map in case it got changed
             try {
                 songModel.updateSong(currentSelectedSong);
                 mediaPlayerViewController.updateSongPathSoundMap(currentSelectedSong);
+                mediaPlayerViewController.refreshSongList();
                 btnCloseWindow();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -273,9 +293,8 @@ public class MediaPlayerCUViewController implements Initializable {
         }
     }
 
-    public void btnCloseWindow() throws Exception { //Close the window
+    public void btnCloseWindow() { //Close the window
         Stage parent = (Stage) txtInputYear.getScene().getWindow();
-        mediaPlayerViewController.refreshSongList();
         parent.close();
     }
 

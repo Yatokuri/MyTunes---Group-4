@@ -22,7 +22,7 @@ public class Song {
 
     public void setSongLength(double songLength) {this.songLength = songLength;}
 
-    public String getSongLengthHHMMSS() {
+    public String getSongLengthHHMMSS() { // This way you convert songTotalTime to HH:MM:SS format
         long hours = (long) (songLength / 3600);
         long minutes = (long) ((songLength % 3600) / 60);
         long remainingSeconds = (long) (songLength % 60);

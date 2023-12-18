@@ -23,10 +23,10 @@ public class SongDAO_DB implements ISongDataAccess {
         getAllSongs();
     }
 
-    public List<Song> getSongsArray() { return allSongs; }
+    public List<Song> getSongsArray() { return allSongs; } // Returns the arraylist of all songs to send up the layers
 
 
-    public List<Song> getAllSongs() throws Exception {
+    public List<Song> getAllSongs() throws Exception { // Queries the database for all songs to insert them in an arraylist
 
         allSongs = new ArrayList<>();
 
@@ -58,7 +58,7 @@ public class SongDAO_DB implements ISongDataAccess {
         }
     }
 
-    public Song createSong(Song song) throws Exception {
+    public Song createSong(Song song) throws Exception { // creates a song and adds it to the database
 
         // SQL command
         String sql = "INSERT INTO dbo.Songs (SongName, SongArtist, SongYear, SongFilepath, songLength, songCategory) VALUES (?,?,?,?,?,?);";
@@ -98,7 +98,7 @@ public class SongDAO_DB implements ISongDataAccess {
         }
     }
 
-    public void updateSong(Song song) throws Exception {
+    public void updateSong(Song song) throws Exception { // updates an existing song in the database with new data
 
         // SQL command
         String sql = "UPDATE dbo.Songs SET SongName = ?, SongArtist = ?, SongYear = ?, SongFilepath = ?, SongLength = ?, SongCategory = ? WHERE SongID = ?";
@@ -126,7 +126,7 @@ public class SongDAO_DB implements ISongDataAccess {
         }
     }
 
-    public void deleteSong(Song song) throws Exception {
+    public void deleteSong(Song song) throws Exception { // deletes a song from the database
 
         // SQL command
         String sqlSongs = "DELETE FROM dbo.Songs WHERE SongID = ?;";

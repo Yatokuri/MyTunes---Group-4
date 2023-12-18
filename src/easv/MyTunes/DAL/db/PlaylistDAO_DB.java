@@ -21,7 +21,7 @@ public class PlaylistDAO_DB implements IPlaylistDataAccess {
         databaseConnector = new MyDatabaseConnector();
     }
 
-    public List<Playlist> getAllPlaylists() throws Exception {
+    public List<Playlist> getAllPlaylists() throws Exception { // Returns all playlists from the database
 
         ArrayList<Playlist> allPlaylists = new ArrayList<>();
 
@@ -52,7 +52,7 @@ public class PlaylistDAO_DB implements IPlaylistDataAccess {
         }
     }
 
-    public Playlist createPlaylist(Playlist playlist) throws Exception {
+    public Playlist createPlaylist(Playlist playlist) throws Exception { // Creates a playlist in the database with the given name
 
         // SQL command
         String sql = "INSERT INTO dbo.Playlist (Name) VALUES (?);";
@@ -89,7 +89,7 @@ public class PlaylistDAO_DB implements IPlaylistDataAccess {
 
     }
 
-    public void updatePlaylist(Playlist playlist) throws Exception {
+    public void updatePlaylist(Playlist playlist) throws Exception { // Updates the name of a playlist in the database where the id matches the given playlist
 
         // SQL command
         String sql = "UPDATE dbo.Playlist SET Name = ? WHERE ID = ?";
@@ -112,7 +112,7 @@ public class PlaylistDAO_DB implements IPlaylistDataAccess {
         }
     }
 
-    public void deletePlaylist(Playlist playlist) throws Exception {
+    public void deletePlaylist(Playlist playlist) throws Exception { // Deletes a playlist from the database
         // SQL command
         String  sql = "DELETE FROM dbo.PlaylistSongs WHERE PlaylistId = ?;";
         try (Connection conn = databaseConnector.getConnection();

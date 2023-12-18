@@ -18,6 +18,7 @@ public class MyDatabaseConnector {
         Properties databaseProperties = new Properties();
         databaseProperties.load(new FileInputStream((configFile)));
 
+        // Sets up the database connection for the DAL layer to use
         dataSource = new SQLServerDataSource();
         dataSource.setServerName(databaseProperties.getProperty("Server"));
         dataSource.setDatabaseName(databaseProperties.getProperty("Database"));

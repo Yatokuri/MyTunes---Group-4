@@ -17,7 +17,7 @@ public class Playlist {
         this.songTotalTime = songTotalTime;
     }
 
-    public String getSongLengthHHMMSS() {
+    public String getSongLengthHHMMSS() { // This way you convert songTotalTime to HH:MM:SS format
         long hours = (long) (songTotalTime / 3600);
         long minutes = (long) ((songTotalTime % 3600) / 60);
         long remainingSeconds = (long) (songTotalTime % 60);

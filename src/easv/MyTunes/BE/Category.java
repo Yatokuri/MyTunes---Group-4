@@ -12,10 +12,6 @@ public class Category {
     public String getSongCategory() {
         return songCategory;
     }
-    public void setSongCategory(String songCategory) {
-        this.songCategory = songCategory;
-    }
-
 
     @Override
     public String toString()

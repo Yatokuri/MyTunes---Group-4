@@ -21,13 +21,13 @@ public class PlaylistModel {
         playlistsToBeViewed.addAll(playlistManager.getAllPlaylist());
     }
 
-    public void createNewPlaylist(Playlist newPlaylist) throws Exception {
+    public void createNewPlaylist(Playlist newPlaylist) throws Exception { // Sends a request to the database to create a new playlist
         Playlist p = playlistManager.createNewPlaylist(newPlaylist);playlistsToBeViewed.add(p); // update list
     }
 
-    public static ObservableList<Playlist> getObservablePlaylists() {return playlistsToBeViewed;}
+    public static ObservableList<Playlist> getObservablePlaylists() {return playlistsToBeViewed;} // Returns the playlists
 
-    public void updatePlaylist(Playlist updatedPlaylist) throws Exception {
+    public void updatePlaylist(Playlist updatedPlaylist) throws Exception { // Sends a request to the database to update a playlist
         // update song in DAL layer (through the layers)
         playlistManager.updatePlaylist(updatedPlaylist);
 
@@ -36,14 +36,14 @@ public class PlaylistModel {
         p.setPlaylistName(updatedPlaylist.getPlaylistName());
     }
 
-    public void deletePlaylist(Playlist selectedPlaylist) throws Exception {
+    public void deletePlaylist(Playlist selectedPlaylist) throws Exception { // Sends a request to the database to delete a playlist
         // delete song in DAL layer (through the layers)
         playlistManager.deletePlaylist(selectedPlaylist);
 
         // remove from observable list (and UI)
         playlistsToBeViewed.remove(selectedPlaylist);
     }
-    public Playlist getPlaylistById(int plId){
+    public Playlist getPlaylistById(int plId){ // Returns a Playlist based on its id
         return playlistManager.getPlaylistById(plId);
     }
 }

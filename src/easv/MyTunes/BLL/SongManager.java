@@ -49,12 +49,12 @@ public class SongManager {
         return null;
     }
 
-    private boolean searchFindsSongs(Song song, String searchText) {
+    private boolean searchFindsSongs(Song song, String searchText) { // Creates the search parameter for the title and artist column to use for the search filter
         return (song.getTitle().toLowerCase().contains(searchText.toLowerCase())) || (song.getArtist().toLowerCase().contains(searchText.toLowerCase()));
     }
 
-    public ObservableList<Song> filterList(List<Song> song, String searchText) {
-        List<Song> filterList = new ArrayList<>();
+    public ObservableList<Song> filterList(List<Song> song, String searchText) { // Creates an observable list for the search function in the GUI that
+        List<Song> filterList = new ArrayList<>();                               // mirrors the song list but changes based on search input from the above method
         for (Song s : song) {
             if (searchFindsSongs(s, searchText)) {
                 filterList.add(s);

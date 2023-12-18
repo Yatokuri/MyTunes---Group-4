@@ -21,13 +21,11 @@ public class ValidateModel {
     private static final String[]validFiles  = {"wav" , "mp3"};
 
     public ValidateModel()  {
-
     }
-    //Method to check valid data to CU is correct
-    public boolean validateInput(TextField textField, String value) { //Valid input
+    public boolean validateInput(TextField textField, String value) { // Method to check if data in CU window is valid
         switch (textField.getId()) {
             case "txtInputName":
-                return !value.isEmpty() && value.length() <= 150; //The same number we have set in the nvarchar in SQL
+                return !value.isEmpty() && value.length() <= 150; // The same number we have set in the nvarchar in SQL
             case "txtInputArtist":
                 return !value.isEmpty() && value.length() <= 100; // -||-
             case "txtInputFilepath":
@@ -35,33 +33,32 @@ public class ValidateModel {
                     setupUpdateOriginalName = value;
                     setupUpdateOriginal = false;
                 }
-                if (setupUpdateOriginalName.equals(value))  { //When updating a song the filepath can be the same as before of cause
+                if (setupUpdateOriginalName.equals(value))  { // When updating a song the filepath can be the same as before of cause
                     return isValidMediaPath(value);
                 }
-                for  (Song s : SongModel.getObservableSongs()) { //We don't want people to have the same song path twice
+                for  (Song s : SongModel.getObservableSongs()) { // We don't want people to have the same song path twice
                     if (s.getSongPath().equals(value)) {
                         return false;
                     }
                 }
-                return isValidMediaPath(value);
+                return isValidMediaPath(value); // If there time is 00:00:00 that mean the song is invalid
             case "txtInputTime":
                 return !value.equals("00:00:00");
 
-            case "txtInputYear":
+            case "txtInputYear": //You can add a Song from year 1 to current year
                 try {
                     int year = Integer.parseInt(value);
                     int currentYear = Year.now().getValue();
                     return year >= 1 && year <= currentYear;
                 } catch (NumberFormatException e) {
-                    return false; // Not a valid integer
+                    return false;
                 }
             default:
                 return true;
         }
     }
 
-    //Method to choose valid files
-    public String btnChoose() {   //   FileChooser fileChooser = new FileChooser();
+    public String btnChoose() {   // Method to choose valid files
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Audio Files", validFiles2);
         fileChooser.getExtensionFilters().add(extFilter);
@@ -71,13 +68,11 @@ public class ValidateModel {
 
         if (selectedFile != null) {
             return selectedFile.getAbsolutePath();  // Get the selected file path and save it
-
         }
         return "";
     }
 
-    //Method to check if a file is valid
-    public boolean isValidMediaPath(String path) {
+    public boolean isValidMediaPath(String path) { // Method to check if a file is valid
         List<String> supportedExtensions = Arrays.asList(validFiles);
         try {
             Path filePath = FileSystems.getDefault().getPath(path);
@@ -90,8 +85,7 @@ public class ValidateModel {
         }
     }
 
-    //Method to get a song time in HH:MM:SS format
-    public void updateTimeText(MediaPlayer newSong, Consumer<String> onReadyCallback) {
+    public void updateTimeText(MediaPlayer newSong, Consumer<String> onReadyCallback) { // Method to get a song time in HH:MM:SS format
         newSong.setOnReady(() -> {
             long totalSeconds = (long) newSong.getTotalDuration().toSeconds();
             String formattedTime = String.format("%02d:%02d:%02d " +  "-" + totalSeconds , totalSeconds / 3600, (totalSeconds % 3600) / 60, totalSeconds % 60);
@@ -102,8 +96,7 @@ public class ValidateModel {
         });
     }
 
-    //Convert validFiles where mp3 be to *.mp3
-    private static final String[] validFiles2 = generateValidFiles2();
+    private static final String[] validFiles2 = generateValidFiles2(); //Convert validFiles where mp3 be to *.mp3 etc.
     private static String[] generateValidFiles2() {
         String[] validFiles2 = new String[ValidateModel.validFiles.length];
         for (int i = 0; i < ValidateModel.validFiles.length; i++) {

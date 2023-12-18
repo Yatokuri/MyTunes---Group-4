@@ -16,13 +16,13 @@ public class CategoryModel {
         categoriesToBeViewed.addAll(categoryManager.getAllCategories());
     }
 
-    public void createNewCategory(Category newCategory) throws Exception {
+    public void createNewCategory(Category newCategory) throws Exception { // Sends a request to the database to add a new category
         Category c = categoryManager.createNewCategory(newCategory);categoriesToBeViewed.add(c); // update list
     }
 
-    public static ObservableList<Category> getObservableCategories() {return categoriesToBeViewed;}
+    public static ObservableList<Category> getObservableCategories() {return categoriesToBeViewed;} // Returns the categories from the Database
 
-    public void deleteCategory(Category selectedCategory) throws Exception {
+    public void deleteCategory(Category selectedCategory) throws Exception { // Sends a request to the database to delete a category
         // delete song in DAL layer (through the layers)
         categoryManager.deleteCategory(selectedCategory);
 

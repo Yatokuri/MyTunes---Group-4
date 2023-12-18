@@ -16,7 +16,7 @@ public class Category_DB {
     public Category_DB() throws IOException {
         databaseConnector = new MyDatabaseConnector();
     }
-    public List<Category> getAllCategories() throws Exception {
+    public List<Category> getAllCategories() throws Exception { // Returns all categories from the database
 
         ArrayList<Category> allCategories = new ArrayList<>();
 
@@ -42,7 +42,7 @@ public class Category_DB {
         }
     }
 
-    public Category createCategory(Category category) throws Exception {
+    public Category createCategory(Category category) throws Exception { // Inserts a new category in the database
 
         // SQL command
         String sql = "INSERT INTO dbo.Category (Category) VALUES (?);";
@@ -67,7 +67,7 @@ public class Category_DB {
             throw new Exception("Could not create Category", ex);
         }
     }
-    public void deleteCategory(Category category) throws Exception {
+    public void deleteCategory(Category category) throws Exception { // deletes a category in the database
         // SQL command
         String  sql = "DELETE FROM dbo.Category WHERE Category = ?";
         try (Connection conn = databaseConnector.getConnection();

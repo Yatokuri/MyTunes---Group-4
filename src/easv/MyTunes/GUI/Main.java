@@ -10,22 +10,19 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
-        FXMLLoader loader = new FXMLLoader();
-        Parent root = loader.load(getClass().getResource("/View/MediaPlayer.fxml"));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/View/MediaPlayer.fxml")));
         primaryStage.getIcons().add(new Image("/Icons/mainIcon.png"));
-        primaryStage.setTitle("MyTunes Beta 0,8");
+        primaryStage.setTitle("MyTunes");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(true);
         root.requestFocus();
         primaryStage.show();
     }
-
-
-
-
 
     public static void main(String[] args) {
         launch(args);
