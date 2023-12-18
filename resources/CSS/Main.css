@@ -5,6 +5,8 @@
 #anchorPane {
     -fx-background-color: linear-gradient(to bottom, #6f787e, #6f787e, #60727c); /* Adjust colors as needed */
 }
+
+
 .button {
     -fx-background-color: linear-gradient(to bottom, #0a5f72, #1080a2); /* Adjust colors as needed */
     -fx-border-color: #001618;
@@ -18,6 +20,22 @@
     -fx-background-color: linear-gradient(to bottom, #00e2e2, #0259ea); /* Adjust colors as needed */
     -fx-background-radius: 15px 15px 15px 15px;
 }
+
+.buttonSpeed {
+    -fx-background-color: none;
+    -fx-border-color: none;
+    -fx-text-fill: black;
+    -fx-border-radius: none;
+    -fx-background-radius: none;
+    -fx-border-insets: -1;
+}
+
+.buttonSpeed:hover{
+    -fx-text-fill: #0a0a0a;
+    -fx-background-color: none;
+    -fx-background-radius: none;
+}
+
 
 .combo-box{
     -fx-background-color: #9d2323;

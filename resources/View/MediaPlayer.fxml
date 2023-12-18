@@ -185,5 +185,6 @@
          </children>
       </HBox>
       <Button fx:id="btnVideo" layoutX="71.0" layoutY="593.0" mnemonicParsing="false" onAction="#btnNewVideo" prefWidth="90.0" stylesheets="@../CSS/Main.css" text="Upload Video" visible="false" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="70.0" />
+      <Button fx:id="btnSpeed" layoutX="171.0" layoutY="608.0" mnemonicParsing="false" onAction="#btnSpeedSong" styleClass="buttonSpeed" stylesheets="@../CSS/Main.css" text="0,25x" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="14.0" />
    </children>
 </AnchorPane>

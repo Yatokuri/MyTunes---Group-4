@@ -30,6 +30,7 @@ public class DisplayErrorModel {
             alert.setTitle("Something went wrong");
             alert.setHeaderText("The database could not be reached. Please try again.");
             alert.showAndWait();
+            System.exit(0);
         } else {
             alert.setTitle("Something went wrong");
             alert.setHeaderText(t.getMessage());

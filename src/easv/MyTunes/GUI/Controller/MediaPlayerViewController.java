@@ -61,7 +61,7 @@ public class MediaPlayerViewController implements Initializable {
     @FXML
     private ImageView btnPlayIcon, btnRepeatIcon, btnShuffleIcon;
     @FXML
-    private Button btnCreatePlaylist, btnUpdatePlaylist, btnPlay, btnRepeat, btnShuffle, btnVideo;
+    private Button btnCreatePlaylist, btnUpdatePlaylist, btnPlay, btnRepeat, btnShuffle, btnVideo, btnSpeed;
     @FXML
     private TextField txtSongSearch;
     @FXML
@@ -78,6 +78,9 @@ public class MediaPlayerViewController implements Initializable {
     private int shuffleMode = 0; //Default shuffle
     private int currentIndex = 0;
     private boolean previousPress = false;
+    public List<Double> speeds = new ArrayList<>();
+    private int currentSpeedIndex = 0;
+    private Double currentSpeed = 1.00;
     private Playlist currentPlaylist, currentPlaylistPlaying; //The current playing selected and playing from
     private Song currentSong, currentSongPlaying; //The current Song selected and playing
     private SongModel songModel;
@@ -135,6 +138,7 @@ public class MediaPlayerViewController implements Initializable {
         sliderProgressVolume.setPickOnBounds(false); // -||-
         tblSongsInPlaylist.setPlaceholder(new Label("No songs found"));
         tblSongs.setPlaceholder(new Label("No songs found"));
+        tblPlaylist.setPlaceholder(new Label("No playlist found"));
         tblSongsInPlaylistVBOX.setManaged(false); // Hide songs in playlist while no playlist is selected
 
         // Initializes the Observable list into a Filtered list for use in the search function
@@ -158,6 +162,9 @@ public class MediaPlayerViewController implements Initializable {
         sliderProgressVolume.setValue(0.1F);
         setVolume();
         updateProgressStyle();
+
+        speeds.addAll(Arrays.asList(0.25, 0.50 ,0.75, 1.00, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0)); // We add the speeds to the list
+        btnSpeed.setText(currentSpeed + "x");
 
         // Add tableview functionality
         playSongFromTableViewPlaylist();
@@ -550,7 +557,7 @@ public class MediaPlayerViewController implements Initializable {
         handlePlayingSongColor();
         tblSongsInPlaylist.refresh(); //So the song in song playlist get its color
         tblPlaylist.refresh(); //So the playlist in playlist get its color
-
+        currentMusic.setRate(currentSpeed);
 
         // Play or pause based on the isMusicPaused flag
         if (isMusicPaused) {
@@ -1191,7 +1198,7 @@ public class MediaPlayerViewController implements Initializable {
                 repeatMode = 2;
                 isSecreteModeActive = true;
                 btnRepeatIcon.setImage(repeatDisableIcon);
-                btnShuffleIcon.setImage(repeatDisableIcon);
+                btnShuffleIcon.setImage(shuffleIconDisable);
                 btnVideo.setVisible(true);
                 btnRepeat.setDisable(true);
                 btnShuffle.setDisable(true);
@@ -1366,6 +1373,21 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
+    public void btnSpeedSong() { // Here we change the songs speed
+        if (currentSpeedIndex == speeds.size())  {
+            currentSpeedIndex = -1;
+        }
+        currentSpeedIndex = (currentSpeedIndex + 1) % speeds.size();
+        currentSpeed = speeds.get(currentSpeedIndex);
+        btnSpeed.setText(currentSpeed + "x");
+
+        // Set the media player's playback speed to the new speed
+        if (currentMusic != null) {
+            currentMusic.setRate(currentSpeed);
+        }
+    }
+
+
     public void onSlideProgressPressed() { // Tries to move the song progress to the selected duration
         if (currentMusic != null) {
             isUserChangingSlider = true; // This prevents the system from trying to update itself
@@ -1388,13 +1410,15 @@ public class MediaPlayerViewController implements Initializable {
     //******************************************STYLING*SLIDERS************************************************
     private void setSliderVolumeStyle() { // Sets the CSS for the volume slider
         double percentage = sliderProgressVolume.getValue() / (sliderProgressVolume.getMax() - sliderProgressVolume.getMin());
-        String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #038878 0%%, #038878 %.2f%%, #92dc9b %.2f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
+        String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #038878 0%%, #038878 %.2f%%, " +
+                "#92dc9b %.2f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
         sliderProgressVolume.lookup(".track").setStyle(color);
     }
 
     private void setSliderSongProgressStyle() { // Sets the css for the song progress slider
         double percentage = sliderProgressSong.getValue() / (sliderProgressSong.getMax() - sliderProgressSong.getMin());
-        String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #04a650 0%%, #04a650 %.10f%%, #92dc9b %.10f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
+        String color = String.format(Locale.US, "-fx-background-color: linear-gradient(to right, #04a650 0%%, #04a650 %.10f%%, " +
+                "#92dc9b %.10f%%, #92dc9b 100%%);", percentage * 100, percentage * 100);
         sliderProgressSong.lookup(".track").setStyle(color);
     }
 }
