@@ -16,7 +16,8 @@ Thomas
 
 
 ## Version History
-
+* 1.0
+    * Full Release
 * 0.1
     * Initial Release
 
