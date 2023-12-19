@@ -29,6 +29,8 @@ Thomas
 * CTRL + Left Arrow = Rewind in Song
 * CTRL + Right Arrow = Fast Forward in Song 
 * CTRL + DEL = Delete selected Song/Playlist
+* CTRL + S = Speed up Song
+* SHIFT + S = Slow down Song
 * CTRL + H = Enable/Disable Shuffle
 * CTRL + T = Enable/Disable Repeat
 * CTRL + B = Go to previous Song
