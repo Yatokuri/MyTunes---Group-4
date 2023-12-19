@@ -35,6 +35,7 @@ public class SongModel {
         songsToBeViewed.addAll(songManager.getAllSongs());
     }
     public ObservableList<Song> updateSongList() throws Exception { // Updates the song list from the database to be accurate again
+        songsToBeViewed.clear();
         songsToBeViewed.addAll(songManager.getAllSongs());
         return songsToBeViewed;
     }
