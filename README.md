@@ -23,20 +23,20 @@ Thomas
 
 ## Controls
 
-Space = Pause/Play
-Esc = Clear Select
-CTRL + Left Arrow = Rewind in Song
-CTRL + Right Arrow = Fast Forward in Song 
-CTRL + DEL = Delete selected Song/Playlist
-CTRL + H = Enable/Disable Shuffle
-CTRL + T = Enable/Disable Repeat
-CTRL + B = Go to previous Song
-CTRL + F = Go to next Song
-CTRL + P = Create new Playlist
-CTRL + O = Update selected Playlist
-CTRL + C = Create new Song
-CTRL + U = Update selected Song
-SHIFT + M + T = Enable/Disable Secret experimental Function
+* Space = Pause/Play
+* Esc = Clear Select
+* CTRL + Left Arrow = Rewind in Song
+* CTRL + Right Arrow = Fast Forward in Song 
+* CTRL + DEL = Delete selected Song/Playlist
+* CTRL + H = Enable/Disable Shuffle
+* CTRL + T = Enable/Disable Repeat
+* CTRL + B = Go to previous Song
+* CTRL + F = Go to next Song
+* CTRL + P = Create new Playlist
+* CTRL + O = Update selected Playlist
+* CTRL + C = Create new Song
+* CTRL + U = Update selected Song
+* SHIFT + M + T = Enable/Disable Secret experimental Function
 
 
 ## License
