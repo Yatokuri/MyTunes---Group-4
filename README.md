@@ -23,6 +23,7 @@ Thomas
 
 ## Controls
 
+**Media Player Hotkeys**
 * Space = Pause/Play
 * Esc = Clear Select
 * CTRL + Left Arrow = Rewind in Song
@@ -37,6 +38,12 @@ Thomas
 * CTRL + C = Create new Song
 * CTRL + U = Update selected Song
 * SHIFT + M + T = Enable/Disable Secret experimental Function
+
+**Create/Update Window Hotkeys**
+* Esc = Close window
+* CTRL + F = Choose a file
+* CTRL + C = Create new Category
+* CTRL + S = Attempt to Save/Update Song
 
 
 ## License
