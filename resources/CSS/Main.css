@@ -24,14 +24,14 @@
 .buttonSpeed {
     -fx-background-color: none;
     -fx-border-color: none;
-    -fx-text-fill: black;
+    -fx-text-fill: #2f2e2e;
     -fx-border-radius: none;
     -fx-background-radius: none;
     -fx-border-insets: -1;
 }
 
 .buttonSpeed:hover{
-    -fx-text-fill: #0a0a0a;
+    -fx-text-fill: #333232;
     -fx-background-color: none;
     -fx-background-radius: none;
 }

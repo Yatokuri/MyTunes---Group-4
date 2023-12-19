@@ -79,7 +79,7 @@ public class MediaPlayerViewController implements Initializable {
     private int currentIndex = 0;
     private boolean previousPress = false;
     public List<Double> speeds = new ArrayList<>();
-    private int currentSpeedIndex = 0;
+    private int currentSpeedIndex = 4; // This should be where 1.00
     private Double currentSpeed = 1.00;
     private Playlist currentPlaylist, currentPlaylistPlaying; //The current playing selected and playing from
     private Song currentSong, currentSongPlaying; //The current Song selected and playing
@@ -220,7 +220,7 @@ public class MediaPlayerViewController implements Initializable {
 
 
         contextMenuPlaylist.getItems().addAll(createPlaylist, updatePlaylist, deletePlaylist, deleteAllSongs);
-        contextMenuSongs.getItems().addAll(createSong, updateSong, deleteSong);
+        contextMenuSongs.getItems().addAll(createSong, updateSong, deleteSong, playlistSubMenu);
         contextMenuSongsInPlaylist.getItems().addAll(deleteSongInPlaylist);
 
         tblSongs.setContextMenu(contextMenuSongs);
@@ -786,6 +786,22 @@ public class MediaPlayerViewController implements Initializable {
     }
 
     //******************************************HELPER*METHOD********************************************
+    public void setSpeedSong(int value) { // Method to change what speed we use
+        if (currentSpeedIndex == speeds.size())
+            currentSpeedIndex = -1;
+        if (currentSpeedIndex == 0) {
+            currentSpeedIndex = speeds.size();
+        }
+        currentSpeedIndex = (currentSpeedIndex + value) % speeds.size();
+        currentSpeed = speeds.get(currentSpeedIndex);
+        btnSpeed.setText(currentSpeed + "x");
+
+        // Set the media player's playback speed to the new speed
+        if (currentMusic != null) {
+            currentMusic.setRate(currentSpeed);
+        }
+    }
+
     public void refreshPlaylists() throws Exception { // Refreshes the playlist and songs in playlist table views.
         if (currentPlaylist == null) {
             currentPlaylist = PlaylistModel.getObservablePlaylists().getFirst();
@@ -1142,6 +1158,18 @@ public class MediaPlayerViewController implements Initializable {
             }
         }
 
+        if (event.isControlDown()) {
+            if (keyCode == KeyCode.S) { // Opens the create song window
+                setSpeedSong(1);
+            }
+        }
+
+        if (event.isShiftDown()) {
+            if (keyCode == KeyCode.S) { // Opens the create song window
+                setSpeedSong(-1);
+            }
+        }
+
         if (!isSecreteModeActive) { //Disable key under media
             if (keyCode == KeyCode.DELETE) { // Tries to delete the selected song, playlist or song in playlist. Will still show relevant warning screen
                 handleDelete();
@@ -1204,7 +1232,7 @@ public class MediaPlayerViewController implements Initializable {
                 btnShuffle.setDisable(true);
                 txtSongSearch.setVisible(false);
                 vboxTblBtn.setVisible(false);
-                anchorPane.setStyle("-fx-background-color: #6f787e;");
+                anchorPane.setStyle("-fx-background-color: #454b4f;");
                 mediaView.setMediaPlayer(mp);
                 isMusicPaused = false;
                 handleNewSong(mp, currentMovie);
@@ -1373,20 +1401,13 @@ public class MediaPlayerViewController implements Initializable {
         }
     }
 
-    public void btnSpeedSong() { // Here we change the songs speed
-        if (currentSpeedIndex == speeds.size())  {
-            currentSpeedIndex = -1;
+    public void btnSpeedSong(MouseEvent event) { // Here we change the songs speed
+        if (event.getButton() == MouseButton.SECONDARY) {
+            setSpeedSong(-1);
         }
-        currentSpeedIndex = (currentSpeedIndex + 1) % speeds.size();
-        currentSpeed = speeds.get(currentSpeedIndex);
-        btnSpeed.setText(currentSpeed + "x");
-
-        // Set the media player's playback speed to the new speed
-        if (currentMusic != null) {
-            currentMusic.setRate(currentSpeed);
-        }
+        else
+            setSpeedSong(1);
     }
-
 
     public void onSlideProgressPressed() { // Tries to move the song progress to the selected duration
         if (currentMusic != null) {
